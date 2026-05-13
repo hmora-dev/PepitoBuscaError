@@ -252,27 +252,6 @@ RECOMENDACION(
 
 ---
 
-## Diagrama Entidad-Relación
-
-El diagrama Entidad-Relación y el modelo relacional se encuentran documentados en la carpeta `/docs`.
-
-Archivos recomendados:
-
-```txt
-docs/diagrama-er-modelo-relacional.png
-docs/modelo-base-datos.pdf
-docs/dump.sql
-docs/queries.sql
-```
-
-Imagen del diagrama:
-
-```md
-![Diagrama Entidad-Relación](docs/diagrama-er-modelo-relacional.png)
-```
-
----
-
 ## Justificación del diseño de base de datos
 
 El diseño de la base de datos se ha planteado para que sea claro, normalizado y fácil de mantener.
