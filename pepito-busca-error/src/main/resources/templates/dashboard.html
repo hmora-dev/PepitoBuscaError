@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>PepitoBuscaError</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+	<a class="brand" th:href="@{/}">
+		<span class="brand-mark">P</span>
+		<span>PepitoBuscaError</span>
+	</a>
+	<nav class="nav-pills" aria-label="Main">
+		<a th:href="@{/}">Dashboard</a>
+	</nav>
+</header>
+
+<main class="layout">
+	<section class="scan-panel">
+		<div class="panel-heading">
+			<div>
+				<p class="eyebrow">Security audit</p>
+				<h1>Analyze an authorized domain</h1>
+			</div>
+			<div class="status-chip">Passive checks</div>
+		</div>
+
+		<form class="scan-form" th:action="@{/scans}" th:object="${targetForm}" method="post">
+			<div class="form-grid">
+				<label>
+					<span>Asset name</span>
+					<input type="text" th:field="*{name}" placeholder="Company portal">
+					<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+				</label>
+
+				<label>
+					<span>Domain or URL</span>
+					<input type="text" th:field="*{domainOrUrl}" placeholder="example.com">
+					<small th:if="${#fields.hasErrors('domainOrUrl')}" th:errors="*{domainOrUrl}"></small>
+				</label>
+			</div>
+
+			<label class="check-row">
+				<input type="checkbox" th:field="*{authorized}">
+				<span>I am authorized to analyze this target</span>
+			</label>
+			<small class="field-error" th:if="${#fields.hasErrors('authorized')}" th:errors="*{authorized}"></small>
+
+			<button class="primary-action" type="submit">Run audit</button>
+		</form>
+	</section>
+
+	<section class="metric-strip" aria-label="Overview">
+		<div class="metric">
+			<span class="metric-value" th:text="${#lists.size(recentTargets)}">0</span>
+			<span class="metric-label">Assets</span>
+		</div>
+		<div class="metric">
+			<span class="metric-value" th:text="${#lists.size(recentScans)}">0</span>
+			<span class="metric-label">Scans</span>
+		</div>
+		<div class="metric">
+			<span class="metric-value"
+				  th:text="${#lists.isEmpty(recentScans) ? '0' : recentScans[0].riskScore}">0</span>
+			<span class="metric-label">Latest risk</span>
+		</div>
+	</section>
+
+	<section class="content-grid">
+		<div class="table-panel">
+			<div class="section-title">
+				<h2>Recent scans</h2>
+			</div>
+
+			<div class="empty-state" th:if="${#lists.isEmpty(recentScans)}">
+				No scans stored yet.
+			</div>
+
+			<div class="scan-list" th:unless="${#lists.isEmpty(recentScans)}">
+				<a class="scan-row" th:each="scan : ${recentScans}" th:href="@{/scans/{id}(id=${scan.id})}">
+					<span>
+						<strong th:text="${scan.target.name}">Asset</strong>
+						<small th:text="${scan.target.domain}">example.com</small>
+					</span>
+					<span class="risk-meter" th:classappend="${scan.riskScore >= 60 ? ' danger' : (scan.riskScore >= 25 ? ' warn' : ' ok')}">
+						<span th:style="'width:' + ${scan.riskScore} + '%'"></span>
+					</span>
+					<span class="score" th:text="${scan.riskScore}">0</span>
+				</a>
+			</div>
+		</div>
+
+		<div class="table-panel">
+			<div class="section-title">
+				<h2>Assets</h2>
+			</div>
+
+			<div class="empty-state" th:if="${#lists.isEmpty(recentTargets)}">
+				No assets stored yet.
+			</div>
+
+			<div class="asset-list" th:unless="${#lists.isEmpty(recentTargets)}">
+				<div class="asset-row" th:each="target : ${recentTargets}">
+					<span>
+						<strong th:text="${target.name}">Asset</strong>
+						<small th:text="${target.url}">https://example.com</small>
+					</span>
+					<span class="asset-domain" th:text="${target.domain}">example.com</span>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+</body>
+</html>

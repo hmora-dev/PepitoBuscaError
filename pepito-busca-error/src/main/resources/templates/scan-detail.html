@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${scan.target.name + ' report'}">Security report</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+	<a class="brand" th:href="@{/}">
+		<span class="brand-mark">P</span>
+		<span>PepitoBuscaError</span>
+	</a>
+	<nav class="nav-pills" aria-label="Main">
+		<a th:href="@{/}">Dashboard</a>
+	</nav>
+</header>
+
+<main class="layout">
+	<section class="report-head">
+		<div>
+			<p class="eyebrow">Security report</p>
+			<h1 th:text="${scan.target.name}">Asset</h1>
+			<p class="muted" th:text="${scan.target.url}">https://example.com</p>
+		</div>
+		<div class="risk-card" th:classappend="${scan.riskScore >= 60 ? ' danger' : (scan.riskScore >= 25 ? ' warn' : ' ok')}">
+			<span>Risk score</span>
+			<strong th:text="${scan.riskScore}">0</strong>
+		</div>
+	</section>
+
+	<section class="severity-grid">
+		<div class="severity critical">
+			<span th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).CRITICAL]}">0</span>
+			<strong>Critical</strong>
+		</div>
+		<div class="severity high">
+			<span th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).HIGH]}">0</span>
+			<strong>High</strong>
+		</div>
+		<div class="severity medium">
+			<span th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).MEDIUM]}">0</span>
+			<strong>Medium</strong>
+		</div>
+		<div class="severity low">
+			<span th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).LOW]}">0</span>
+			<strong>Low</strong>
+		</div>
+	</section>
+
+	<section class="findings-panel">
+		<div class="section-title">
+			<h2>Findings</h2>
+			<span class="status-chip" th:text="${scan.status}">COMPLETED</span>
+		</div>
+
+		<article class="finding-card" th:each="finding : ${findings}">
+			<div class="finding-top">
+				<div>
+					<span class="category" th:text="${finding.category.label}">Web</span>
+					<h3 th:text="${finding.title}">Missing header</h3>
+				</div>
+				<span class="severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
+					  th:text="${finding.severity.label}">Medium</span>
+			</div>
+			<div class="finding-body">
+				<div>
+					<h4>Evidence</h4>
+					<p th:text="${finding.evidence}">Evidence</p>
+				</div>
+				<div>
+					<h4>Recommendation</h4>
+					<p th:text="${finding.recommendation}">Recommendation</p>
+				</div>
+			</div>
+		</article>
+	</section>
+</main>
+</body>
+</html>
