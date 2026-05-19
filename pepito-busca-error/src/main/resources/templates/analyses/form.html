@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${'New analysis · ' + company.name}">New analysis</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+
+<main class="page-shell">
+	<nav class="breadcrumbs" aria-label="Breadcrumb">
+		<a th:href="@{/companies}">Companies</a>
+		<span>/</span>
+		<a th:href="@{/companies/{id}(id=${company.idCompany})}" th:text="${company.name}">Company</a>
+		<span>/</span>
+		<span>New analysis</span>
+	</nav>
+
+	<section class="page-heading">
+		<div>
+			<p class="eyebrow">Digital risk analysis</p>
+			<h1 th:text="${'Analyze ' + company.name}">Analyze company</h1>
+			<p class="muted">Select the indicators detected during the first review. The platform calculates the score and stores the recommendations automatically.</p>
+		</div>
+	</section>
+
+	<section class="content-panel">
+		<form class="entity-form" th:action="@{/companies/{id}/analyses/save(id=${company.idCompany})}"
+			  th:object="${analysisForm}" method="post">
+			<div class="global-error" th:if="${#fields.hasGlobalErrors()}">
+				<p th:each="error : ${#fields.globalErrors()}" th:text="${error}">Invalid analysis</p>
+			</div>
+
+			<div class="indicator-grid">
+				<label class="indicator-option" th:each="option, itemStat : ${indicatorOptions}"
+					   th:for="${'indicator-' + itemStat.index}">
+					<input type="checkbox" th:field="*{selectedIndicators}" th:value="${option.type}"
+						   th:id="${'indicator-' + itemStat.index}">
+					<span>
+						<strong th:text="${option.type}">Indicator</strong>
+						<small th:text="${option.description}">Description</small>
+					</span>
+					<span class="badge severity-badge" th:classappend="${option.severity.cssClass}"
+						  th:text="${option.severity.label}">Medium</span>
+				</label>
+			</div>
+
+			<div class="info-box">
+				<strong>Risk rule:</strong>
+				<span>The score is capped at 100. Empty selections are allowed and create a low-risk analysis with no recommendations.</span>
+			</div>
+
+			<div class="form-actions">
+				<a class="btn btn-ghost" th:href="@{/companies/{id}(id=${company.idCompany})}">Cancel</a>
+				<button class="btn btn-primary" type="submit">Calculate risk</button>
+			</div>
+		</form>
+	</section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

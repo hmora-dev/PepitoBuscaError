@@ -3,115 +3,121 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>PepitoBuscaError</title>
-	<link rel="stylesheet" th:href="@{/css/app.css}">
+	<title>Dashboard · PepitoBuscaError</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<header class="topbar">
-	<a class="brand" th:href="@{/}">
-		<span class="brand-mark">P</span>
-		<span>PepitoBuscaError</span>
-	</a>
-	<nav class="nav-pills" aria-label="Main">
-		<a th:href="@{/}">Dashboard</a>
-	</nav>
-</header>
+<div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
 
-<main class="layout">
-	<section class="scan-panel">
-		<div class="panel-heading">
-			<div>
-				<p class="eyebrow">Security audit</p>
-				<h1>Analyze an authorized domain</h1>
-			</div>
-			<div class="status-chip">Passive checks</div>
+<main class="page-shell">
+	<section class="page-heading">
+		<div>
+			<p class="eyebrow">Business overview</p>
+			<h1>Security dashboard</h1>
+			<p class="muted">A simple operational view of companies, analyses, and risk levels.</p>
 		</div>
-
-		<form class="scan-form" th:action="@{/scans}" th:object="${targetForm}" method="post">
-			<div class="form-grid">
-				<label>
-					<span>Asset name</span>
-					<input type="text" th:field="*{name}" placeholder="Company portal">
-					<small th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
-				</label>
-
-				<label>
-					<span>Domain or URL</span>
-					<input type="text" th:field="*{domainOrUrl}" placeholder="example.com">
-					<small th:if="${#fields.hasErrors('domainOrUrl')}" th:errors="*{domainOrUrl}"></small>
-				</label>
-			</div>
-
-			<label class="check-row">
-				<input type="checkbox" th:field="*{authorized}">
-				<span>I am authorized to analyze this target</span>
-			</label>
-			<small class="field-error" th:if="${#fields.hasErrors('authorized')}" th:errors="*{authorized}"></small>
-
-			<button class="primary-action" type="submit">Run audit</button>
-		</form>
+		<a class="btn btn-primary" th:href="@{/companies/new}">Register company</a>
 	</section>
 
-	<section class="metric-strip" aria-label="Overview">
-		<div class="metric">
-			<span class="metric-value" th:text="${#lists.size(recentTargets)}">0</span>
-			<span class="metric-label">Assets</span>
-		</div>
-		<div class="metric">
-			<span class="metric-value" th:text="${#lists.size(recentScans)}">0</span>
-			<span class="metric-label">Scans</span>
-		</div>
-		<div class="metric">
-			<span class="metric-value"
-				  th:text="${#lists.isEmpty(recentScans) ? '0' : recentScans[0].riskScore}">0</span>
-			<span class="metric-label">Latest risk</span>
-		</div>
+	<section class="stats-grid">
+		<article class="stat-card">
+			<span>Total companies</span>
+			<strong th:text="${stats.totalCompanies}">0</strong>
+		</article>
+		<article class="stat-card">
+			<span>Total analyses</span>
+			<strong th:text="${stats.totalAnalyses}">0</strong>
+		</article>
+		<article class="stat-card">
+			<span>Average risk</span>
+			<strong th:text="${stats.averageRiskScore}">0</strong>
+		</article>
+		<article class="stat-card danger">
+			<span>Critical analyses</span>
+			<strong th:text="${stats.criticalAnalyses}">0</strong>
+		</article>
 	</section>
 
-	<section class="content-grid">
-		<div class="table-panel">
+	<section class="dashboard-grid">
+		<div class="content-panel">
 			<div class="section-title">
-				<h2>Recent scans</h2>
+				<h2>Risk distribution</h2>
+				<span class="badge neutral" th:text="${stats.totalAnalyses + ' analyses'}">0 analyses</span>
 			</div>
-
-			<div class="empty-state" th:if="${#lists.isEmpty(recentScans)}">
-				No scans stored yet.
-			</div>
-
-			<div class="scan-list" th:unless="${#lists.isEmpty(recentScans)}">
-				<a class="scan-row" th:each="scan : ${recentScans}" th:href="@{/scans/{id}(id=${scan.id})}">
-					<span>
-						<strong th:text="${scan.target.name}">Asset</strong>
-						<small th:text="${scan.target.domain}">example.com</small>
-					</span>
-					<span class="risk-meter" th:classappend="${scan.riskScore >= 60 ? ' danger' : (scan.riskScore >= 25 ? ' warn' : ' ok')}">
-						<span th:style="'width:' + ${scan.riskScore} + '%'"></span>
-					</span>
-					<span class="score" th:text="${scan.riskScore}">0</span>
-				</a>
-			</div>
-		</div>
-
-		<div class="table-panel">
-			<div class="section-title">
-				<h2>Assets</h2>
-			</div>
-
-			<div class="empty-state" th:if="${#lists.isEmpty(recentTargets)}">
-				No assets stored yet.
-			</div>
-
-			<div class="asset-list" th:unless="${#lists.isEmpty(recentTargets)}">
-				<div class="asset-row" th:each="target : ${recentTargets}">
-					<span>
-						<strong th:text="${target.name}">Asset</strong>
-						<small th:text="${target.url}">https://example.com</small>
-					</span>
-					<span class="asset-domain" th:text="${target.domain}">example.com</span>
+			<div class="distribution-list">
+				<div class="distribution-row" th:each="level : ${T(com.pepitobuscaerror.model.RiskLevel).values()}">
+					<div>
+						<span class="badge risk-badge" th:classappend="${level.cssClass}" th:text="${level.label}">Low</span>
+						<strong th:text="${stats.riskDistribution.get(level)}">0</strong>
+					</div>
+					<div class="progress-track">
+						<span th:style="'width:' + ${stats.totalAnalyses == 0 ? 0 : (stats.riskDistribution.get(level) * 100 / stats.totalAnalyses)} + '%'"></span>
+					</div>
 				</div>
 			</div>
 		</div>
+
+		<div class="content-panel">
+			<div class="section-title">
+				<h2>Latest companies</h2>
+				<a class="text-link" th:href="@{/companies}">View all</a>
+			</div>
+			<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestCompanies)}">
+				<a class="compact-row" th:each="company : ${stats.latestCompanies}"
+				   th:href="@{/companies/{id}(id=${company.idCompany})}">
+					<span>
+						<strong th:text="${company.name}">Company</strong>
+						<small th:text="${company.domain}">example.com</small>
+					</span>
+					<span class="badge neutral" th:text="${company.analysisCount + ' analyses'}">0 analyses</span>
+				</a>
+			</div>
+			<div class="empty-state" th:if="${#lists.isEmpty(stats.latestCompanies)}">
+				No companies registered yet.
+			</div>
+		</div>
+	</section>
+
+	<section class="content-panel">
+		<div class="section-title">
+			<h2>Latest analyses</h2>
+			<span class="muted">Most recent risk evaluations</span>
+		</div>
+		<div class="table-wrap" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
+			<table class="data-table">
+				<thead>
+				<tr>
+					<th>Company</th>
+					<th>Date</th>
+					<th>Score</th>
+					<th>Risk</th>
+					<th>Status</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="analysis : ${stats.latestAnalyses}">
+					<td>
+						<a class="text-link" th:href="@{/companies/{id}(id=${analysis.company.idCompany})}"
+						   th:text="${analysis.company.name}">Company</a>
+					</td>
+					<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
+					<td><strong th:text="${analysis.riskScore}">0</strong></td>
+					<td>
+						<a class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+						   th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}"
+						   th:text="${analysis.riskLevel.label}">Low</a>
+					</td>
+					<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
+			Create a company and run the first analysis to populate this dashboard.
+		</div>
 	</section>
 </main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

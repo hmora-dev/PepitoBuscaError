@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="app-header" th:fragment="navbar(active)">
+	<a class="brand" th:href="@{/}">
+		<span class="brand-mark">PB</span>
+		<span class="brand-text">PepitoBuscaError</span>
+	</a>
+	<nav class="main-nav" aria-label="Main navigation">
+		<a th:href="@{/}" th:classappend="${active == 'home'} ? ' active' : ''">Home</a>
+		<a th:href="@{/dashboard}" th:classappend="${active == 'dashboard'} ? ' active' : ''">Dashboard</a>
+		<a th:href="@{/companies}" th:classappend="${active == 'companies'} ? ' active' : ''">Companies</a>
+	</nav>
+</header>
+</body>
+</html>

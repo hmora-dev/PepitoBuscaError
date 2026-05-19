@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Companies · PepitoBuscaError</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+
+<main class="page-shell">
+	<section class="page-heading">
+		<div>
+			<p class="eyebrow">Company management</p>
+			<h1>Companies</h1>
+			<p class="muted">Search, manage, and review the analysis history of registered businesses.</p>
+		</div>
+		<a class="btn btn-primary" th:href="@{/companies/new}">New company</a>
+	</section>
+
+	<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
+
+	<section class="content-panel">
+		<form class="search-bar" th:action="@{/companies}" method="get">
+			<label class="sr-only" for="q">Search companies</label>
+			<input id="q" name="q" type="search" th:value="${query}" placeholder="Search by name, domain, or sector">
+			<button class="btn btn-secondary" type="submit">Search</button>
+			<a class="btn btn-ghost" th:href="@{/companies}" th:if="${query != ''}">Clear</a>
+		</form>
+
+		<div class="table-wrap" th:if="${!#lists.isEmpty(companies)}">
+			<table class="data-table">
+				<thead>
+				<tr>
+					<th>Name</th>
+					<th>Domain</th>
+					<th>Sector</th>
+					<th>Analyses</th>
+					<th>Latest risk</th>
+					<th>Actions</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="company : ${companies}">
+					<td>
+						<a class="table-title" th:href="@{/companies/{id}(id=${company.idCompany})}"
+						   th:text="${company.name}">Company</a>
+						<small th:text="${company.corporateEmail}">mail@example.com</small>
+					</td>
+					<td th:text="${company.domain}">example.com</td>
+					<td th:text="${company.sector}">Sector</td>
+					<td th:text="${company.analysisCount}">0</td>
+					<td>
+						<span class="badge neutral" th:if="${company.latestRiskLevel == null}">Not analyzed</span>
+						<span class="badge risk-badge" th:if="${company.latestRiskLevel != null}"
+							  th:classappend="${company.latestRiskLevel.cssClass}"
+							  th:text="${company.latestRiskLevel.label}">Low</span>
+					</td>
+					<td class="table-actions">
+						<a class="btn btn-small btn-secondary" th:href="@{/companies/{id}(id=${company.idCompany})}">View</a>
+						<a class="btn btn-small btn-ghost" th:href="@{/companies/edit/{id}(id=${company.idCompany})}">Edit</a>
+						<a class="btn btn-small btn-danger" th:href="@{/companies/delete/{id}(id=${company.idCompany})}"
+						   onclick="return confirm('Delete this company and all its analyses?');">Delete</a>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="empty-state" th:if="${#lists.isEmpty(companies)}">
+			<strong>No companies found.</strong>
+			<span>Register the first company or try a different search term.</span>
+		</div>
+	</section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

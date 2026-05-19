@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${'Analysis result · ' + analysis.company.name}">Analysis result</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+
+<main class="page-shell">
+	<nav class="breadcrumbs" aria-label="Breadcrumb">
+		<a th:href="@{/companies}">Companies</a>
+		<span>/</span>
+		<a th:href="@{/companies/{id}(id=${analysis.company.idCompany})}" th:text="${analysis.company.name}">Company</a>
+		<span>/</span>
+		<span>Analysis result</span>
+	</nav>
+
+	<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Completed</div>
+
+	<section class="result-hero">
+		<div>
+			<p class="eyebrow">Analysis result</p>
+			<h1 th:text="${analysis.company.name}">Company</h1>
+			<p class="muted">
+				<span th:text="${analysis.company.domain}">example.com</span>
+				<span> · </span>
+				<span th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</span>
+			</p>
+		</div>
+		<div class="score-panel" th:classappend="${analysis.riskLevel.cssClass}">
+			<span>Risk score</span>
+			<strong th:text="${analysis.riskScore}">0</strong>
+			<small th:text="${analysis.riskLevel.label}">Low</small>
+		</div>
+	</section>
+
+	<section class="section-grid two">
+		<div class="content-panel">
+			<div class="section-title">
+				<h2>Indicators by severity</h2>
+				<span class="badge neutral" th:text="${analysis.indicators.size() + ' indicators'}">0 indicators</span>
+			</div>
+
+			<div class="empty-state" th:if="${#lists.isEmpty(analysis.indicators)}">
+				<strong>No risk indicators were selected.</strong>
+				<span>This analysis is stored as low risk.</span>
+			</div>
+
+			<div th:each="severity : ${T(com.pepitobuscaerror.model.Severity).values()}"
+				 th:if="${!#lists.isEmpty(indicatorGroups.get(severity))}" class="group-block">
+				<h3>
+					<span class="badge severity-badge" th:classappend="${severity.cssClass}" th:text="${severity.label}">High</span>
+				</h3>
+				<article class="detail-card" th:each="indicator : ${indicatorGroups.get(severity)}">
+					<strong th:text="${indicator.type}">Indicator</strong>
+					<span th:text="${indicator.value}">Value</span>
+					<p th:text="${indicator.description}">Description</p>
+				</article>
+			</div>
+		</div>
+
+		<div class="content-panel">
+			<div class="section-title">
+				<h2>Recommendations by priority</h2>
+				<span class="badge neutral" th:text="${analysis.recommendations.size() + ' actions'}">0 actions</span>
+			</div>
+
+			<div class="empty-state" th:if="${#lists.isEmpty(analysis.recommendations)}">
+				<strong>No recommendations generated.</strong>
+				<span>Keep monitoring the company and create a new analysis if risks appear.</span>
+			</div>
+
+			<div th:each="priority : ${T(com.pepitobuscaerror.model.Priority).values()}"
+				 th:if="${!#lists.isEmpty(recommendationGroups.get(priority))}" class="group-block">
+				<h3>
+					<span class="badge priority-badge" th:classappend="${priority.cssClass}" th:text="${priority.label}">High</span>
+				</h3>
+				<article class="detail-card" th:each="recommendation : ${recommendationGroups.get(priority)}">
+					<strong th:text="${recommendation.description}">Recommendation</strong>
+					<p th:text="${recommendation.action}">Action</p>
+				</article>
+			</div>
+		</div>
+	</section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
