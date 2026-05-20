@@ -56,6 +56,16 @@ The module collects DNS records, likely third-party providers, public verificati
 
 This feature improves the project because it connects cybersecurity analysis with realistic OSINT work: identifying what the organization exposes publicly, documenting provider dependencies, and producing remediation actions that a technician can explain.
 
+## Why OSINT Integrations Were Added
+
+OSINT integrations were added because public intelligence enriches risk analysis without requiring intrusive testing. A defensive audit often starts by asking what the outside world can already see about the organization.
+
+DNSDumpster-style and SecurityTrails-style intelligence help identify exposed subdomains, DNS configuration, associated IPs, nameservers, mail servers, and provider relationships. These signals are useful for finding stale assets, unmanaged hostnames, weak DNS hygiene, and public administration-style names that require manual validation.
+
+Have I Been Pwned-style email exposure checks help identify whether corporate accounts may have appeared in known breach datasets. The application only displays high-level breach information and defensive recommendations, such as changing passwords, enabling MFA, and reviewing reused credentials.
+
+Demo mode was added so the project remains functional without paid API keys. When SecurityTrails or HIBP keys are missing, the UI clearly explains that demo data is being shown. This keeps the implementation suitable for academic and defensive use while avoiding hardcoded secrets.
+
 ## MVC Architecture
 
 MVC separates responsibilities clearly:
@@ -77,4 +87,4 @@ The `RiskCalculator` interface separates the risk calculation contract from its 
 
 ## Excluded Advanced Features
 
-JWT, React, real cybersecurity APIs, Docker, microservices, GraphQL, and WebFlux were not included because they would add complexity that is not necessary for the DAM 1 objective. The current version focuses on a stable, explainable Spring Boot MVC application.
+JWT, React, Docker, microservices, GraphQL, WebFlux, offensive scanning, exploit code, and password lookup features were not included because they would add complexity or risk that is not necessary for the DAM 1 objective. The current version focuses on a stable, explainable Spring Boot MVC application with optional passive API integrations.

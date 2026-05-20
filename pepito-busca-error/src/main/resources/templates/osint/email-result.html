@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Email OSINT result - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('osint')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('osint')}"></div>
+
+		<main class="page-content">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/osint}">OSINT</a>
+				<span>/</span>
+				<span>Email exposure</span>
+			</nav>
+
+			<section class="result-hero">
+				<div>
+					<p class="eyebrow">Have I Been Pwned</p>
+					<h1 th:text="${result.email}">security@example.com</h1>
+					<p class="muted">High-level corporate email breach exposure review. No passwords are requested or stored.</p>
+				</div>
+				<div class="score-panel" th:classappend="${#strings.toLowerCase(result.riskSeverity)}">
+					<span>Suggested severity</span>
+					<strong th:text="${result.riskSeverity}">HIGH</strong>
+					<small th:text="${result.demoMode ? 'Demo data' : 'API data'}">Demo data</small>
+				</div>
+			</section>
+
+			<div class="warning-box" th:if="${result.demoMode}">
+				<i class="bi bi-exclamation-triangle"></i>
+				<span th:text="${result.message}">HIBP API key not configured. Showing demo data.</span>
+			</div>
+
+			<section class="stats-grid">
+				<article class="stat-card" th:classappend="${result.breachesFound ? ' danger' : ''}">
+					<span>Exposure found</span>
+					<strong th:text="${result.breachesFound ? 'Yes' : 'No'}">Yes</strong>
+					<small>Corporate email exposure</small>
+				</article>
+				<article class="stat-card" th:classappend="${result.breachesFound ? ' danger' : ''}">
+					<span>Breaches</span>
+					<strong th:text="${result.breachCount}">2</strong>
+					<small>High-level results only</small>
+				</article>
+				<article class="stat-card">
+					<span>Mode</span>
+					<strong th:text="${result.demoMode ? 'Demo' : 'API'}">Demo</strong>
+					<small>No API key is hardcoded</small>
+				</article>
+				<article class="stat-card">
+					<span>Checked</span>
+					<strong th:text="${result.checkedAt}">Date</strong>
+					<small>Application timestamp</small>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Exposure details</p>
+							<h2>Known breaches</h2>
+						</div>
+						<span class="badge severity-badge" th:classappend="${#strings.toLowerCase(result.riskSeverity)}"
+							  th:text="${result.riskSeverity}">HIGH</span>
+					</div>
+
+					<div class="table-wrap" th:if="${result.breachesFound}">
+						<table class="data-table">
+							<thead>
+							<tr>
+								<th>Breach</th>
+								<th>Date</th>
+								<th>Exposed data classes</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="breach : ${result.breaches}">
+								<td><strong th:text="${breach.name}">Example breach</strong></td>
+								<td th:text="${breach.breachDate}">2022-01-01</td>
+								<td th:text="${breach.dataClassesSummary}">Email addresses</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="empty-state" th:if="${!result.breachesFound}">
+						<i class="bi bi-check2-circle"></i>
+						<strong>No breach exposure returned</strong>
+						<span>Continue monitoring the account and keep MFA enabled.</span>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Recommendations</p>
+							<h2>Defensive actions</h2>
+						</div>
+					</div>
+					<div class="detail-card">
+						<span>Risk note</span>
+						<p th:text="${result.breachesFound ? 'Corporate email exposure detected' : 'No breach exposure returned by this check'}">Corporate email exposure detected</p>
+					</div>
+					<div class="detail-card">
+						<span>Action</span>
+						<p th:text="${result.riskRecommendation}">Change passwords, enable MFA, review reused credentials.</p>
+					</div>
+					<div class="info-box">
+						<i class="bi bi-shield-lock"></i>
+						<span>Use this module only with domains and emails you are authorized to review. Do not store raw sensitive breach data unnecessarily.</span>
+					</div>
+					<div class="bottom-actions">
+						<a class="btn btn-secondary" th:href="@{/osint}">
+							<i class="bi bi-arrow-left"></i>
+							<span>Back to OSINT</span>
+						</a>
+					</div>
+				</article>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

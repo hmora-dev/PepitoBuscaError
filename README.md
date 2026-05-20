@@ -45,6 +45,9 @@ The main user is a technical consultant, IT student, or small-business support t
 - Private tracking links that automatically send live browser-reported location to Spring Boot while the page is open and permission is granted.
 - Professional live map view using Leaflet and OpenStreetMap tiles.
 - OSINT Intelligence area for authorized passive public-footprint reports.
+- DNSDumpster-style domain intelligence with safe demo subdomain data.
+- SecurityTrails-style DNS intelligence with optional API key support.
+- Have I Been Pwned-style corporate email exposure checks with optional API key support.
 - Passive OSINT checks for DNS, mail, web/CDN metadata, TLS certificates, robots.txt, sitemap.xml, and security.txt.
 - User-friendly error page.
 - Responsive SaaS-style interface with cards, tables, dark metric panels, thin borders, and soft shadows.
@@ -65,23 +68,33 @@ This is real geolocation, but it is still a web application. Tracking only works
 
 The map is rendered with Leaflet and OpenStreetMap tiles, so the map view needs internet access to load tile images.
 
-## OSINT Intelligence
+## OSINT Intelligence Module
 
-The OSINT module is designed for domains the user owns or is authorized to review. It creates a passive public-footprint report without brute forcing paths, scanning address ranges, exploiting services, or bypassing authentication.
+The OSINT module is designed for domains and corporate emails the user owns or is authorized to review. It is passive and defensive: it does not brute force subdomains, scan address ranges, exploit services, bypass authentication, or look up passwords.
 
-The report collects:
-
-- DNS records and likely external providers.
-- Mail posture such as MX, SPF, DMARC, MTA-STS, and TLS-RPT.
-- Web response metadata, security headers, and likely CDN/hosting fingerprints.
-- TLS certificate subject, issuer, and expiry window.
-- Public well-known files such as `security.txt`, `robots.txt`, and `sitemap.xml`.
-
-Open it from:
+The section is available at:
 
 ```text
-OSINT > Run OSINT report
+http://localhost:8080/osint
 ```
+
+It includes three provider-style checks:
+
+- DNSDumpster-style analysis: summarizes public DNS records and shows realistic passive/demo subdomain intelligence such as `mail`, `vpn`, `dev`, `admin`, and `portal`.
+- SecurityTrails-style analysis: shows current DNS records, subdomains, associated IPs, nameservers, mail servers, historical DNS notes, and risk interpretation.
+- Have I Been Pwned-style analysis: checks whether a corporate email appears in known breach exposure data and shows only high-level breach names, dates, and data classes.
+
+SecurityTrails and Have I Been Pwned require API keys for real provider calls. Configure them through environment variables or `application.properties`:
+
+```properties
+osint.securitytrails.api-key=${SECURITYTRAILS_API_KEY:}
+osint.hibp.api-key=${HIBP_API_KEY:}
+osint.demo-mode=true
+```
+
+When `osint.demo-mode=true` or an API key is missing, the application returns safe demo data and shows a warning in the UI. This keeps the project functional during academic presentations without paid API keys.
+
+The existing saved OSINT report flow still works through `OSINT > Run OSINT report`. Provider-style domain intelligence is also converted into high-level `Finding` records for scan reports, without storing raw sensitive breach data.
 
 ## Visual Design
 

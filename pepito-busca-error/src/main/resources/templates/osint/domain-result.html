@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Domain OSINT result - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('osint')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('osint')}"></div>
+
+		<main class="page-content">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/osint}">OSINT</a>
+				<span>/</span>
+				<span th:text="${result.domain}">example.com</span>
+			</nav>
+
+			<section class="result-hero">
+				<div>
+					<p class="eyebrow">OSINT Intelligence</p>
+					<h1 th:text="${result.domain}">example.com</h1>
+					<p class="muted">DNSDumpster-style and SecurityTrails-style passive domain intelligence.</p>
+				</div>
+				<div class="score-panel medium">
+					<span>Mode</span>
+					<strong th:text="${result.demoMode ? 'DEMO' : 'API'}">DEMO</strong>
+					<small>Passive defensive review</small>
+				</div>
+			</section>
+
+			<div class="warning-box" th:if="${result.demoMode}">
+				<i class="bi bi-exclamation-triangle"></i>
+				<span>One or more OSINT providers are using demo data because demo mode is enabled or an API key is missing.</span>
+			</div>
+
+			<section class="stats-grid">
+				<article class="stat-card">
+					<span>DNSDumpster subdomains</span>
+					<strong th:text="${result.dnsDumpsterResult.subdomainCount}">0</strong>
+					<small th:text="${result.dnsDumpsterResult.demoMode ? 'Demo/passive data' : 'Provider data'}">Demo</small>
+				</article>
+				<article class="stat-card">
+					<span>SecurityTrails subdomains</span>
+					<strong th:text="${result.securityTrailsResult.subdomainCount}">0</strong>
+					<small th:text="${result.securityTrailsResult.demoMode ? 'Demo data' : 'API data'}">Demo</small>
+				</article>
+				<article class="stat-card">
+					<span>DNS records</span>
+					<strong th:text="${result.securityTrailsResult.currentRecords.size()}">0</strong>
+					<small>Current record summary</small>
+				</article>
+				<article class="stat-card">
+					<span>Associated IPs</span>
+					<strong th:text="${result.securityTrailsResult.associatedIps.size()}">0</strong>
+					<small>Public DNS relationships</small>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">DNSDumpster</p>
+							<h2>Subdomain discovery</h2>
+						</div>
+						<span class="badge neutral" th:text="${result.dnsDumpsterResult.subdomainCount + ' hosts'}">0 hosts</span>
+					</div>
+
+					<div class="warning-box" th:if="${result.dnsDumpsterResult.demoMode}">
+						<i class="bi bi-info-circle"></i>
+						<span th:text="${result.dnsDumpsterResult.message}">Demo mode</span>
+					</div>
+
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+							<tr>
+								<th>Hostname</th>
+								<th>Source</th>
+								<th>Address</th>
+								<th>Risk</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="subdomain : ${result.dnsDumpsterResult.subdomains}">
+								<td>
+									<strong th:text="${subdomain.hostname}">mail.example.com</strong>
+									<small th:text="${subdomain.note}">Note</small>
+								</td>
+								<td th:text="${subdomain.source}">Demo</td>
+								<td th:text="${subdomain.ipAddress}">203.0.113.10</td>
+								<td>
+									<span class="badge severity-badge" th:classappend="${subdomain.riskClass}"
+										  th:text="${subdomain.riskLabel}">Info</span>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">DNS records</p>
+							<h2>Public records summary</h2>
+						</div>
+					</div>
+
+					<div class="group-block">
+						<div class="detail-card" th:each="record : ${result.dnsDumpsterResult.dnsRecordsSummary}">
+							<span>Summary</span>
+							<p th:text="${record}">A records: none observed</p>
+						</div>
+						<div class="detail-card">
+							<span>MX records</span>
+							<p th:text="${result.dnsDumpsterResult.mxRecordsSummary}">None observed</p>
+						</div>
+						<div class="detail-card">
+							<span>NS records</span>
+							<p th:text="${result.dnsDumpsterResult.nsRecordsSummary}">None observed</p>
+						</div>
+						<div class="detail-card">
+							<span>TXT records</span>
+							<p th:text="${result.dnsDumpsterResult.txtRecordsSummary}">None observed</p>
+						</div>
+					</div>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">SecurityTrails</p>
+							<h2>Current DNS intelligence</h2>
+						</div>
+						<span class="badge neutral" th:text="${result.securityTrailsResult.currentRecords.size() + ' records'}">0 records</span>
+					</div>
+
+					<div class="warning-box" th:if="${result.securityTrailsResult.demoMode}">
+						<i class="bi bi-info-circle"></i>
+						<span th:text="${result.securityTrailsResult.message}">SecurityTrails API key not configured. Showing demo data.</span>
+					</div>
+
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+							<tr>
+								<th>Type</th>
+								<th>Name</th>
+								<th>Value</th>
+								<th>TTL</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="record : ${result.securityTrailsResult.currentRecords}">
+								<td><span class="badge neutral" th:text="${record.type}">A</span></td>
+								<td th:text="${record.name}">example.com</td>
+								<td th:text="${record.value}">203.0.113.15</td>
+								<td th:text="${record.ttl}">3600</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Relationships</p>
+							<h2>IPs, servers, and notes</h2>
+						</div>
+					</div>
+
+					<div class="group-block">
+						<div class="detail-card">
+							<span>Associated IPs</span>
+							<p th:text="${result.securityTrailsResult.associatedIpsSummary}">203.0.113.15</p>
+						</div>
+						<div class="detail-card">
+							<span>Nameservers</span>
+							<p th:text="${result.securityTrailsResult.nameserversSummary}">ns1</p>
+						</div>
+						<div class="detail-card">
+							<span>Mail servers</span>
+							<p th:text="${result.securityTrailsResult.mailServersSummary}">mail</p>
+						</div>
+						<div class="detail-card" th:each="note : ${result.securityTrailsResult.historicalNotes}">
+							<span>Historical DNS note</span>
+							<p th:text="${note}">Historical note</p>
+						</div>
+					</div>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Risk notes</p>
+							<h2>Items to validate</h2>
+						</div>
+					</div>
+					<div class="group-block">
+						<div class="detail-card">
+							<span>Possible exposed services</span>
+							<p th:text="${result.dnsDumpsterResult.exposedServicesSummary}">None observed</p>
+						</div>
+						<div class="detail-card" th:each="note : ${result.dnsDumpsterResult.riskNotes}">
+							<span>DNSDumpster</span>
+							<p th:text="${note}">Risk note</p>
+						</div>
+						<div class="detail-card" th:each="note : ${result.securityTrailsResult.riskNotes}">
+							<span>SecurityTrails</span>
+							<p th:text="${note}">Risk note</p>
+						</div>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Recommendations</p>
+							<h2>Defensive next steps</h2>
+						</div>
+					</div>
+					<div class="group-block">
+						<div class="detail-card" th:each="recommendation : ${result.recommendations}">
+							<span>Action</span>
+							<p th:text="${recommendation}">Recommendation</p>
+						</div>
+					</div>
+					<div class="bottom-actions">
+						<a class="btn btn-secondary" th:href="@{/osint}">
+							<i class="bi bi-arrow-left"></i>
+							<span>Back to OSINT</span>
+						</a>
+					</div>
+				</article>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

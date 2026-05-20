@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +37,35 @@ class OsintControllerTests {
 		mockMvc.perform(get("/osint"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("OSINT Intelligence")));
+	}
+
+	@Test
+	void domainResultRendersDemoProviders() throws Exception {
+		mockMvc.perform(post("/osint/domain")
+						.param("domain", "example.com")
+						.param("authorized", "true"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("DNSDumpster")))
+				.andExpect(content().string(containsString("SecurityTrails API key not configured. Showing demo data.")));
+	}
+
+	@Test
+	void emailResultRendersDemoProvider() throws Exception {
+		mockMvc.perform(post("/osint/email")
+						.param("email", "security@example.com")
+						.param("authorized", "true"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Have I Been Pwned")))
+				.andExpect(content().string(containsString("HIBP API key not configured. Showing demo data.")));
+	}
+
+	@Test
+	void invalidDomainReturnsFriendlyValidation() throws Exception {
+		mockMvc.perform(post("/osint/domain")
+						.param("domain", "not a valid domain")
+						.param("authorized", "true"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Enter a valid domain such as example.com")));
 	}
 
 	@Test

@@ -20,6 +20,98 @@
 
 			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Completed</div>
 
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Domain intelligence</p>
+							<h2>DNSDumpster and SecurityTrails</h2>
+						</div>
+						<span class="badge neutral">Passive</span>
+					</div>
+
+					<form class="entity-form" th:action="@{/osint/domain}" th:object="${osintDomainForm}" method="post">
+						<label>
+							<span>Domain</span>
+							<input type="text" th:field="*{domain}" placeholder="example.com" autocomplete="off">
+							<small class="field-error" th:if="${#fields.hasErrors('domain')}" th:errors="*{domain}"></small>
+						</label>
+
+						<label class="check-row authorization-row">
+							<input type="checkbox" th:field="*{authorized}">
+							<span>I confirm that I am authorized to review this domain.</span>
+						</label>
+						<small class="field-error" th:if="${#fields.hasErrors('authorized')}" th:errors="*{authorized}"></small>
+
+						<div class="info-box">
+							<i class="bi bi-shield-check"></i>
+							<span>Use this module only with domains and emails you are authorized to review.</span>
+						</div>
+
+						<div class="form-actions">
+							<button class="btn btn-primary" type="submit">
+								<i class="bi bi-diagram-3"></i>
+								<span>Analyze domain</span>
+							</button>
+						</div>
+					</form>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Email exposure</p>
+							<h2>Have I Been Pwned</h2>
+						</div>
+						<span class="badge neutral">No passwords</span>
+					</div>
+
+					<form class="entity-form" th:action="@{/osint/email}" th:object="${osintEmailForm}" method="post">
+						<label>
+							<span>Corporate email</span>
+							<input type="email" th:field="*{email}" placeholder="security@example.com" autocomplete="off">
+							<small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+						</label>
+
+						<label class="check-row authorization-row">
+							<input type="checkbox" th:field="*{authorized}">
+							<span>I confirm that I am authorized to review this email exposure.</span>
+						</label>
+						<small class="field-error" th:if="${#fields.hasErrors('authorized')}" th:errors="*{authorized}"></small>
+
+						<div class="warning-box">
+							<i class="bi bi-exclamation-triangle"></i>
+							<span>The application never asks for passwords and only displays high-level breach exposure details.</span>
+						</div>
+
+						<div class="form-actions">
+							<button class="btn btn-primary" type="submit">
+								<i class="bi bi-envelope-exclamation"></i>
+								<span>Check email</span>
+							</button>
+						</div>
+					</form>
+				</article>
+			</section>
+
+			<section class="section-grid three">
+				<article class="content-panel">
+					<p class="eyebrow">DNSDumpster</p>
+					<h2>Subdomain context</h2>
+					<p class="muted panel-copy">Shows DNSDumpster-style public DNS inventory, demo subdomains, mail hosts, nameservers, TXT records, and interesting hostnames.</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">SecurityTrails</p>
+					<h2>DNS intelligence</h2>
+					<p class="muted panel-copy">Uses a configured API key when available, otherwise returns realistic demo records without crashing the application.</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Have I Been Pwned</p>
+					<h2>Breach exposure</h2>
+					<p class="muted panel-copy">Checks corporate email exposure only when an API key is configured, with safe demo mode for academic presentations.</p>
+				</article>
+			</section>
+
 			<section class="detail-grid">
 				<article class="dark-summary-card">
 					<div class="summary-topline">

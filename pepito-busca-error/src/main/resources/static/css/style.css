@@ -863,6 +863,15 @@ label span {
 	color: #78350f;
 }
 
+.page-content > .warning-box {
+	margin-bottom: 18px;
+}
+
+.content-panel .warning-box,
+.content-panel .info-box {
+	margin-bottom: 16px;
+}
+
 .empty-state {
 	display: grid;
 	justify-items: start;
