@@ -42,7 +42,7 @@ Thymeleaf was kept as the rendering technology because it aligns with Spring Boo
 
 The geolocation module was added as a real engineering feature for owned devices. It stores a device name, type, owner, private tracking token, latitude, longitude, GPS accuracy, location label, status, and last update date.
 
-The live tracker uses the browser Geolocation API. The tracked device opens its private tracking link, presses the start button, grants browser permission, and the browser sends latitude, longitude, and accuracy to a Spring MVC endpoint. The backend validates the coordinates and stores the latest position in MySQL.
+The live tracker uses the browser Geolocation API. The tracked device opens its private tracking link, grants browser permission, and the browser automatically sends latitude, longitude, accuracy, and a best-effort readable location label to a Spring MVC endpoint. The backend validates the coordinates and stores the latest position in MySQL.
 
 Leaflet was added to display the live position on a real interactive map with OpenStreetMap tiles. The live tracker moves the marker and accuracy circle as the browser reports new positions. The device detail page also polls the backend and refreshes the saved position on the map.
 

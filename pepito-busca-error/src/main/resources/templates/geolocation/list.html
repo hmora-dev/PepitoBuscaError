@@ -65,8 +65,8 @@
 							<th>Device</th>
 							<th>Type</th>
 							<th>Owner</th>
-							<th>Location</th>
-							<th>Coordinates</th>
+							<th>Detected location</th>
+							<th>Accuracy</th>
 							<th>Last update</th>
 							<th>Status</th>
 							<th>Actions</th>
@@ -80,14 +80,11 @@
 							</td>
 							<td th:text="${device.deviceType}">Laptop</td>
 							<td th:text="${device.owner}">Owner</td>
-							<td th:text="${device.locationLabel == null || device.locationLabel == '' ? 'No label' : device.locationLabel}">Home</td>
+							<td th:text="${device.locationLabel == null || device.locationLabel == '' ? 'Waiting for live update' : device.locationLabel}">Home</td>
 							<td>
-								<span th:if="${device.hasCoordinates()}">
-									<span th:text="${#numbers.formatDecimal(device.latitude, 1, 5)}">0</span>
-									<span>, </span>
-									<span th:text="${#numbers.formatDecimal(device.longitude, 1, 5)}">0</span>
-								</span>
-								<span class="muted" th:if="${!device.hasCoordinates()}">Waiting for live update</span>
+								<span th:if="${device.accuracyMeters != null}"
+									  th:text="${#numbers.formatDecimal(device.accuracyMeters, 1, 1) + ' m'}">20 m</span>
+								<span class="muted" th:if="${device.accuracyMeters == null}">Waiting</span>
 							</td>
 							<td th:text="${#temporals.format(device.lastSeenAt, 'dd MMM yyyy HH:mm')}">Date</td>
 							<td>

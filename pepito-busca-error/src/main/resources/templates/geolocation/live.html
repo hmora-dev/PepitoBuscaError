@@ -12,13 +12,13 @@
 			</div>
 			<h1 th:text="${device.name}">Device</h1>
 			<p>
-				This page sends this device browser's real location to PepitoBuscaError while it remains open and permission is granted.
+				This page detects this device browser's real location and sends it to PepitoBuscaError while it remains open.
 			</p>
 
 			<div class="live-status-grid">
 				<div>
 					<span>Status</span>
-					<strong id="tracking-status">Stopped</strong>
+					<strong id="tracking-status">Starting</strong>
 				</div>
 				<div>
 					<span>Accuracy</span>
@@ -63,12 +63,18 @@
 
 			<div class="map-readout-grid">
 				<div>
-					<span>Latitude</span>
-					<strong id="live-latitude" th:text="${device.latitude == null ? 'Waiting' : device.latitude}">Waiting</strong>
+					<span>Detected location</span>
+					<strong id="live-location"
+							th:text="${device.locationLabel == null || device.locationLabel == '' ? 'Waiting for device' : device.locationLabel}">
+						Waiting
+					</strong>
 				</div>
 				<div>
-					<span>Longitude</span>
-					<strong id="live-longitude" th:text="${device.longitude == null ? 'Waiting' : device.longitude}">Waiting</strong>
+					<span>Position quality</span>
+					<strong id="live-position-quality"
+							th:text="${device.accuracyMeters == null ? 'Waiting for GPS' : #numbers.formatDecimal(device.accuracyMeters, 1, 1) + ' m accuracy'}">
+						Waiting
+					</strong>
 				</div>
 				<div>
 					<span>Last sent</span>
@@ -78,7 +84,7 @@
 
 			<div class="info-box live-note">
 				<i class="bi bi-info-circle"></i>
-				<span>The marker moves in real time while this page is open and the browser grants location permission. Map tiles require internet access.</span>
+				<span>Location starts automatically after browser permission. Most mobile browsers require HTTPS for GPS access.</span>
 			</div>
 		</section>
 	</main>
@@ -93,6 +99,7 @@
 	const initialLongitude = /*[[${device.longitude}]]*/ -3.7038;
 	const initialAccuracy = /*[[${device.accuracyMeters}]]*/ null;
 	const deviceName = /*[[${device.name}]]*/ "Device";
+	const initialLocationLabel = /*[[${device.locationLabel}]]*/ "";
 	const markerIconUrl = /*[[@{/img/pepito-map-marker.svg}]]*/ "/img/pepito-map-marker.svg";
 	let watchId = null;
 	let mapMarker = null;
@@ -100,11 +107,15 @@
 	let firstLiveUpdate = true;
 	let followLiveMap = true;
 	let lastLivePosition = null;
+	let lastResolvedLabel = initialLocationLabel || "";
+	let lastResolvedPosition = initialHasCoordinates ? [initialLatitude, initialLongitude] : null;
+	let lastResolvedAt = 0;
+	let activeLocationLookup = null;
 
 	const statusElement = document.getElementById("tracking-status");
 	const accuracyElement = document.getElementById("tracking-accuracy");
-	const latitudeElement = document.getElementById("live-latitude");
-	const longitudeElement = document.getElementById("live-longitude");
+	const locationElement = document.getElementById("live-location");
+	const positionQualityElement = document.getElementById("live-position-quality");
 	const lastSentElement = document.getElementById("live-last-sent");
 	const startButton = document.getElementById("start-tracking");
 	const stopButton = document.getElementById("stop-tracking");
@@ -226,23 +237,99 @@
 		statusElement.textContent = value;
 	}
 
-	function sendPosition(position) {
-		const latitude = position.coords.latitude;
-		const longitude = position.coords.longitude;
-		const accuracy = position.coords.accuracy;
+	function trimLocationLabel(value) {
+		if (!value) {
+			return "";
+		}
+		return value.length <= 180 ? value : value.substring(0, 177) + "...";
+	}
 
-		latitudeElement.textContent = latitude.toFixed(6);
-		longitudeElement.textContent = longitude.toFixed(6);
-		accuracyElement.textContent = Math.round(accuracy) + " m";
-		updateMap(latitude, longitude, accuracy);
-		setStatus("Sending");
+	function distanceMeters(firstPosition, latitude, longitude) {
+		if (firstPosition === null) {
+			return Number.POSITIVE_INFINITY;
+		}
+		const earthRadiusMeters = 6371000;
+		const toRadians = Math.PI / 180;
+		const lat1 = firstPosition[0] * toRadians;
+		const lat2 = latitude * toRadians;
+		const deltaLat = (latitude - firstPosition[0]) * toRadians;
+		const deltaLng = (longitude - firstPosition[1]) * toRadians;
+		const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+			+ Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+		return earthRadiusMeters * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	}
 
+	function shouldResolveLocation(latitude, longitude) {
+		return !lastResolvedLabel
+			|| lastResolvedPosition === null
+			|| distanceMeters(lastResolvedPosition, latitude, longitude) > 100
+			|| Date.now() - lastResolvedAt > 300000;
+	}
+
+	function formatLocationLabel(data) {
+		if (data && data.display_name) {
+			return trimLocationLabel(data.display_name);
+		}
+		if (!data || !data.address) {
+			return "";
+		}
+		const address = data.address;
+		const parts = [
+			address.road || address.neighbourhood || address.suburb,
+			address.city || address.town || address.village || address.municipality,
+			address.state,
+			address.country
+		].filter(Boolean);
+		return trimLocationLabel(parts.join(", "));
+	}
+
+	function resolveLocationLabel(latitude, longitude) {
+		if (!shouldResolveLocation(latitude, longitude)) {
+			return Promise.resolve(lastResolvedLabel);
+		}
+		if (activeLocationLookup !== null) {
+			return activeLocationLookup;
+		}
+		const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&lat="
+			+ encodeURIComponent(latitude) + "&lon=" + encodeURIComponent(longitude);
+		activeLocationLookup = fetch(url, {
+			headers: {"Accept": "application/json"},
+			credentials: "omit"
+		})
+			.then(function (response) {
+				if (!response.ok) {
+					throw new Error("Location lookup failed");
+				}
+				return response.json();
+			})
+			.then(function (data) {
+				const label = formatLocationLabel(data);
+				if (label) {
+					lastResolvedLabel = label;
+					lastResolvedPosition = [latitude, longitude];
+					lastResolvedAt = Date.now();
+				}
+				return label;
+			})
+			.catch(function () {
+				return lastResolvedLabel || "Location detected on map";
+			})
+			.finally(function () {
+				activeLocationLookup = null;
+			});
+		return activeLocationLookup;
+	}
+
+	function postPosition(latitude, longitude, accuracy, locationLabel) {
 		const body = new URLSearchParams();
 		body.append("latitude", latitude);
 		body.append("longitude", longitude);
 		body.append("accuracy", accuracy);
+		if (locationLabel) {
+			body.append("locationLabel", locationLabel);
+		}
 
-		fetch(updateUrl, {
+		return fetch(updateUrl, {
 			method: "POST",
 			headers: {"Content-Type": "application/x-www-form-urlencoded"},
 			body: body
@@ -252,8 +339,32 @@
 					throw new Error("Server rejected the position");
 				}
 				return response.json();
+			});
+	}
+
+	function sendPosition(position) {
+		const latitude = position.coords.latitude;
+		const longitude = position.coords.longitude;
+		const accuracy = position.coords.accuracy;
+
+		accuracyElement.textContent = Math.round(accuracy) + " m";
+		positionQualityElement.textContent = Math.round(accuracy) + " m accuracy";
+		updateMap(latitude, longitude, accuracy);
+		setStatus("Detecting location");
+
+		resolveLocationLabel(latitude, longitude)
+			.then(function (locationLabel) {
+				if (locationLabel) {
+					locationElement.textContent = locationLabel;
+				}
+				setStatus("Sending location");
+				return postPosition(latitude, longitude, accuracy, locationLabel);
 			})
-			.then(function () {
+			.then(function (data) {
+				if (data.locationLabel) {
+					locationElement.textContent = data.locationLabel;
+					lastResolvedLabel = data.locationLabel;
+				}
 				setStatus("Live");
 				lastSentElement.textContent = new Date().toLocaleString();
 			})
@@ -265,6 +376,7 @@
 	function handleError(error) {
 		if (error.code === error.PERMISSION_DENIED) {
 			setStatus("Permission denied");
+			resetTrackingControls();
 		} else if (error.code === error.POSITION_UNAVAILABLE) {
 			setStatus("Position unavailable");
 		} else if (error.code === error.TIMEOUT) {
@@ -274,9 +386,29 @@
 		}
 	}
 
-	startButton.addEventListener("click", function () {
+	function isLocalhost() {
+		return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+	}
+
+	function resetTrackingControls() {
+		if (watchId !== null) {
+			navigator.geolocation.clearWatch(watchId);
+			watchId = null;
+		}
+		startButton.disabled = false;
+		stopButton.disabled = true;
+	}
+
+	function startTracking() {
+		if (watchId !== null) {
+			return;
+		}
 		if (!navigator.geolocation) {
 			setStatus("Not supported");
+			return;
+		}
+		if (!window.isSecureContext && !isLocalhost()) {
+			setStatus("HTTPS required for GPS");
 			return;
 		}
 		watchId = navigator.geolocation.watchPosition(sendPosition, handleError, {
@@ -287,17 +419,16 @@
 		startButton.disabled = true;
 		stopButton.disabled = false;
 		setStatus("Waiting for permission");
-	});
+	}
+
+	startButton.addEventListener("click", startTracking);
 
 	stopButton.addEventListener("click", function () {
-		if (watchId !== null) {
-			navigator.geolocation.clearWatch(watchId);
-			watchId = null;
-		}
-		startButton.disabled = false;
-		stopButton.disabled = true;
+		resetTrackingControls();
 		setStatus("Stopped");
 	});
+
+	startTracking();
 </script>
 </body>
 </html>

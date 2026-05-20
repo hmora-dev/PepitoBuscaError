@@ -1,7 +1,9 @@
 package com.pepitobuscaerror.controller;
 
 import com.pepitobuscaerror.model.TrackedDevice;
+import com.pepitobuscaerror.service.TrackingLinkService;
 import com.pepitobuscaerror.service.TrackedDeviceService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,11 @@ import java.util.Map;
 public class GeolocationController {
 
 	private final TrackedDeviceService trackedDeviceService;
+	private final TrackingLinkService trackingLinkService;
 
-	public GeolocationController(TrackedDeviceService trackedDeviceService) {
+	public GeolocationController(TrackedDeviceService trackedDeviceService, TrackingLinkService trackingLinkService) {
 		this.trackedDeviceService = trackedDeviceService;
+		this.trackingLinkService = trackingLinkService;
 	}
 
 	@GetMapping
@@ -60,8 +64,12 @@ public class GeolocationController {
 	}
 
 	@GetMapping("/{id}")
-	public String deviceDetail(@PathVariable Long id, Model model) {
-		model.addAttribute("device", trackedDeviceService.getDevice(id));
+	public String deviceDetail(@PathVariable Long id, HttpServletRequest request, Model model) {
+		TrackedDevice device = trackedDeviceService.getDevice(id);
+		TrackingLinkService.TrackingLinks trackingLinks =
+				trackingLinkService.buildLinks(request, device.getTrackingToken());
+		model.addAttribute("device", device);
+		model.addAttribute("trackingLinks", trackingLinks);
 		return "geolocation/detail";
 	}
 
@@ -77,6 +85,7 @@ public class GeolocationController {
 		body.put("latitude", device.getLatitude());
 		body.put("longitude", device.getLongitude());
 		body.put("accuracy", device.getAccuracyMeters());
+		body.put("locationLabel", device.getLocationLabel());
 		body.put("lastSeenAt", device.getLastSeenAt().toString());
 		return ResponseEntity.ok(body);
 	}
@@ -91,17 +100,20 @@ public class GeolocationController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> updateLivePosition(@PathVariable String trackingToken,
 			@RequestParam Double latitude, @RequestParam Double longitude,
-			@RequestParam(required = false) Double accuracy) {
+			@RequestParam(required = false) Double accuracy,
+			@RequestParam(required = false) String locationLabel) {
 		try {
-			TrackedDevice device = trackedDeviceService.updateLivePosition(trackingToken, latitude, longitude, accuracy);
-			return ResponseEntity.ok(Map.of(
-					"status", "ok",
-					"deviceId", device.getIdDevice(),
-					"latitude", device.getLatitude(),
-					"longitude", device.getLongitude(),
-					"accuracy", device.getAccuracyMeters() == null ? 0 : device.getAccuracyMeters(),
-					"lastSeenAt", device.getLastSeenAt().toString()
-			));
+			TrackedDevice device = trackedDeviceService.updateLivePosition(trackingToken, latitude, longitude, accuracy,
+					locationLabel);
+			Map<String, Object> body = new LinkedHashMap<>();
+			body.put("status", "ok");
+			body.put("deviceId", device.getIdDevice());
+			body.put("latitude", device.getLatitude());
+			body.put("longitude", device.getLongitude());
+			body.put("accuracy", device.getAccuracyMeters() == null ? 0 : device.getAccuracyMeters());
+			body.put("locationLabel", device.getLocationLabel());
+			body.put("lastSeenAt", device.getLastSeenAt().toString());
+			return ResponseEntity.ok(body);
 		} catch (IllegalArgumentException exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(Map.of("status", "error", "message", exception.getMessage()));

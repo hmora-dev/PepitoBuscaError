@@ -1246,10 +1246,29 @@ label span {
 	overflow-wrap: anywhere;
 }
 
+.tracking-link-stack {
+	display: grid;
+	gap: 14px;
+}
+
+.tracking-link-entry label {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--muted);
+	font-size: 12px;
+	font-weight: 900;
+	text-transform: uppercase;
+}
+
 .tracking-link-box {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr) auto auto;
 	gap: 10px;
+	align-items: center;
+}
+
+.tracking-link-box input {
+	width: 100%;
 }
 
 .tracking-page {

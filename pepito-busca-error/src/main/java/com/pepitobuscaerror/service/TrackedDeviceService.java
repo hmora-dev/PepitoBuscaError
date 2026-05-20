@@ -10,6 +10,8 @@ import java.util.List;
 @Service
 public class TrackedDeviceService {
 
+	private static final int MAX_LOCATION_LABEL_LENGTH = 180;
+
 	private final TrackedDeviceRepository trackedDeviceRepository;
 
 	public TrackedDeviceService(TrackedDeviceRepository trackedDeviceRepository) {
@@ -65,22 +67,24 @@ public class TrackedDeviceService {
 		device.setName(clean(form.getName()));
 		device.setDeviceType(clean(form.getDeviceType()));
 		device.setOwner(clean(form.getOwner()));
-		device.setLatitude(form.getLatitude());
-		device.setLongitude(form.getLongitude());
-		device.setLocationLabel(clean(form.getLocationLabel()));
 		device.setNotes(clean(form.getNotes()));
 		device.setActive(form.isActive());
 		return trackedDeviceRepository.save(device);
 	}
 
 	@Transactional
-	public TrackedDevice updateLivePosition(String trackingToken, Double latitude, Double longitude, Double accuracyMeters) {
+	public TrackedDevice updateLivePosition(String trackingToken, Double latitude, Double longitude, Double accuracyMeters,
+			String locationLabel) {
 		validateCoordinates(latitude, longitude);
 		TrackedDevice device = getDeviceByTrackingToken(trackingToken);
 		if (!device.isActive()) {
 			throw new IllegalArgumentException("This device is inactive.");
 		}
 		device.updatePosition(latitude, longitude, accuracyMeters);
+		String cleanLocationLabel = cleanLocationLabel(locationLabel);
+		if (cleanLocationLabel != null) {
+			device.setLocationLabel(cleanLocationLabel);
+		}
 		return trackedDeviceRepository.save(device);
 	}
 
@@ -121,5 +125,16 @@ public class TrackedDeviceService {
 
 	private String clean(String value) {
 		return value == null ? null : value.trim();
+	}
+
+	private String cleanLocationLabel(String value) {
+		String cleanValue = clean(value);
+		if (cleanValue == null || cleanValue.isBlank()) {
+			return null;
+		}
+		if (cleanValue.length() <= MAX_LOCATION_LABEL_LENGTH) {
+			return cleanValue;
+		}
+		return cleanValue.substring(0, MAX_LOCATION_LABEL_LENGTH - 3) + "...";
 	}
 }

@@ -46,16 +46,17 @@
 			<section class="detail-grid">
 				<article class="dark-summary-card">
 					<div class="summary-topline">
-						<span>Last known coordinates</span>
+						<span>Detected device location</span>
 						<span class="badge success" th:if="${device.active}">Active</span>
 						<span class="badge neutral" th:if="${!device.active}">Inactive</span>
 					</div>
 					<strong class="coordinate-value" id="detail-coordinate-value"
-							th:text="${device.hasCoordinates() ? #numbers.formatDecimal(device.latitude, 1, 5) + ', ' + #numbers.formatDecimal(device.longitude, 1, 5) : 'Waiting for GPS'}">
+							th:text="${device.locationLabel != null && device.locationLabel != '' ? device.locationLabel : (device.hasCoordinates() ? 'Location detected on map' : 'Waiting for GPS')}">
 						Waiting for GPS
 					</strong>
-					<p th:text="${device.locationLabel == null || device.locationLabel == '' ? 'No location label provided.' : device.locationLabel}">
-						Location label
+					<p id="detail-location-subtitle"
+					   th:text="${device.hasCoordinates() ? #numbers.formatDecimal(device.latitude, 1, 5) + ', ' + #numbers.formatDecimal(device.longitude, 1, 5) : 'Open the tracking link on the device to detect its location.'}">
+						Location detail
 					</p>
 				</article>
 
@@ -118,8 +119,9 @@
 						</strong>
 					</div>
 					<div>
-						<span>Location label</span>
-						<strong th:text="${device.locationLabel == null || device.locationLabel == '' ? device.name : device.locationLabel}">
+						<span>Detected location</span>
+						<strong id="detail-location-label"
+								th:text="${device.locationLabel == null || device.locationLabel == '' ? 'Waiting for device' : device.locationLabel}">
 							Location
 						</strong>
 					</div>
@@ -141,16 +143,55 @@
 					</div>
 					<span class="badge neutral">Private token</span>
 				</div>
-				<div class="tracking-link-box">
-					<input id="tracking-link" type="text" readonly
-						   th:value="@{/geolocation/live/{token}(token=${device.trackingToken})}">
-					<a class="btn btn-secondary" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
-						<i class="bi bi-broadcast-pin"></i>
-						<span>Open tracker</span>
-					</a>
+				<div class="tracking-link-stack">
+					<div class="tracking-link-entry" th:if="${trackingLinks.configuredUrl != ''}">
+						<label for="public-tracking-link">Public tracking link</label>
+						<div class="tracking-link-box">
+							<input id="public-tracking-link" type="text" readonly th:value="${trackingLinks.configuredUrl}">
+							<button class="btn btn-secondary copy-tracking-link" type="button"
+									data-copy-target="public-tracking-link">
+								<i class="bi bi-clipboard"></i>
+								<span>Copy</span>
+							</button>
+							<a class="btn btn-secondary" th:href="${trackingLinks.configuredUrl}" target="_blank" rel="noopener">
+								<i class="bi bi-broadcast-pin"></i>
+								<span>Open</span>
+							</a>
+						</div>
+					</div>
+					<div class="tracking-link-entry" th:if="${trackingLinks.networkUrl != ''}">
+						<label for="network-tracking-link">Same Wi-Fi tracking link</label>
+						<div class="tracking-link-box">
+							<input id="network-tracking-link" type="text" readonly th:value="${trackingLinks.networkUrl}">
+							<button class="btn btn-secondary copy-tracking-link" type="button"
+									data-copy-target="network-tracking-link">
+								<i class="bi bi-clipboard"></i>
+								<span>Copy</span>
+							</button>
+							<a class="btn btn-secondary" th:href="${trackingLinks.networkUrl}" target="_blank" rel="noopener">
+								<i class="bi bi-broadcast-pin"></i>
+								<span>Open</span>
+							</a>
+						</div>
+					</div>
+					<div class="tracking-link-entry">
+						<label for="current-tracking-link">Current browser link</label>
+						<div class="tracking-link-box">
+							<input id="current-tracking-link" type="text" readonly th:value="${trackingLinks.currentUrl}">
+							<button class="btn btn-secondary copy-tracking-link" type="button"
+									data-copy-target="current-tracking-link">
+								<i class="bi bi-clipboard"></i>
+								<span>Copy</span>
+							</button>
+							<a class="btn btn-secondary" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
+								<i class="bi bi-broadcast-pin"></i>
+								<span>Open</span>
+							</a>
+						</div>
+					</div>
 				</div>
 				<p class="muted panel-copy">
-					Send this link to your own device, open it in the browser, press Start live tracking, and accept the browser location permission.
+					Send the same Wi-Fi link to a device on this network. Use a public HTTPS link when tracking outside the network or when a mobile browser blocks GPS on HTTP.
 				</p>
 			</section>
 		</main>
@@ -167,6 +208,7 @@
 	const initialLongitude = /*[[${device.longitude}]]*/ -3.7038;
 	const initialAccuracy = /*[[${device.accuracyMeters}]]*/ null;
 	const deviceName = /*[[${device.name}]]*/ "Device";
+	const initialLocationLabel = /*[[${device.locationLabel}]]*/ "";
 	const markerIconUrl = /*[[@{/img/pepito-map-marker.svg}]]*/ "/img/pepito-map-marker.svg";
 	const fallbackPosition = [40.4168, -3.7038];
 	const startPosition = initialHasCoordinates ? [initialLatitude, initialLongitude] : fallbackPosition;
@@ -181,8 +223,40 @@
 	const lastUpdateElement = document.getElementById("detail-last-update");
 	const statusElement = document.getElementById("detail-map-status");
 	const openMapElement = document.getElementById("detail-open-map");
+	const locationSubtitleElement = document.getElementById("detail-location-subtitle");
+	const locationLabelElement = document.getElementById("detail-location-label");
 	const centerMapButton = document.getElementById("center-detail-map");
 	const followMapButton = document.getElementById("follow-detail-map");
+
+	document.querySelectorAll(".copy-tracking-link").forEach(function (button) {
+		button.addEventListener("click", function () {
+			const input = document.getElementById(button.dataset.copyTarget);
+			if (input === null) {
+				return;
+			}
+			const label = button.querySelector("span");
+			const originalLabel = label === null ? "" : label.textContent;
+			function showCopied() {
+				if (label !== null) {
+					label.textContent = "Copied";
+					setTimeout(function () {
+						label.textContent = originalLabel;
+					}, 1600);
+				}
+			}
+			function fallbackCopy() {
+				input.focus();
+				input.select();
+				document.execCommand("copy");
+				showCopied();
+			}
+			if (navigator.clipboard && window.isSecureContext) {
+				navigator.clipboard.writeText(input.value).then(showCopied).catch(fallbackCopy);
+			} else {
+				fallbackCopy();
+			}
+		});
+	});
 
 	const detailMap = L.map("device-map", {
 		zoomControl: false,
@@ -220,7 +294,7 @@
 		}
 	}
 
-	function updateDetailMap(latitude, longitude, accuracy) {
+	function updateDetailMap(latitude, longitude, accuracy, locationLabel) {
 		const position = [latitude, longitude];
 		lastDetailPosition = position;
 		if (detailMarker === null) {
@@ -250,7 +324,11 @@
 			detailMap.setView(position, targetZoom, {animate: true});
 		}
 		firstDetailUpdate = false;
-		coordinateElement.textContent = latitude.toFixed(5) + ", " + longitude.toFixed(5);
+		coordinateElement.textContent = locationLabel || "Location detected on map";
+		locationSubtitleElement.textContent = latitude.toFixed(5) + ", " + longitude.toFixed(5);
+		if (locationLabel) {
+			locationLabelElement.textContent = locationLabel;
+		}
 		accuracyElement.textContent = accuracy ? Math.round(accuracy) + " meters" : "Accuracy not reported";
 		statusElement.textContent = "Live position received";
 		openMapElement.href = "https://www.google.com/maps?q=" + latitude + "," + longitude;
@@ -258,7 +336,7 @@
 	}
 
 	if (initialHasCoordinates) {
-		updateDetailMap(initialLatitude, initialLongitude, initialAccuracy || 20);
+		updateDetailMap(initialLatitude, initialLongitude, initialAccuracy || 20, initialLocationLabel);
 	}
 
 	detailMap.whenReady(function () {
@@ -310,7 +388,7 @@
 					statusElement.textContent = "Waiting for first live update";
 					return;
 				}
-				updateDetailMap(data.latitude, data.longitude, data.accuracy || 20);
+				updateDetailMap(data.latitude, data.longitude, data.accuracy || 20, data.locationLabel);
 				if (data.lastSeenAt) {
 					lastUpdateElement.textContent = new Date(data.lastSeenAt).toLocaleString();
 				}
