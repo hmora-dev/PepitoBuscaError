@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Error · PepitoBuscaError</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Error - PepitoBuscaError')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar('')}"></div>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('')}"></div>
 
-<main class="page-shell narrow">
-	<section class="content-panel error-panel">
-		<p class="eyebrow">Application message</p>
-		<h1 th:text="${title != null ? title : 'Something went wrong'}">Something went wrong</h1>
-		<p class="muted" th:text="${message != null ? message : 'The application could not complete the requested action.'}">
-			The application could not complete the requested action.
-		</p>
-		<div class="action-row">
-			<a class="btn btn-primary" th:href="@{/dashboard}">Go to dashboard</a>
-			<a class="btn btn-secondary" th:href="@{/companies}">View companies</a>
-		</div>
-	</section>
-</main>
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('')}"></div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+		<main class="page-content narrow">
+			<section class="content-panel error-panel">
+				<p class="eyebrow">Application message</p>
+				<h1 th:text="${title != null ? title : 'Something went wrong'}">Something went wrong</h1>
+				<p class="muted" th:text="${message != null ? message : 'The application could not complete the requested action.'}">
+					The application could not complete the requested action.
+				</p>
+				<div class="action-row">
+					<a class="btn btn-primary" th:href="@{/dashboard}">
+						<i class="bi bi-grid-1x2"></i>
+						<span>Go to dashboard</span>
+					</a>
+					<a class="btn btn-secondary" th:href="@{/companies}">
+						<i class="bi bi-buildings"></i>
+						<span>View companies</span>
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
 </body>
 </html>

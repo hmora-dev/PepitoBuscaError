@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Recommendations - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('recommendations')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('recommendations')}"></div>
+
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Action plan</p>
+					<h1>Recommendations</h1>
+					<p class="muted">A separate window for remediation actions generated from risk analyses.</p>
+				</div>
+				<a class="btn btn-secondary" th:href="@{/analyses}">
+					<i class="bi bi-activity"></i>
+					<span>View analyses</span>
+				</a>
+			</section>
+
+			<section class="stats-grid three-stats">
+				<article class="stat-card" th:each="priority : ${T(com.pepitobuscaerror.model.Priority).values()}">
+					<span th:text="${priority.label + ' priority'}">High priority</span>
+					<strong th:text="${priorityCounts.get(priority)}">0</strong>
+					<small>
+						<span class="badge priority-badge" th:classappend="${priority.cssClass}" th:text="${priority.label}">High</span>
+					</small>
+				</article>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Stored recommendations</p>
+						<h2>Remediation actions</h2>
+					</div>
+					<span class="badge neutral" th:text="${recommendations.size() + ' actions'}">0 actions</span>
+				</div>
+
+				<div class="table-wrap" th:if="${!#lists.isEmpty(recommendations)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Priority</th>
+							<th>Recommendation</th>
+							<th>Action</th>
+							<th>Company</th>
+							<th>Analysis</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="recommendation : ${recommendations}">
+							<td>
+								<span class="badge priority-badge" th:classappend="${recommendation.priority.cssClass}"
+									  th:text="${recommendation.priority.label}">High</span>
+							</td>
+							<td><strong th:text="${recommendation.description}">Recommendation</strong></td>
+							<td th:text="${recommendation.action}">Action</td>
+							<td>
+								<a class="text-link" th:href="@{/companies/{id}(id=${recommendation.analysis.company.idCompany})}"
+								   th:text="${recommendation.analysis.company.name}">Company</a>
+							</td>
+							<td>
+								<a class="btn btn-small btn-secondary"
+								   th:href="@{/analyses/{id}(id=${recommendation.analysis.idAnalysis})}">
+									<i class="bi bi-eye"></i>
+									<span>View</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(recommendations)}">
+					<i class="bi bi-lightning-charge"></i>
+					<strong>No recommendations available</strong>
+					<span>Recommendations will appear after analyses detect risk indicators.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

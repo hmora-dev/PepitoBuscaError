@@ -24,6 +24,12 @@ public class AnalysisController {
 		this.analysisService = analysisService;
 	}
 
+	@GetMapping("/analyses")
+	public String listAnalyses(Model model) {
+		model.addAttribute("analyses", analysisService.findAllAnalyses());
+		return "analyses/list";
+	}
+
 	@GetMapping("/companies/{companyId}/analyses/new")
 	public String newAnalysis(@PathVariable Long companyId, Model model) {
 		model.addAttribute("company", companyService.getCompany(companyId));

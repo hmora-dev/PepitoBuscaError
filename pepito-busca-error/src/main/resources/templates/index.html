@@ -1,100 +1,113 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>PepitoBuscaError · Digital risk analysis</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('PepitoBuscaError - Digital risk analysis')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar('home')}"></div>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></div>
 
-<main class="page-shell">
-	<section class="home-hero">
-		<div class="hero-copy">
-			<p class="eyebrow">Cybersecurity risk platform</p>
-			<h1>PepitoBuscaError</h1>
-			<p class="hero-text">
-				Register companies, evaluate digital risk indicators, calculate a clear risk score, and generate practical security recommendations.
-			</p>
-			<div class="action-row">
-				<a class="btn btn-primary" th:href="@{/companies/new}">Register company</a>
-				<a class="btn btn-secondary" th:href="@{/dashboard}">Open dashboard</a>
-			</div>
-		</div>
-		<div class="risk-visual" aria-label="Risk overview preview">
-			<div class="visual-header">
-				<span>Risk radar</span>
-				<strong th:text="${stats.averageRiskScore + '%'}">0%</strong>
-			</div>
-			<div class="signal-grid">
-				<span class="signal strong"></span>
-				<span></span>
-				<span class="signal warn"></span>
-				<span></span>
-				<span class="signal"></span>
-				<span class="signal danger"></span>
-				<span></span>
-				<span class="signal"></span>
-				<span></span>
-			</div>
-			<div class="visual-metrics">
-				<div>
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
+
+		<main class="page-content">
+			<section class="hero-panel">
+				<div class="hero-copy">
+					<p class="eyebrow">Cybersecurity SaaS dashboard</p>
+					<h1>PepitoBuscaError</h1>
+					<p class="hero-text">
+						Register companies, calculate digital risk, and review practical security recommendations from a clean Spring Boot MVC interface.
+					</p>
+					<div class="action-row">
+						<a class="btn btn-primary" th:href="@{/dashboard}">
+							<i class="bi bi-grid-1x2"></i>
+							<span>Open dashboard</span>
+						</a>
+						<a class="btn btn-secondary" th:href="@{/companies/new}">
+							<i class="bi bi-plus-lg"></i>
+							<span>Register company</span>
+						</a>
+					</div>
+				</div>
+
+				<div class="dark-summary-card">
+					<div class="summary-topline">
+						<span>Average risk</span>
+						<span class="pulse-dot"></span>
+					</div>
+					<strong th:text="${stats.averageRiskScore}">0</strong>
+					<div class="risk-bar">
+						<span th:style="'width:' + ${stats.averageRiskScore} + '%'"></span>
+					</div>
+					<div class="dark-metrics">
+						<div>
+							<span>Companies</span>
+							<strong th:text="${stats.totalCompanies}">0</strong>
+						</div>
+						<div>
+							<span>Analyses</span>
+							<strong th:text="${stats.totalAnalyses}">0</strong>
+						</div>
+						<div>
+							<span>Critical</span>
+							<strong th:text="${stats.criticalAnalyses}">0</strong>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="stats-grid">
+				<article class="stat-card">
+					<span>Total companies</span>
 					<strong th:text="${stats.totalCompanies}">0</strong>
-					<span>Companies</span>
-				</div>
-				<div>
+					<small>Registered business profiles</small>
+				</article>
+				<article class="stat-card">
+					<span>Total analyses</span>
 					<strong th:text="${stats.totalAnalyses}">0</strong>
-					<span>Analyses</span>
-				</div>
-				<div>
+					<small>Completed digital reviews</small>
+				</article>
+				<article class="stat-card">
+					<span>Average risk score</span>
+					<strong th:text="${stats.averageRiskScore}">0</strong>
+					<small>Score from 0 to 100</small>
+				</article>
+				<article class="stat-card danger">
+					<span>Critical risks</span>
 					<strong th:text="${stats.criticalAnalyses}">0</strong>
-					<span>Critical</span>
+					<small>Analyses marked critical</small>
+				</article>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Recent activity</p>
+						<h2>Latest analyses</h2>
+					</div>
+					<a class="text-link" th:href="@{/analyses}">Open analyses</a>
 				</div>
-			</div>
-		</div>
-	</section>
 
-	<section class="section-grid three">
-		<article class="feature-panel">
-			<span class="panel-number">01</span>
-			<h2>Company registry</h2>
-			<p>Maintain the company domain, email, sector, and analysis history from one clean management area.</p>
-		</article>
-		<article class="feature-panel">
-			<span class="panel-number">02</span>
-			<h2>Risk calculation</h2>
-			<p>Selected indicators are converted into a score from 0 to 100 and a level from low to critical.</p>
-		</article>
-		<article class="feature-panel">
-			<span class="panel-number">03</span>
-			<h2>Recommendations</h2>
-			<p>Every detected risk can generate stored actions that are easy to explain to a small business.</p>
-		</article>
-	</section>
+				<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
+					<a class="compact-row" th:each="analysis : ${stats.latestAnalyses}"
+					   th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
+						<span>
+							<strong th:text="${analysis.company.name}">Company</strong>
+							<small th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</small>
+						</span>
+						<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+							  th:text="${analysis.riskLevel.label}">Low</span>
+					</a>
+				</div>
 
-	<section class="content-panel split-panel">
-		<div>
-			<p class="eyebrow">Latest activity</p>
-			<h2>Recent analyses</h2>
-		</div>
-		<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
-			<a class="compact-row" th:each="analysis : ${stats.latestAnalyses}"
-			   th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
-				<span>
-					<strong th:text="${analysis.company.name}">Company</strong>
-					<small th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</small>
-				</span>
-				<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
-					  th:text="${analysis.riskLevel.label}">Low</span>
-			</a>
-		</div>
-		<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
-			No analyses have been created yet.
-		</div>
-	</section>
-</main>
+				<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
+					<i class="bi bi-activity"></i>
+					<strong>No analyses available</strong>
+					<span>Create a company and run the first risk analysis.</span>
+				</div>
+			</section>
+		</main>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
 </body>
 </html>

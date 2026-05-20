@@ -1,123 +1,211 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Dashboard · PepitoBuscaError</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Dashboard - PepitoBuscaError')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></div>
 
-<main class="page-shell">
-	<section class="page-heading">
-		<div>
-			<p class="eyebrow">Business overview</p>
-			<h1>Security dashboard</h1>
-			<p class="muted">A simple operational view of companies, analyses, and risk levels.</p>
-		</div>
-		<a class="btn btn-primary" th:href="@{/companies/new}">Register company</a>
-	</section>
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
 
-	<section class="stats-grid">
-		<article class="stat-card">
-			<span>Total companies</span>
-			<strong th:text="${stats.totalCompanies}">0</strong>
-		</article>
-		<article class="stat-card">
-			<span>Total analyses</span>
-			<strong th:text="${stats.totalAnalyses}">0</strong>
-		</article>
-		<article class="stat-card">
-			<span>Average risk</span>
-			<strong th:text="${stats.averageRiskScore}">0</strong>
-		</article>
-		<article class="stat-card danger">
-			<span>Critical analyses</span>
-			<strong th:text="${stats.criticalAnalyses}">0</strong>
-		</article>
-	</section>
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Business overview</p>
+					<h1>Security dashboard</h1>
+					<p class="muted">A clear operational view of companies, analyses, and current risk exposure.</p>
+				</div>
+				<div class="action-row">
+					<a class="btn btn-secondary" th:href="@{/companies}">
+						<i class="bi bi-buildings"></i>
+						<span>View companies</span>
+					</a>
+					<a class="btn btn-primary" th:href="@{/companies/new}">
+						<i class="bi bi-plus-lg"></i>
+						<span>Register company</span>
+					</a>
+				</div>
+			</section>
 
-	<section class="dashboard-grid">
-		<div class="content-panel">
-			<div class="section-title">
-				<h2>Risk distribution</h2>
-				<span class="badge neutral" th:text="${stats.totalAnalyses + ' analyses'}">0 analyses</span>
-			</div>
-			<div class="distribution-list">
-				<div class="distribution-row" th:each="level : ${T(com.pepitobuscaerror.model.RiskLevel).values()}">
-					<div>
-						<span class="badge risk-badge" th:classappend="${level.cssClass}" th:text="${level.label}">Low</span>
-						<strong th:text="${stats.riskDistribution.get(level)}">0</strong>
+			<section class="stats-grid">
+				<article class="stat-card">
+					<span>Total companies</span>
+					<strong th:text="${stats.totalCompanies}">0</strong>
+					<small>Registered company profiles</small>
+				</article>
+				<article class="stat-card">
+					<span>Total analyses</span>
+					<strong th:text="${stats.totalAnalyses}">0</strong>
+					<small>Completed risk evaluations</small>
+				</article>
+				<article class="stat-card">
+					<span>Average risk score</span>
+					<strong th:text="${stats.averageRiskScore}">0</strong>
+					<small>Current portfolio average</small>
+				</article>
+				<article class="stat-card danger">
+					<span>Critical risks</span>
+					<strong th:text="${stats.criticalAnalyses}">0</strong>
+					<small>Analyses requiring attention</small>
+				</article>
+			</section>
+
+			<section class="dark-panel-grid">
+				<article class="dark-metric-panel">
+					<span>Current average risk</span>
+					<strong th:text="${stats.averageRiskScore}">0</strong>
+					<div class="risk-bar">
+						<span th:style="'width:' + ${stats.averageRiskScore} + '%'"></span>
 					</div>
-					<div class="progress-track">
-						<span th:style="'width:' + ${stats.totalAnalyses == 0 ? 0 : (stats.riskDistribution.get(level) * 100 / stats.totalAnalyses)} + '%'"></span>
+				</article>
+				<article class="dark-metric-panel">
+					<span>Latest high-risk company</span>
+					<strong th:if="${stats.latestHighRiskAnalysis != null}"
+							th:text="${stats.latestHighRiskAnalysis.company.name}">Company</strong>
+					<strong th:if="${stats.latestHighRiskAnalysis == null}">None</strong>
+					<small th:if="${stats.latestHighRiskAnalysis != null}"
+						   th:text="${stats.latestHighRiskAnalysis.riskLevel.label + ' risk'}">High risk</small>
+					<small th:if="${stats.latestHighRiskAnalysis == null}">No high-risk analyses yet</small>
+				</article>
+				<article class="dark-metric-panel">
+					<span>Critical findings</span>
+					<strong th:text="${stats.criticalIndicators}">0</strong>
+					<small>Critical indicators detected</small>
+				</article>
+			</section>
+
+			<section class="dashboard-grid">
+				<div class="content-panel" id="risk-distribution">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Risk summary</p>
+							<h2>Risk distribution</h2>
+						</div>
+						<span class="badge neutral" th:text="${stats.totalAnalyses + ' analyses'}">0 analyses</span>
+					</div>
+
+					<div class="distribution-list">
+						<div class="distribution-row" th:each="level : ${T(com.pepitobuscaerror.model.RiskLevel).values()}">
+							<div>
+								<span class="badge risk-badge" th:classappend="${level.cssClass}" th:text="${level.label}">Low</span>
+								<strong th:text="${stats.riskDistribution.get(level)}">0</strong>
+							</div>
+							<div class="progress-track">
+								<span th:style="'width:' + ${stats.totalAnalyses == 0 ? 0 : (stats.riskDistribution.get(level) * 100 / stats.totalAnalyses)} + '%'"></span>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
 
-		<div class="content-panel">
-			<div class="section-title">
-				<h2>Latest companies</h2>
-				<a class="text-link" th:href="@{/companies}">View all</a>
-			</div>
-			<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestCompanies)}">
-				<a class="compact-row" th:each="company : ${stats.latestCompanies}"
-				   th:href="@{/companies/{id}(id=${company.idCompany})}">
-					<span>
-						<strong th:text="${company.name}">Company</strong>
-						<small th:text="${company.domain}">example.com</small>
-					</span>
-					<span class="badge neutral" th:text="${company.analysisCount + ' analyses'}">0 analyses</span>
-				</a>
-			</div>
-			<div class="empty-state" th:if="${#lists.isEmpty(stats.latestCompanies)}">
-				No companies registered yet.
-			</div>
-		</div>
-	</section>
+				<div class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Registry</p>
+							<h2>Latest companies</h2>
+						</div>
+					<a class="text-link" th:href="@{/companies}">Open companies</a>
+					</div>
 
-	<section class="content-panel">
-		<div class="section-title">
-			<h2>Latest analyses</h2>
-			<span class="muted">Most recent risk evaluations</span>
-		</div>
-		<div class="table-wrap" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
-			<table class="data-table">
-				<thead>
-				<tr>
-					<th>Company</th>
-					<th>Date</th>
-					<th>Score</th>
-					<th>Risk</th>
-					<th>Status</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr th:each="analysis : ${stats.latestAnalyses}">
-					<td>
-						<a class="text-link" th:href="@{/companies/{id}(id=${analysis.company.idCompany})}"
-						   th:text="${analysis.company.name}">Company</a>
-					</td>
-					<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
-					<td><strong th:text="${analysis.riskScore}">0</strong></td>
-					<td>
-						<a class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
-						   th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}"
-						   th:text="${analysis.riskLevel.label}">Low</a>
-					</td>
-					<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
-			Create a company and run the first analysis to populate this dashboard.
-		</div>
-	</section>
-</main>
+					<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestCompanies)}">
+						<a class="compact-row" th:each="company : ${stats.latestCompanies}"
+						   th:href="@{/companies/{id}(id=${company.idCompany})}">
+							<span>
+								<strong th:text="${company.name}">Company</strong>
+								<small th:text="${company.domain}">example.com</small>
+							</span>
+							<span class="badge neutral" th:text="${company.analysisCount + ' analyses'}">0 analyses</span>
+						</a>
+					</div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+					<div class="empty-state" th:if="${#lists.isEmpty(stats.latestCompanies)}">
+						<i class="bi bi-buildings"></i>
+						<strong>No companies registered yet</strong>
+						<span>Add the first company to start building the risk overview.</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="content-panel" id="latest-analyses">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Analysis history</p>
+						<h2>Latest analyses</h2>
+					</div>
+					<a class="text-link" th:href="@{/analyses}">Open analyses</a>
+				</div>
+
+				<div class="table-wrap" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Company</th>
+							<th>Date</th>
+							<th>Score</th>
+							<th>Risk</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="analysis : ${stats.latestAnalyses}">
+							<td>
+								<a class="table-title" th:href="@{/companies/{id}(id=${analysis.company.idCompany})}"
+								   th:text="${analysis.company.name}">Company</a>
+								<small th:text="${analysis.company.domain}">example.com</small>
+							</td>
+							<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
+							<td><strong th:text="${analysis.riskScore}">0</strong></td>
+							<td>
+								<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+									  th:text="${analysis.riskLevel.label}">Low</span>
+							</td>
+							<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
+							<td>
+								<a class="btn btn-small btn-secondary" th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
+									<i class="bi bi-eye"></i>
+									<span>View</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
+					<i class="bi bi-activity"></i>
+					<strong>No analyses available</strong>
+					<span>Create a company and run the first analysis to populate this dashboard.</span>
+				</div>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<p class="eyebrow">Recommendations</p>
+					<h2>Prioritized remediation</h2>
+					<p class="muted panel-copy">
+						Open the dedicated recommendations window to review remediation actions without crowding the dashboard.
+					</p>
+					<a class="btn btn-secondary panel-action" th:href="@{/recommendations}">
+						<i class="bi bi-lightning-charge"></i>
+						<span>Open recommendations</span>
+					</a>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Geolocation</p>
+					<h2>Owned device tracking</h2>
+					<p class="muted panel-copy">
+						Register your own devices and store their last known coordinates in a separate project area.
+					</p>
+					<a class="btn btn-secondary panel-action" th:href="@{/geolocation}">
+						<i class="bi bi-geo-alt"></i>
+						<span>Open geolocation</span>
+					</a>
+				</article>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
 </body>
 </html>

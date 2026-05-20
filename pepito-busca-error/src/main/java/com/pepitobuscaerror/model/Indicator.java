@@ -73,4 +73,8 @@ public class Indicator {
 	public Severity getSeverity() {
 		return severity;
 	}
+
+	public Analysis getAnalysis() {
+		return analysis;
+	}
 }

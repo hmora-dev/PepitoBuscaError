@@ -24,6 +24,30 @@ JPA and Hibernate reduce repetitive SQL for basic CRUD operations and map the Ja
 
 Thymeleaf was chosen because the application is a server-rendered Spring MVC project. It avoids unnecessary frontend complexity, extra build tools, API layers, and advanced authentication requirements.
 
+## Why This Visual Design Was Chosen
+
+The sidebar layout was chosen because it improves navigation in a dashboard-style application. It keeps the main sections visible on desktop and changes to a compact top navigation on smaller screens.
+
+The main sections were separated into different pages: dashboard, companies, analyses, indicators, recommendations, documentation, and geolocation. This avoids placing too much information on one page and makes each workflow easier to understand.
+
+Dashboard cards were chosen because they make key information easy to understand quickly: total companies, total analyses, average risk, and critical risks.
+
+Risk badges were added because they help identify priorities quickly. Different colors for low, medium, high, and critical levels make the result easier to scan in tables and reports.
+
+The responsive design was chosen to improve usability on desktop, tablet, and mobile. Cards stack vertically, tables can scroll horizontally, and action buttons remain easy to tap.
+
+Thymeleaf was kept as the rendering technology because it aligns with Spring Boot MVC and keeps the project simple. Reusable fragments for the layout, sidebar, navbar, and footer avoid repeated HTML without introducing a complex frontend framework.
+
+## Real Geolocation Module
+
+The geolocation module was added as a real engineering feature for owned devices. It stores a device name, type, owner, private tracking token, latitude, longitude, GPS accuracy, location label, status, and last update date.
+
+The live tracker uses the browser Geolocation API. The tracked device opens its private tracking link, presses the start button, grants browser permission, and the browser sends latitude, longitude, and accuracy to a Spring MVC endpoint. The backend validates the coordinates and stores the latest position in MySQL.
+
+Leaflet was added to display the live position on a real interactive map with OpenStreetMap tiles. The live tracker moves the marker and accuracy circle as the browser reports new positions. The device detail page also polls the backend and refreshes the saved position on the map.
+
+This design was chosen because it works in real life without needing a native mobile application. It is also privacy-aware because the device owner must open the page and grant permission. A limitation is that browser geolocation only runs while the page is open; continuous background tracking would require a native mobile app or a more advanced PWA architecture.
+
 ## MVC Architecture
 
 MVC separates responsibilities clearly:

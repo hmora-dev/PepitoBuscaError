@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Device form - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('geolocation')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('geolocation')}"></div>
+
+		<main class="page-content narrow">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/geolocation}">Geolocation</a>
+				<span>/</span>
+				<span th:text="${pageTitle}">Device form</span>
+			</nav>
+
+			<section class="content-panel form-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Owned device</p>
+						<h1 th:text="${pageTitle}">Register device</h1>
+						<p class="muted">Register the device first. Then open its tracking link on that device to send live coordinates.</p>
+					</div>
+				</div>
+
+				<form class="entity-form geolocation-form"
+					  th:action="${device.idDevice == null} ? @{/geolocation/save} : @{/geolocation/update/{id}(id=${device.idDevice})}"
+					  th:object="${device}" method="post">
+					<div class="form-grid two">
+						<label>
+							<span>Device name</span>
+							<input type="text" th:field="*{name}" placeholder="My laptop">
+							<small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+						</label>
+						<label>
+							<span>Device type</span>
+							<input type="text" th:field="*{deviceType}" placeholder="Laptop, phone, tablet">
+							<small class="field-error" th:if="${#fields.hasErrors('deviceType')}" th:errors="*{deviceType}"></small>
+						</label>
+						<label>
+							<span>Owner</span>
+							<input type="text" th:field="*{owner}" placeholder="Your name">
+							<small class="field-error" th:if="${#fields.hasErrors('owner')}" th:errors="*{owner}"></small>
+						</label>
+						<label>
+							<span>Location label</span>
+							<input type="text" th:field="*{locationLabel}" placeholder="Home, office, lab">
+							<small class="field-error" th:if="${#fields.hasErrors('locationLabel')}" th:errors="*{locationLabel}"></small>
+						</label>
+						<label>
+							<span>Latitude</span>
+							<input id="latitude" type="text" th:field="*{latitude}" placeholder="Optional initial latitude">
+							<small class="field-error" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}"></small>
+						</label>
+						<label>
+							<span>Longitude</span>
+							<input id="longitude" type="text" th:field="*{longitude}" placeholder="Optional initial longitude">
+							<small class="field-error" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}"></small>
+						</label>
+					</div>
+
+					<label>
+						<span>Notes</span>
+						<input type="text" th:field="*{notes}" placeholder="Optional context about this location">
+						<small class="field-error" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></small>
+					</label>
+
+					<label class="check-row">
+						<input type="checkbox" th:field="*{active}">
+						<span>Device is active</span>
+					</label>
+
+					<div class="info-box">
+						<i class="bi bi-crosshair"></i>
+						<span>The button fills the form once. Real continuous tracking happens from the live tracking page after the device grants location permission.</span>
+					</div>
+
+					<div class="form-actions">
+						<a class="btn btn-ghost" th:href="@{/geolocation}">
+							<i class="bi bi-arrow-left"></i>
+							<span>Cancel</span>
+						</a>
+						<button class="btn btn-secondary" type="button" id="use-current-location">
+							<i class="bi bi-crosshair"></i>
+							<span>Use current position</span>
+						</button>
+						<button class="btn btn-primary" type="submit">
+							<i class="bi bi-check2"></i>
+							<span>Save device</span>
+						</button>
+					</div>
+				</form>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+
+<script>
+	const locationButton = document.getElementById("use-current-location");
+	if (locationButton) {
+		locationButton.addEventListener("click", function () {
+			if (!navigator.geolocation) {
+				alert("Geolocation is not available in this browser.");
+				return;
+			}
+			navigator.geolocation.getCurrentPosition(function (position) {
+				document.getElementById("latitude").value = position.coords.latitude.toFixed(6);
+				document.getElementById("longitude").value = position.coords.longitude.toFixed(6);
+			}, function () {
+				alert("Location permission was not granted.");
+			});
+		});
+	}
+</script>
+</body>
+</html>

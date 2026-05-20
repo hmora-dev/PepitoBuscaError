@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Analyses - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('analyses')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('analyses')}"></div>
+
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Analysis center</p>
+					<h1>Analyses</h1>
+					<p class="muted">Review every completed risk analysis without opening the full dashboard.</p>
+				</div>
+				<a class="btn btn-primary" th:href="@{/companies}">
+					<i class="bi bi-plus-lg"></i>
+					<span>Create from company</span>
+				</a>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">History</p>
+						<h2>All analyses</h2>
+					</div>
+					<span class="badge neutral" th:text="${analyses.size() + ' analyses'}">0 analyses</span>
+				</div>
+
+				<div class="table-wrap" th:if="${!#lists.isEmpty(analyses)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Company</th>
+							<th>Domain</th>
+							<th>Date</th>
+							<th>Score</th>
+							<th>Risk</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="analysis : ${analyses}">
+							<td>
+								<a class="table-title" th:href="@{/companies/{id}(id=${analysis.company.idCompany})}"
+								   th:text="${analysis.company.name}">Company</a>
+							</td>
+							<td th:text="${analysis.company.domain}">example.com</td>
+							<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
+							<td><strong th:text="${analysis.riskScore}">0</strong></td>
+							<td>
+								<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+									  th:text="${analysis.riskLevel.label}">Low</span>
+							</td>
+							<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
+							<td>
+								<a class="btn btn-small btn-secondary" th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
+									<i class="bi bi-eye"></i>
+									<span>View result</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(analyses)}">
+					<i class="bi bi-activity"></i>
+					<strong>No analyses available</strong>
+					<span>Create an analysis from a company detail page.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,80 +1,106 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Companies · PepitoBuscaError</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Companies - PepitoBuscaError')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('companies')}"></div>
 
-<main class="page-shell">
-	<section class="page-heading">
-		<div>
-			<p class="eyebrow">Company management</p>
-			<h1>Companies</h1>
-			<p class="muted">Search, manage, and review the analysis history of registered businesses.</p>
-		</div>
-		<a class="btn btn-primary" th:href="@{/companies/new}">New company</a>
-	</section>
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
 
-	<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Company management</p>
+					<h1>Companies</h1>
+					<p class="muted">Search, manage, and review registered businesses from one clean table.</p>
+				</div>
+				<a class="btn btn-primary" th:href="@{/companies/new}">
+					<i class="bi bi-plus-lg"></i>
+					<span>New company</span>
+				</a>
+			</section>
 
-	<section class="content-panel">
-		<form class="search-bar" th:action="@{/companies}" method="get">
-			<label class="sr-only" for="q">Search companies</label>
-			<input id="q" name="q" type="search" th:value="${query}" placeholder="Search by name, domain, or sector">
-			<button class="btn btn-secondary" type="submit">Search</button>
-			<a class="btn btn-ghost" th:href="@{/companies}" th:if="${query != ''}">Clear</a>
-		</form>
+			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
 
-		<div class="table-wrap" th:if="${!#lists.isEmpty(companies)}">
-			<table class="data-table">
-				<thead>
-				<tr>
-					<th>Name</th>
-					<th>Domain</th>
-					<th>Sector</th>
-					<th>Analyses</th>
-					<th>Latest risk</th>
-					<th>Actions</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr th:each="company : ${companies}">
-					<td>
-						<a class="table-title" th:href="@{/companies/{id}(id=${company.idCompany})}"
-						   th:text="${company.name}">Company</a>
-						<small th:text="${company.corporateEmail}">mail@example.com</small>
-					</td>
-					<td th:text="${company.domain}">example.com</td>
-					<td th:text="${company.sector}">Sector</td>
-					<td th:text="${company.analysisCount}">0</td>
-					<td>
-						<span class="badge neutral" th:if="${company.latestRiskLevel == null}">Not analyzed</span>
-						<span class="badge risk-badge" th:if="${company.latestRiskLevel != null}"
-							  th:classappend="${company.latestRiskLevel.cssClass}"
-							  th:text="${company.latestRiskLevel.label}">Low</span>
-					</td>
-					<td class="table-actions">
-						<a class="btn btn-small btn-secondary" th:href="@{/companies/{id}(id=${company.idCompany})}">View</a>
-						<a class="btn btn-small btn-ghost" th:href="@{/companies/edit/{id}(id=${company.idCompany})}">Edit</a>
-						<a class="btn btn-small btn-danger" th:href="@{/companies/delete/{id}(id=${company.idCompany})}"
-						   onclick="return confirm('Delete this company and all its analyses?');">Delete</a>
-					</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
+			<section class="content-panel">
+				<form class="search-bar" th:action="@{/companies}" method="get">
+					<label class="sr-only" for="q">Search companies</label>
+					<div class="search-input">
+						<i class="bi bi-search"></i>
+						<input id="q" name="q" type="search" th:value="${query}" placeholder="Search by name, domain, or sector">
+					</div>
+					<button class="btn btn-secondary" type="submit">
+						<i class="bi bi-funnel"></i>
+						<span>Search</span>
+					</button>
+					<a class="btn btn-ghost" th:href="@{/companies}" th:if="${query != ''}">
+						<i class="bi bi-x-lg"></i>
+						<span>Clear</span>
+					</a>
+				</form>
 
-		<div class="empty-state" th:if="${#lists.isEmpty(companies)}">
-			<strong>No companies found.</strong>
-			<span>Register the first company or try a different search term.</span>
-		</div>
-	</section>
-</main>
+				<div class="table-wrap" th:if="${!#lists.isEmpty(companies)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Company</th>
+							<th>Domain</th>
+							<th>Sector</th>
+							<th>Corporate email</th>
+							<th>Registered</th>
+							<th>Analyses</th>
+							<th>Latest risk</th>
+							<th>Actions</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="company : ${companies}">
+							<td>
+								<a class="table-title" th:href="@{/companies/{id}(id=${company.idCompany})}"
+								   th:text="${company.name}">Company</a>
+							</td>
+							<td th:text="${company.domain}">example.com</td>
+							<td th:text="${company.sector}">Sector</td>
+							<td th:text="${company.corporateEmail}">mail@example.com</td>
+							<td th:text="${#temporals.format(company.registrationDate, 'dd MMM yyyy')}">Date</td>
+							<td><span class="badge neutral" th:text="${company.analysisCount}">0</span></td>
+							<td>
+								<span class="badge neutral" th:if="${company.latestRiskLevel == null}">Not analyzed</span>
+								<span class="badge risk-badge" th:if="${company.latestRiskLevel != null}"
+									  th:classappend="${company.latestRiskLevel.cssClass}"
+									  th:text="${company.latestRiskLevel.label}">Low</span>
+							</td>
+							<td class="table-actions">
+								<a class="btn btn-small btn-secondary" th:href="@{/companies/{id}(id=${company.idCompany})}">
+									<i class="bi bi-eye"></i>
+									<span>View</span>
+								</a>
+								<a class="btn btn-small btn-ghost" th:href="@{/companies/edit/{id}(id=${company.idCompany})}">
+									<i class="bi bi-pencil"></i>
+									<span>Edit</span>
+								</a>
+								<a class="btn btn-small btn-danger" th:href="@{/companies/delete/{id}(id=${company.idCompany})}"
+								   onclick="return confirm('Delete this company and all its analyses?');">
+									<i class="bi bi-trash"></i>
+									<span>Delete</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+				<div class="empty-state" th:if="${#lists.isEmpty(companies)}">
+					<i class="bi bi-buildings"></i>
+					<strong>No companies registered yet</strong>
+					<span>Register the first company or try a different search term.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
 </body>
 </html>

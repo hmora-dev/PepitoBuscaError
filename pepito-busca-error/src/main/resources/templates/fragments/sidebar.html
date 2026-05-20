@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<header class="app-topbar" th:fragment="navbar(active)">
-	<a class="topbar-brand" th:href="@{/dashboard}">
+<aside class="app-sidebar" th:fragment="sidebar(active)" aria-label="Main navigation">
+	<a class="sidebar-brand" th:href="@{/dashboard}">
 		<span class="brand-mark">PB</span>
-		<span>PepitoBuscaError</span>
+		<span>
+			<strong>PepitoBuscaError</strong>
+			<small>Risk intelligence</small>
+		</span>
 	</a>
-	<nav class="mobile-nav" aria-label="Mobile navigation">
+
+	<nav class="sidebar-nav">
 		<a th:href="@{/dashboard}" th:classappend="${active == 'dashboard'} ? ' active' : ''">
 			<i class="bi bi-grid-1x2"></i>
 			<span>Dashboard</span>
@@ -33,13 +37,17 @@
 		</a>
 		<a th:href="@{/documentation}" th:classappend="${active == 'documentation'} ? ' active' : ''">
 			<i class="bi bi-journal-text"></i>
-			<span>Docs</span>
+			<span>Documentation</span>
 		</a>
 	</nav>
-	<a class="btn btn-primary btn-topbar" th:href="@{/companies/new}">
-		<i class="bi bi-plus-lg"></i>
-		<span>New company</span>
-	</a>
-</header>
+
+	<div class="sidebar-card">
+		<span class="status-dot"></span>
+		<div>
+			<strong>MVC + Thymeleaf</strong>
+			<small>Simple DAM 1 architecture</small>
+		</div>
+	</div>
+</aside>
 </body>
 </html>

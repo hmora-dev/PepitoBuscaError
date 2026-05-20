@@ -52,6 +52,11 @@ public class AnalysisService {
 		);
 	}
 
+	@Transactional(readOnly = true)
+	public List<Analysis> findAllAnalyses() {
+		return analysisRepository.findAllByOrderByAnalysisDateDesc();
+	}
+
 	@Transactional
 	public Analysis createAnalysis(Long companyId, AnalysisForm form) {
 		Company company = companyRepository.findById(companyId)

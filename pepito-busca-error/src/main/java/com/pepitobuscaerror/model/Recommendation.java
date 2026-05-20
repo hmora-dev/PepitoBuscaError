@@ -66,4 +66,8 @@ public class Recommendation {
 	public String getAction() {
 		return action;
 	}
+
+	public Analysis getAnalysis() {
+		return analysis;
+	}
 }

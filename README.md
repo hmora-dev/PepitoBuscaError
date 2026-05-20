@@ -2,6 +2,8 @@
 
 PepitoBuscaError is a Spring Boot MVC web application for registering companies and performing basic digital risk analysis. It is designed as a polished DAM 1 final project: professional enough to present as a small SaaS platform, but simple enough to understand and defend.
 
+The application now includes a modern responsive dashboard inspired by professional SaaS cybersecurity tools. The interface uses Thymeleaf templates, reusable fragments, and custom CSS to keep the frontend understandable without adding React, JWT, Docker, or other advanced architecture.
+
 ## Objective
 
 The objective is to help small and medium-sized businesses understand basic digital risk indicators. The application stores companies, creates analyses, calculates a risk score, assigns a risk level, and generates practical recommendations.
@@ -21,22 +23,61 @@ The main user is a technical consultant, IT student, or small-business support t
 - Hibernate
 - MySQL 8
 - HTML5 and CSS3
+- Thymeleaf fragments for the reusable layout
+- Custom responsive CSS for the SaaS dashboard interface
 
 ## Features
 
-- Professional home page.
-- Dashboard with total companies, total analyses, average risk, critical analyses, recent companies, recent analyses, and risk distribution.
+- Professional responsive home page and dashboard.
+- Left sidebar navigation on desktop and a compact top navigation on mobile.
+- Dashboard with total companies, total analyses, average risk, critical analyses, critical indicators, recent companies, recent analyses, and risk distribution.
+- Separate pages for dashboard, companies, analyses, indicators, recommendations, documentation, and geolocation.
 - Full company CRUD.
 - Company search by name, domain, or sector.
-- Company detail page with analysis history.
+- Company detail page with profile data, latest risk summary, and analysis history.
 - Analysis creation with selectable risk indicators.
 - Automatic risk score calculation.
 - Automatic risk level assignment.
 - Automatic recommendation generation.
-- Indicators grouped by severity.
-- Recommendations grouped by priority.
+- Indicators grouped by severity with clear risk badges.
+- Recommendations grouped by priority with clear priority badges.
+- Real geolocation module for owned devices using the browser Geolocation API.
+- Private tracking links that send live device coordinates to Spring Boot while the page is open and permission is granted.
+- Professional live map view using Leaflet and OpenStreetMap tiles.
 - User-friendly error page.
-- Responsive SaaS-style interface.
+- Responsive SaaS-style interface with cards, tables, dark metric panels, thin borders, and soft shadows.
+
+## Real Geolocation
+
+The geolocation module works with real browser location permission:
+
+1. Register a device from `Geolocation > New device`.
+2. Open the device detail page.
+3. Open the private live tracking link on that same device.
+4. Press `Start live tracking`.
+5. Accept the browser location permission.
+6. The browser sends latitude, longitude, and accuracy to Spring Boot.
+7. Spring Boot saves the last known position in MySQL.
+8. The live tracker moves the marker on the map, and the device detail page refreshes the saved position automatically.
+
+This is real geolocation, but it is still a web application. Tracking only works while the tracking page is open and the browser grants permission. Background tracking when the browser is closed would require a native mobile app or a more advanced PWA approach.
+
+The map is rendered with Leaflet and OpenStreetMap tiles, so the map view needs internet access to load tile images.
+
+## Visual Design
+
+The visual design is inspired by premium cybersecurity SaaS dashboards. It uses a light workspace, a dark left sidebar, dark metric panels for important risk numbers, clean tables for company management, and color-coded badges for risk levels, severities, and priorities.
+
+The main sections are separated into their own pages instead of being placed inside a single dashboard page. This makes the application easier to navigate and easier to explain in an oral defense.
+
+The UI is built with Thymeleaf templates and custom CSS in:
+
+```text
+pepito-busca-error/src/main/resources/templates
+pepito-busca-error/src/main/resources/static/css/style.css
+```
+
+This keeps the frontend simple enough for a DAM 1 project while still looking like a professional web application.
 
 ## Database Model
 
@@ -46,6 +87,7 @@ The main tables are:
 - `analyses`
 - `indicators`
 - `recommendations`
+- `tracked_devices`
 
 Relationships:
 
@@ -53,6 +95,7 @@ Relationships:
 - One analysis belongs to one company.
 - One analysis has many indicators.
 - One analysis has many recommendations.
+- One tracked device stores owner, status, private tracking token, last known latitude, longitude, accuracy, and update date.
 
 More details are available in `pepito-busca-error/docs/database-model.md`.
 
@@ -122,7 +165,8 @@ http://localhost:8080
 5. Select the detected indicators.
 6. Submit the form to calculate risk.
 7. Review the result page with indicators and recommendations.
-8. Use the dashboard to review global metrics.
+8. Use the separate analyses, indicators, and recommendations pages for detailed review.
+9. Use the geolocation page to register your own devices and store their last known coordinates.
 
 ## AI Usage Statement
 

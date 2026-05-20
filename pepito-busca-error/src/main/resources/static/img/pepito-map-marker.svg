@@ -1,0 +1,9 @@
+<svg width="48" height="58" viewBox="0 0 48 58" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+	<title id="title">PepitoBuscaError map marker</title>
+	<desc id="desc">Dark blue location marker with the PB logo.</desc>
+	<path d="M24 56C24 56 44 36.98 44 22.5C44 10.07 35.05 2 24 2C12.95 2 4 10.07 4 22.5C4 36.98 24 56 24 56Z" fill="#0F172A"/>
+	<path d="M24 54C24 54 42 36.42 42 22.64C42 11.42 33.94 4 24 4C14.06 4 6 11.42 6 22.64C6 36.42 24 54 24 54Z" stroke="#2563EB" stroke-width="3"/>
+	<circle cx="24" cy="23" r="14" fill="#111827"/>
+	<circle cx="24" cy="23" r="12" stroke="#60A5FA" stroke-width="2"/>
+	<text x="24" y="27.7" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="900" fill="#FFFFFF" letter-spacing=".6">PB</text>
+</svg>

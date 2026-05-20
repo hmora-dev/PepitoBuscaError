@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Documentation - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('documentation')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('documentation')}"></div>
+
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Project documentation</p>
+					<h1>Documentation</h1>
+					<p class="muted">A clear page to explain the architecture and defend the project.</p>
+				</div>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<p class="eyebrow">Architecture</p>
+					<h2>Spring Boot MVC</h2>
+					<p class="panel-copy muted">
+						The application uses controllers for routes, services for business logic, repositories for database access, and Thymeleaf templates for the interface.
+					</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Database</p>
+					<h2>MySQL persistence</h2>
+					<p class="panel-copy muted">
+						Companies, analyses, indicators, recommendations, and tracked devices are stored in MySQL through Spring Data JPA.
+					</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Risk model</p>
+					<h2>Simple scoring</h2>
+					<p class="panel-copy muted">
+						Selected indicators are converted into a score from 0 to 100 and classified as low, medium, high, or critical.
+					</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Geolocation</p>
+					<h2>Owned devices only</h2>
+					<p class="panel-copy muted">
+						The geolocation module stores the last known coordinates of devices that belong to the user. It does not use external APIs or background tracking.
+					</p>
+				</article>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

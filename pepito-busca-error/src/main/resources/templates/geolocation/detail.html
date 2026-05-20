@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Device detail - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('geolocation')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('geolocation')}"></div>
+
+		<main class="page-content">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/geolocation}">Geolocation</a>
+				<span>/</span>
+				<span th:text="${device.name}">Device</span>
+			</nav>
+
+			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
+
+			<section class="company-hero">
+				<div class="company-profile">
+					<span class="company-avatar"><i class="bi bi-phone"></i></span>
+					<div>
+						<p class="eyebrow">Tracked device</p>
+						<h1 th:text="${device.name}">Device</h1>
+						<p class="muted" th:text="${device.deviceType + ' - ' + device.owner}">Laptop - Owner</p>
+					</div>
+				</div>
+				<div class="action-row">
+					<a class="btn btn-primary" th:href="@{/geolocation/edit/{id}(id=${device.idDevice})}">
+						<i class="bi bi-pencil"></i>
+						<span>Edit device</span>
+					</a>
+					<a class="btn btn-secondary" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
+						<i class="bi bi-broadcast-pin"></i>
+						<span>Open live tracker</span>
+					</a>
+					<a class="btn btn-danger" th:href="@{/geolocation/delete/{id}(id=${device.idDevice})}"
+					   onclick="return confirm('Delete this tracked device?');">
+						<i class="bi bi-trash"></i>
+						<span>Delete</span>
+					</a>
+				</div>
+			</section>
+
+			<section class="detail-grid">
+				<article class="dark-summary-card">
+					<div class="summary-topline">
+						<span>Last known coordinates</span>
+						<span class="badge success" th:if="${device.active}">Active</span>
+						<span class="badge neutral" th:if="${!device.active}">Inactive</span>
+					</div>
+					<strong class="coordinate-value" id="detail-coordinate-value"
+							th:text="${device.hasCoordinates() ? #numbers.formatDecimal(device.latitude, 1, 5) + ', ' + #numbers.formatDecimal(device.longitude, 1, 5) : 'Waiting for GPS'}">
+						Waiting for GPS
+					</strong>
+					<p th:text="${device.locationLabel == null || device.locationLabel == '' ? 'No location label provided.' : device.locationLabel}">
+						Location label
+					</p>
+				</article>
+
+				<article class="content-panel">
+					<p class="eyebrow">Device information</p>
+					<dl class="profile-list">
+						<div>
+							<dt>Owner</dt>
+							<dd th:text="${device.owner}">Owner</dd>
+						</div>
+						<div>
+							<dt>Registered</dt>
+							<dd th:text="${#temporals.format(device.registeredAt, 'dd MMM yyyy HH:mm')}">Date</dd>
+						</div>
+						<div>
+							<dt>Last update</dt>
+							<dd id="detail-last-update" th:text="${#temporals.format(device.lastSeenAt, 'dd MMM yyyy HH:mm')}">Date</dd>
+						</div>
+						<div>
+							<dt>Accuracy</dt>
+							<dd id="detail-accuracy"
+								th:text="${device.accuracyMeters == null ? 'No GPS accuracy yet' : #numbers.formatDecimal(device.accuracyMeters, 1, 1) + ' meters'}">
+								Accuracy
+							</dd>
+						</div>
+						<div>
+							<dt>Notes</dt>
+							<dd th:text="${device.notes == null || device.notes == '' ? 'No notes' : device.notes}">Notes</dd>
+						</div>
+					</dl>
+				</article>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Live map view</p>
+						<h2>Last known device position</h2>
+					</div>
+					<span class="badge neutral">Auto-refresh</span>
+				</div>
+				<div class="map-shell">
+					<div class="map-toolbar" aria-label="Device map controls">
+						<button class="map-control-button" type="button" id="center-detail-map">
+							<i class="bi bi-crosshair"></i>
+							<span>Center</span>
+						</button>
+						<button class="map-control-button active" type="button" id="follow-detail-map">
+							<i class="bi bi-broadcast"></i>
+							<span>Follow</span>
+						</button>
+					</div>
+					<div id="device-map" class="leaflet-map device-map"></div>
+				</div>
+				<div class="map-readout-grid">
+					<div>
+						<span>Map status</span>
+						<strong id="detail-map-status" th:text="${device.hasCoordinates() ? 'Position loaded' : 'Waiting for first live update'}">
+							Waiting
+						</strong>
+					</div>
+					<div>
+						<span>Location label</span>
+						<strong th:text="${device.locationLabel == null || device.locationLabel == '' ? device.name : device.locationLabel}">
+							Location
+						</strong>
+					</div>
+					<div>
+						<span>External map</span>
+						<a class="text-link" id="detail-open-map"
+						   th:href="${device.hasCoordinates() ? 'https://www.google.com/maps?q=' + device.latitude + ',' + device.longitude : '#'}"
+						   target="_blank" rel="noopener"
+						   th:text="${device.hasCoordinates() ? 'Open coordinates' : 'Waiting for GPS'}">Open coordinates</a>
+					</div>
+				</div>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Real tracking link</p>
+						<h2>Open this on the device</h2>
+					</div>
+					<span class="badge neutral">Private token</span>
+				</div>
+				<div class="tracking-link-box">
+					<input id="tracking-link" type="text" readonly
+						   th:value="@{/geolocation/live/{token}(token=${device.trackingToken})}">
+					<a class="btn btn-secondary" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
+						<i class="bi bi-broadcast-pin"></i>
+						<span>Open tracker</span>
+					</a>
+				</div>
+				<p class="muted panel-copy">
+					Send this link to your own device, open it in the browser, press Start live tracking, and accept the browser location permission.
+				</p>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:inline="javascript">
+	const positionUrl = /*[[@{/geolocation/{id}/position(id=${device.idDevice})}]]*/ "";
+	const initialHasCoordinates = /*[[${device.hasCoordinates()}]]*/ false;
+	const initialLatitude = /*[[${device.latitude}]]*/ 40.4168;
+	const initialLongitude = /*[[${device.longitude}]]*/ -3.7038;
+	const initialAccuracy = /*[[${device.accuracyMeters}]]*/ null;
+	const deviceName = /*[[${device.name}]]*/ "Device";
+	const markerIconUrl = /*[[@{/img/pepito-map-marker.svg}]]*/ "/img/pepito-map-marker.svg";
+	const fallbackPosition = [40.4168, -3.7038];
+	const startPosition = initialHasCoordinates ? [initialLatitude, initialLongitude] : fallbackPosition;
+	let detailMarker = null;
+	let detailAccuracyCircle = null;
+	let firstDetailUpdate = true;
+	let followDetailMap = true;
+	let lastDetailPosition = initialHasCoordinates ? startPosition : null;
+
+	const coordinateElement = document.getElementById("detail-coordinate-value");
+	const accuracyElement = document.getElementById("detail-accuracy");
+	const lastUpdateElement = document.getElementById("detail-last-update");
+	const statusElement = document.getElementById("detail-map-status");
+	const openMapElement = document.getElementById("detail-open-map");
+	const centerMapButton = document.getElementById("center-detail-map");
+	const followMapButton = document.getElementById("follow-detail-map");
+
+	const detailMap = L.map("device-map", {
+		zoomControl: false,
+		scrollWheelZoom: true,
+		touchZoom: true,
+		dragging: true
+	}).setView(startPosition, initialHasCoordinates ? 15 : 6);
+
+	const detailZoomControl = L.control.zoom({position: "bottomright"}).addTo(detailMap);
+	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		maxZoom: 19,
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	}).addTo(detailMap);
+
+	const deviceMarkerIcon = L.icon({
+		iconUrl: markerIconUrl,
+		iconSize: [48, 58],
+		iconAnchor: [24, 56],
+		popupAnchor: [0, -50]
+	});
+
+	function setDetailFollow(enabled) {
+		followDetailMap = enabled;
+		followMapButton.classList.toggle("active", enabled);
+	}
+
+	function disableDetailFollow() {
+		setDetailFollow(false);
+	}
+
+	function refreshDetailMapSize() {
+		detailMap.invalidateSize({pan: false});
+		if (lastDetailPosition !== null && followDetailMap) {
+			detailMap.panTo(lastDetailPosition, {animate: false});
+		}
+	}
+
+	function updateDetailMap(latitude, longitude, accuracy) {
+		const position = [latitude, longitude];
+		lastDetailPosition = position;
+		if (detailMarker === null) {
+			detailMarker = L.marker(position, {
+				icon: deviceMarkerIcon,
+				title: deviceName
+			}).addTo(detailMap).bindPopup(deviceName);
+		} else {
+			detailMarker.setLatLng(position);
+		}
+
+		if (detailAccuracyCircle === null) {
+			detailAccuracyCircle = L.circle(position, {
+				radius: accuracy || 20,
+				color: "#2563eb",
+				weight: 2,
+				fillColor: "#60a5fa",
+				fillOpacity: 0.16
+			}).addTo(detailMap);
+		} else {
+			detailAccuracyCircle.setLatLng(position);
+			detailAccuracyCircle.setRadius(accuracy || 20);
+		}
+
+		if (followDetailMap || firstDetailUpdate) {
+			const targetZoom = firstDetailUpdate && detailMap.getZoom() < 12 ? 15 : detailMap.getZoom();
+			detailMap.setView(position, targetZoom, {animate: true});
+		}
+		firstDetailUpdate = false;
+		coordinateElement.textContent = latitude.toFixed(5) + ", " + longitude.toFixed(5);
+		accuracyElement.textContent = accuracy ? Math.round(accuracy) + " meters" : "Accuracy not reported";
+		statusElement.textContent = "Live position received";
+		openMapElement.href = "https://www.google.com/maps?q=" + latitude + "," + longitude;
+		openMapElement.textContent = "Open coordinates";
+	}
+
+	if (initialHasCoordinates) {
+		updateDetailMap(initialLatitude, initialLongitude, initialAccuracy || 20);
+	}
+
+	detailMap.whenReady(function () {
+		[150, 500, 1200].forEach(function (delay) {
+			setTimeout(refreshDetailMapSize, delay);
+		});
+	});
+
+	window.addEventListener("resize", function () {
+		refreshDetailMapSize();
+	});
+
+	if ("ResizeObserver" in window) {
+		new ResizeObserver(refreshDetailMapSize).observe(document.getElementById("device-map"));
+	}
+
+	detailMap.on("dragstart", disableDetailFollow);
+	detailMap.getContainer().addEventListener("wheel", disableDetailFollow, {passive: true});
+	detailMap.getContainer().addEventListener("touchstart", disableDetailFollow, {passive: true});
+
+	const detailZoomElement = detailZoomControl.getContainer();
+	if (detailZoomElement !== null) {
+		detailZoomElement.addEventListener("click", disableDetailFollow);
+	}
+
+	centerMapButton.addEventListener("click", function () {
+		const targetPosition = lastDetailPosition === null ? startPosition : lastDetailPosition;
+		const targetZoom = lastDetailPosition === null && !initialHasCoordinates ? 6 : Math.max(detailMap.getZoom(), 15);
+		detailMap.setView(targetPosition, targetZoom, {animate: true});
+	});
+
+	followMapButton.addEventListener("click", function () {
+		setDetailFollow(!followDetailMap);
+		if (followDetailMap && lastDetailPosition !== null) {
+			detailMap.setView(lastDetailPosition, Math.max(detailMap.getZoom(), 15), {animate: true});
+		}
+	});
+
+	function refreshPosition() {
+		fetch(positionUrl)
+			.then(function (response) {
+				if (!response.ok) {
+					throw new Error("Position request failed");
+				}
+				return response.json();
+			})
+			.then(function (data) {
+				if (!data.hasCoordinates) {
+					statusElement.textContent = "Waiting for first live update";
+					return;
+				}
+				updateDetailMap(data.latitude, data.longitude, data.accuracy || 20);
+				if (data.lastSeenAt) {
+					lastUpdateElement.textContent = new Date(data.lastSeenAt).toLocaleString();
+				}
+			})
+			.catch(function () {
+				statusElement.textContent = "Map refresh failed";
+			});
+	}
+
+	setInterval(refreshPosition, 5000);
+</script>
+</body>
+</html>

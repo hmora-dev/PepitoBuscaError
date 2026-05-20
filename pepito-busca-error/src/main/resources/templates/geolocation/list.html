@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Geolocation - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('geolocation')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('geolocation')}"></div>
+
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Owned device tracking</p>
+					<h1>Geolocation</h1>
+					<p class="muted">Register your own devices, open their live tracking link, and store real browser GPS updates in MySQL.</p>
+				</div>
+				<a class="btn btn-primary" th:href="@{/geolocation/new}">
+					<i class="bi bi-plus-lg"></i>
+					<span>New device</span>
+				</a>
+			</section>
+
+			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
+
+			<section class="dark-panel-grid">
+				<article class="dark-metric-panel">
+					<span>Total devices</span>
+					<strong th:text="${devices.size()}">0</strong>
+					<small>Registered owned devices</small>
+				</article>
+				<article class="dark-metric-panel">
+					<span>Active devices</span>
+					<strong th:text="${activeDevices}">0</strong>
+					<small>Marked as currently active</small>
+				</article>
+				<article class="dark-metric-panel">
+					<span>Tracking mode</span>
+					<strong>Manual</strong>
+					<small>Browser permission required</small>
+				</article>
+			</section>
+
+			<section class="content-panel">
+				<form class="search-bar" th:action="@{/geolocation}" method="get">
+					<label class="sr-only" for="q">Search devices</label>
+					<div class="search-input">
+						<i class="bi bi-search"></i>
+						<input id="q" name="q" type="search" th:value="${query}" placeholder="Search by device, type, owner, or place">
+					</div>
+					<button class="btn btn-secondary" type="submit">
+						<i class="bi bi-funnel"></i>
+						<span>Search</span>
+					</button>
+					<a class="btn btn-ghost" th:href="@{/geolocation}" th:if="${query != ''}">
+						<i class="bi bi-x-lg"></i>
+						<span>Clear</span>
+					</a>
+				</form>
+
+				<div class="table-wrap" th:if="${!#lists.isEmpty(devices)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Device</th>
+							<th>Type</th>
+							<th>Owner</th>
+							<th>Location</th>
+							<th>Coordinates</th>
+							<th>Last update</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="device : ${devices}">
+							<td>
+								<a class="table-title" th:href="@{/geolocation/{id}(id=${device.idDevice})}"
+								   th:text="${device.name}">Device</a>
+							</td>
+							<td th:text="${device.deviceType}">Laptop</td>
+							<td th:text="${device.owner}">Owner</td>
+							<td th:text="${device.locationLabel == null || device.locationLabel == '' ? 'No label' : device.locationLabel}">Home</td>
+							<td>
+								<span th:if="${device.hasCoordinates()}">
+									<span th:text="${#numbers.formatDecimal(device.latitude, 1, 5)}">0</span>
+									<span>, </span>
+									<span th:text="${#numbers.formatDecimal(device.longitude, 1, 5)}">0</span>
+								</span>
+								<span class="muted" th:if="${!device.hasCoordinates()}">Waiting for live update</span>
+							</td>
+							<td th:text="${#temporals.format(device.lastSeenAt, 'dd MMM yyyy HH:mm')}">Date</td>
+							<td>
+								<span class="badge success" th:if="${device.active}">Active</span>
+								<span class="badge neutral" th:if="${!device.active}">Inactive</span>
+							</td>
+							<td class="table-actions">
+								<a class="btn btn-small btn-secondary" th:href="@{/geolocation/{id}(id=${device.idDevice})}">
+									<i class="bi bi-eye"></i>
+									<span>View</span>
+								</a>
+								<a class="btn btn-small btn-ghost" th:href="@{/geolocation/edit/{id}(id=${device.idDevice})}">
+									<i class="bi bi-pencil"></i>
+									<span>Edit</span>
+								</a>
+								<a class="btn btn-small btn-ghost" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
+									<i class="bi bi-broadcast-pin"></i>
+									<span>Track</span>
+								</a>
+								<a class="btn btn-small btn-danger" th:href="@{/geolocation/delete/{id}(id=${device.idDevice})}"
+								   onclick="return confirm('Delete this tracked device?');">
+									<i class="bi bi-trash"></i>
+									<span>Delete</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(devices)}">
+					<i class="bi bi-geo-alt"></i>
+					<strong>No devices registered yet</strong>
+					<span>Add your own laptop, phone, or tablet to store its last known location.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

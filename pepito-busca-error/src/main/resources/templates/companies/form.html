@@ -1,68 +1,76 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title th:text="${pageTitle + ' · PepitoBuscaError'}">Company form</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Company form - PepitoBuscaError')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('companies')}"></div>
 
-<main class="page-shell narrow">
-	<nav class="breadcrumbs" aria-label="Breadcrumb">
-		<a th:href="@{/companies}">Companies</a>
-		<span>/</span>
-		<span th:text="${pageTitle}">Company form</span>
-	</nav>
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
 
-	<section class="content-panel">
-		<div class="section-title">
-			<div>
-				<p class="eyebrow">Company record</p>
-				<h1 th:text="${pageTitle}">Register company</h1>
-			</div>
-		</div>
+		<main class="page-content narrow">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/companies}">Companies</a>
+				<span>/</span>
+				<span th:text="${pageTitle}">Company form</span>
+			</nav>
 
-		<form class="entity-form"
-			  th:action="${company.idCompany == null} ? @{/companies/save} : @{/companies/update/{id}(id=${company.idCompany})}"
-			  th:object="${company}" method="post">
-			<div class="form-grid two">
-				<label>
-					<span>Company name</span>
-					<input type="text" th:field="*{name}" placeholder="Acme Digital Services">
-					<small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
-				</label>
-				<label>
-					<span>Sector</span>
-					<input type="text" th:field="*{sector}" placeholder="Retail, healthcare, education">
-					<small class="field-error" th:if="${#fields.hasErrors('sector')}" th:errors="*{sector}"></small>
-				</label>
-				<label>
-					<span>Domain</span>
-					<input type="text" th:field="*{domain}" placeholder="example.com">
-					<small class="field-error" th:if="${#fields.hasErrors('domain')}" th:errors="*{domain}"></small>
-				</label>
-				<label>
-					<span>Corporate email</span>
-					<input type="email" th:field="*{corporateEmail}" placeholder="security@example.com">
-					<small class="field-error" th:if="${#fields.hasErrors('corporateEmail')}" th:errors="*{corporateEmail}"></small>
-				</label>
-			</div>
+			<section class="content-panel form-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Company record</p>
+						<h1 th:text="${pageTitle}">Register company</h1>
+						<p class="muted">Store the main business data used in risk analyses.</p>
+					</div>
+				</div>
 
-			<div class="warning-box">
-				<strong>Deletion warning:</strong>
-				<span>Deleting a company also removes its analyses, indicators, and recommendations.</span>
-			</div>
+				<form class="entity-form"
+					  th:action="${company.idCompany == null} ? @{/companies/save} : @{/companies/update/{id}(id=${company.idCompany})}"
+					  th:object="${company}" method="post">
+					<div class="form-grid two">
+						<label>
+							<span>Company name</span>
+							<input type="text" th:field="*{name}" placeholder="Acme Digital Services">
+							<small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+						</label>
+						<label>
+							<span>Sector</span>
+							<input type="text" th:field="*{sector}" placeholder="Retail, healthcare, education">
+							<small class="field-error" th:if="${#fields.hasErrors('sector')}" th:errors="*{sector}"></small>
+						</label>
+						<label>
+							<span>Domain</span>
+							<input type="text" th:field="*{domain}" placeholder="example.com">
+							<small class="field-error" th:if="${#fields.hasErrors('domain')}" th:errors="*{domain}"></small>
+						</label>
+						<label>
+							<span>Corporate email</span>
+							<input type="email" th:field="*{corporateEmail}" placeholder="security@example.com">
+							<small class="field-error" th:if="${#fields.hasErrors('corporateEmail')}" th:errors="*{corporateEmail}"></small>
+						</label>
+					</div>
 
-			<div class="form-actions">
-				<a class="btn btn-ghost" th:href="@{/companies}">Cancel</a>
-				<button class="btn btn-primary" type="submit">Save company</button>
-			</div>
-		</form>
-	</section>
-</main>
+					<div class="info-box">
+						<i class="bi bi-info-circle"></i>
+						<span>The domain is normalized before saving so reports keep a consistent format.</span>
+					</div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+					<div class="form-actions">
+						<a class="btn btn-ghost" th:href="@{/companies}">
+							<i class="bi bi-arrow-left"></i>
+							<span>Cancel</span>
+						</a>
+						<button class="btn btn-primary" type="submit">
+							<i class="bi bi-check2"></i>
+							<span>Save company</span>
+						</button>
+					</div>
+				</form>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
 </body>
 </html>

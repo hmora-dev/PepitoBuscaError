@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Indicators - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('indicators')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('indicators')}"></div>
+
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Risk evidence</p>
+					<h1>Indicators</h1>
+					<p class="muted">A separate window for detected indicators and the available indicator catalog.</p>
+				</div>
+				<a class="btn btn-secondary" th:href="@{/analyses}">
+					<i class="bi bi-activity"></i>
+					<span>View analyses</span>
+				</a>
+			</section>
+
+			<section class="stats-grid">
+				<article class="stat-card" th:each="severity : ${T(com.pepitobuscaerror.model.Severity).values()}">
+					<span th:text="${severity.label + ' indicators'}">Low indicators</span>
+					<strong th:text="${severityCounts.get(severity)}">0</strong>
+					<small>
+						<span class="badge severity-badge" th:classappend="${severity.cssClass}" th:text="${severity.label}">Low</span>
+					</small>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<div class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Detected evidence</p>
+							<h2>Stored indicators</h2>
+						</div>
+						<span class="badge neutral" th:text="${indicators.size() + ' indicators'}">0 indicators</span>
+					</div>
+
+					<div class="compact-list" th:if="${!#lists.isEmpty(indicators)}">
+						<a class="compact-row" th:each="indicator : ${indicators}"
+						   th:href="@{/analyses/{id}(id=${indicator.analysis.idAnalysis})}">
+							<span>
+								<strong th:text="${indicator.type}">Indicator</strong>
+								<small>
+									<span th:text="${indicator.analysis.company.name}">Company</span>
+									<span> - </span>
+									<span th:text="${indicator.value}">Value</span>
+								</small>
+							</span>
+							<span class="badge severity-badge" th:classappend="${indicator.severity.cssClass}"
+								  th:text="${indicator.severity.label}">High</span>
+						</a>
+					</div>
+
+					<div class="empty-state" th:if="${#lists.isEmpty(indicators)}">
+						<i class="bi bi-shield-check"></i>
+						<strong>No indicators found</strong>
+						<span>Indicators will appear here after analyses are created.</span>
+					</div>
+				</div>
+
+				<div class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Catalog</p>
+							<h2>Available checks</h2>
+						</div>
+						<span class="badge neutral" th:text="${indicatorCatalog.size() + ' checks'}">0 checks</span>
+					</div>
+
+					<div class="group-block">
+						<article class="detail-card" th:each="option : ${indicatorCatalog}">
+							<strong th:text="${option.type}">Indicator</strong>
+							<span>
+								<span class="badge severity-badge" th:classappend="${option.severity.cssClass}"
+									  th:text="${option.severity.label}">Medium</span>
+							</span>
+							<p th:text="${option.description}">Description</p>
+						</article>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

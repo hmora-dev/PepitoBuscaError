@@ -2,12 +2,14 @@ package com.pepitobuscaerror.service;
 
 import com.pepitobuscaerror.dto.DashboardStats;
 import com.pepitobuscaerror.model.RiskLevel;
+import com.pepitobuscaerror.model.Severity;
 import com.pepitobuscaerror.repository.AnalysisRepository;
 import com.pepitobuscaerror.repository.CompanyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,8 +35,11 @@ public class DashboardService {
 				analysisRepository.count(),
 				(int) Math.round(analysisRepository.averageRiskScore()),
 				distribution.get(RiskLevel.CRITICAL),
+				analysisRepository.countIndicatorsBySeverity(Severity.CRITICAL),
 				companyRepository.findTop5ByOrderByRegistrationDateDesc(),
 				analysisRepository.findTop8ByOrderByAnalysisDateDesc(),
+				analysisRepository.findFirstByRiskLevelInOrderByAnalysisDateDesc(
+						List.of(RiskLevel.CRITICAL, RiskLevel.HIGH)).orElse(null),
 				distribution
 		);
 	}

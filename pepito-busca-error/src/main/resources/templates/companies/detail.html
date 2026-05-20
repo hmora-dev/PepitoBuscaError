@@ -1,95 +1,155 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title th:text="${company.name + ' · PepitoBuscaError'}">Company detail</title>
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Company detail - PepitoBuscaError')}"></head>
 <body>
-<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('companies')}"></div>
 
-<main class="page-shell">
-	<nav class="breadcrumbs" aria-label="Breadcrumb">
-		<a th:href="@{/companies}">Companies</a>
-		<span>/</span>
-		<span th:text="${company.name}">Company</span>
-	</nav>
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
 
-	<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
+		<main class="page-content">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/companies}">Companies</a>
+				<span>/</span>
+				<span th:text="${company.name}">Company</span>
+			</nav>
 
-	<section class="company-hero">
-		<div>
-			<p class="eyebrow">Company profile</p>
-			<h1 th:text="${company.name}">Company</h1>
-			<p class="muted" th:text="${company.domain}">example.com</p>
-		</div>
-		<div class="action-row">
-			<a class="btn btn-primary" th:href="@{/companies/{id}/analyses/new(id=${company.idCompany})}">New analysis</a>
-			<a class="btn btn-secondary" th:href="@{/companies/edit/{id}(id=${company.idCompany})}">Edit</a>
-			<a class="btn btn-danger" th:href="@{/companies/delete/{id}(id=${company.idCompany})}"
-			   onclick="return confirm('Delete this company and all its analyses?');">Delete</a>
-		</div>
-	</section>
+			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
 
-	<section class="section-grid three">
-		<article class="stat-card">
-			<span>Corporate email</span>
-			<strong class="text-fit" th:text="${company.corporateEmail}">mail@example.com</strong>
-		</article>
-		<article class="stat-card">
-			<span>Sector</span>
-			<strong th:text="${company.sector}">Sector</strong>
-		</article>
-		<article class="stat-card">
-			<span>Analyses</span>
-			<strong th:text="${company.analysisCount}">0</strong>
-		</article>
-	</section>
+			<section class="company-hero">
+				<div class="company-profile">
+					<span class="company-avatar" th:text="${#strings.substring(company.name, 0, 1)}">C</span>
+					<div>
+						<p class="eyebrow">Company profile</p>
+						<h1 th:text="${company.name}">Company</h1>
+						<p class="muted" th:text="${company.domain}">example.com</p>
+					</div>
+				</div>
+				<div class="action-row">
+					<a class="btn btn-primary" th:href="@{/companies/{id}/analyses/new(id=${company.idCompany})}">
+						<i class="bi bi-plus-lg"></i>
+						<span>New analysis</span>
+					</a>
+					<a class="btn btn-secondary" th:href="@{/companies/edit/{id}(id=${company.idCompany})}">
+						<i class="bi bi-pencil"></i>
+						<span>Edit</span>
+					</a>
+					<a class="btn btn-danger" th:href="@{/companies/delete/{id}(id=${company.idCompany})}"
+					   onclick="return confirm('Delete this company and all its analyses?');">
+						<i class="bi bi-trash"></i>
+						<span>Delete</span>
+					</a>
+				</div>
+			</section>
 
-	<section class="content-panel">
-		<div class="section-title">
-			<div>
-				<h2>Analysis history</h2>
-				<p class="muted">Every stored result remains available for review and presentation.</p>
-			</div>
-		</div>
+			<section class="section-grid three">
+				<article class="stat-card">
+					<span>Corporate email</span>
+					<strong class="text-fit" th:text="${company.corporateEmail}">mail@example.com</strong>
+					<small>Primary contact</small>
+				</article>
+				<article class="stat-card">
+					<span>Sector</span>
+					<strong th:text="${company.sector}">Sector</strong>
+					<small>Business category</small>
+				</article>
+				<article class="stat-card">
+					<span>Registered</span>
+					<strong class="text-fit" th:text="${#temporals.format(company.registrationDate, 'dd MMM yyyy')}">Date</strong>
+					<small th:text="${company.analysisCount + ' analyses'}">0 analyses</small>
+				</article>
+			</section>
 
-		<div class="table-wrap" th:if="${!#lists.isEmpty(company.analyses)}">
-			<table class="data-table">
-				<thead>
-				<tr>
-					<th>Date</th>
-					<th>Score</th>
-					<th>Risk level</th>
-					<th>Status</th>
-					<th>Actions</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr th:each="analysis : ${company.analyses}">
-					<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
-					<td><strong th:text="${analysis.riskScore}">0</strong></td>
-					<td>
-						<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
-							  th:text="${analysis.riskLevel.label}">Low</span>
-					</td>
-					<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
-					<td>
-						<a class="btn btn-small btn-secondary" th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">View result</a>
-					</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
+			<section class="detail-grid">
+				<article class="dark-summary-card">
+					<div class="summary-topline">
+						<span>Latest risk summary</span>
+						<span class="badge risk-badge" th:if="${company.latestRiskLevel != null}"
+							  th:classappend="${company.latestRiskLevel.cssClass}"
+							  th:text="${company.latestRiskLevel.label}">Low</span>
+						<span class="badge neutral" th:if="${company.latestRiskLevel == null}">Not analyzed</span>
+					</div>
+					<strong th:text="${company.latestRiskScore == null ? '0' : company.latestRiskScore}">0</strong>
+					<div class="risk-bar">
+						<span th:style="'width:' + ${company.latestRiskScore == null ? 0 : company.latestRiskScore} + '%'"></span>
+					</div>
+					<p th:if="${company.latestRiskLevel != null}">Review the latest analysis before creating a new assessment.</p>
+					<p th:if="${company.latestRiskLevel == null}">Create the first analysis to calculate a risk level.</p>
+				</article>
 
-		<div class="empty-state" th:if="${#lists.isEmpty(company.analyses)}">
-			<strong>No analyses yet.</strong>
-			<span>Create the first analysis to calculate a risk score for this company.</span>
-		</div>
-	</section>
-</main>
+				<article class="content-panel">
+					<p class="eyebrow">Business information</p>
+					<dl class="profile-list">
+						<div>
+							<dt>Domain</dt>
+							<dd th:text="${company.domain}">example.com</dd>
+						</div>
+						<div>
+							<dt>Email</dt>
+							<dd th:text="${company.corporateEmail}">mail@example.com</dd>
+						</div>
+						<div>
+							<dt>Sector</dt>
+							<dd th:text="${company.sector}">Sector</dd>
+						</div>
+					</dl>
+				</article>
+			</section>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Analysis history</p>
+						<h2>Stored analyses</h2>
+					</div>
+					<a class="btn btn-secondary" th:href="@{/companies/{id}/analyses/new(id=${company.idCompany})}">
+						<i class="bi bi-plus-lg"></i>
+						<span>Create analysis</span>
+					</a>
+				</div>
+
+				<div class="table-wrap" th:if="${!#lists.isEmpty(company.analyses)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Date</th>
+							<th>Score</th>
+							<th>Risk level</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="analysis : ${company.analyses}">
+							<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
+							<td><strong th:text="${analysis.riskScore}">0</strong></td>
+							<td>
+								<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+									  th:text="${analysis.riskLevel.label}">Low</span>
+							</td>
+							<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
+							<td>
+								<a class="btn btn-small btn-secondary" th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
+									<i class="bi bi-eye"></i>
+									<span>View result</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(company.analyses)}">
+					<i class="bi bi-activity"></i>
+					<strong>No analyses available</strong>
+					<span>Create the first analysis to calculate a risk score for this company.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
 </body>
 </html>
