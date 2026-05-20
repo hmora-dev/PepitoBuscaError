@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('OSINT report - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('osint')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('osint')}"></div>
+
+		<main class="page-content">
+			<nav class="breadcrumbs" aria-label="Breadcrumb">
+				<a th:href="@{/osint}">OSINT</a>
+				<span>/</span>
+				<span th:text="${scan.target.name}">Asset</span>
+			</nav>
+
+			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Completed</div>
+
+			<section class="result-hero">
+				<div>
+					<p class="eyebrow">Passive OSINT report</p>
+					<h1 th:text="${scan.target.name}">Asset</h1>
+					<p class="muted" th:text="${scan.target.url}">https://example.com</p>
+				</div>
+				<div class="score-panel" th:classappend="${scan.riskClass}">
+					<span>Exposure score</span>
+					<strong th:text="${scan.riskScore}">0</strong>
+					<small th:text="${scan.riskLabel + ' / ' + scan.status}">Low / COMPLETED</small>
+				</div>
+			</section>
+
+			<section class="stats-grid">
+				<article class="stat-card danger">
+					<span>Critical</span>
+					<strong th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).CRITICAL]}">0</strong>
+					<small>Requires immediate attention</small>
+				</article>
+				<article class="stat-card danger">
+					<span>High</span>
+					<strong th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).HIGH]}">0</strong>
+					<small>Strong remediation priority</small>
+				</article>
+				<article class="stat-card">
+					<span>Medium</span>
+					<strong th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).MEDIUM]}">0</strong>
+					<small>Track and plan fixes</small>
+				</article>
+				<article class="stat-card">
+					<span>Low / Info</span>
+					<strong th:text="${severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).LOW] + severityCounts[T(com.pepitobuscaerror.model.FindingSeverity).INFO]}">0</strong>
+					<small>Context and hardening</small>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Executive brief</p>
+							<h2>Priority signals</h2>
+						</div>
+						<span class="badge neutral" th:text="${priorityFindings.size() + ' priority'}">0 priority</span>
+					</div>
+
+					<div class="compact-list" th:if="${!#lists.isEmpty(priorityFindings)}">
+						<div class="compact-row" th:each="finding : ${priorityFindings}">
+							<span>
+								<strong th:text="${finding.title}">Finding</strong>
+								<small th:text="${finding.category.label + ' / ' + finding.severity.label}">OSINT / Low</small>
+							</span>
+							<span class="badge severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
+								  th:text="${finding.severity.label}">Low</span>
+						</div>
+					</div>
+
+					<div class="empty-state compact-empty" th:if="${#lists.isEmpty(priorityFindings)}">
+						<i class="bi bi-check2-circle"></i>
+						<strong>No elevated priority findings</strong>
+						<span>The report contains only informational OSINT context.</span>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Coverage</p>
+							<h2>Signals by area</h2>
+						</div>
+						<span class="badge neutral" th:text="${findings.size() + ' total'}">0 total</span>
+					</div>
+
+					<div class="osint-category-grid">
+						<div class="osint-category-stat">
+							<span>OSINT</span>
+							<strong th:text="${categoryCounts[T(com.pepitobuscaerror.model.FindingCategory).OSINT]}">0</strong>
+						</div>
+						<div class="osint-category-stat">
+							<span>DNS</span>
+							<strong th:text="${categoryCounts[T(com.pepitobuscaerror.model.FindingCategory).DNS]}">0</strong>
+						</div>
+						<div class="osint-category-stat">
+							<span>Mail</span>
+							<strong th:text="${categoryCounts[T(com.pepitobuscaerror.model.FindingCategory).MAIL]}">0</strong>
+						</div>
+						<div class="osint-category-stat">
+							<span>Web</span>
+							<strong th:text="${categoryCounts[T(com.pepitobuscaerror.model.FindingCategory).WEB]}">0</strong>
+						</div>
+						<div class="osint-category-stat">
+							<span>Data</span>
+							<strong th:text="${categoryCounts[T(com.pepitobuscaerror.model.FindingCategory).DATA]}">0</strong>
+						</div>
+						<div class="osint-category-stat">
+							<span>Availability</span>
+							<strong th:text="${categoryCounts[T(com.pepitobuscaerror.model.FindingCategory).AVAILABILITY]}">0</strong>
+						</div>
+					</div>
+				</article>
+			</section>
+
+			<section class="detail-grid">
+				<article class="content-panel">
+					<p class="eyebrow">Scope</p>
+					<dl class="profile-list">
+						<div>
+							<dt>Domain</dt>
+							<dd th:text="${scan.target.domain}">example.com</dd>
+						</div>
+						<div>
+							<dt>URL</dt>
+							<dd th:text="${scan.target.url}">https://example.com</dd>
+						</div>
+						<div>
+							<dt>Started</dt>
+							<dd th:text="${scan.startedAt}">Date</dd>
+						</div>
+						<div>
+							<dt>Completed</dt>
+							<dd th:text="${scan.completedAt == null ? 'Not completed' : scan.completedAt}">Date</dd>
+						</div>
+						<div>
+							<dt>Risk rating</dt>
+							<dd th:text="${scan.riskLabel + ' (' + scan.riskScore + '/100)'}">Low (0/100)</dd>
+						</div>
+					</dl>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Method</p>
+					<h2>Passive collection only</h2>
+					<p class="muted panel-copy">
+						This report uses public records, Certificate Transparency, DNS, standard web metadata, TLS details,
+						and well-known public files. It does not brute force directories, scan address ranges, exploit services,
+						or attempt authentication bypass.
+					</p>
+					<div class="info-box osint-method-box">
+						<i class="bi bi-shield-check"></i>
+						<span>Use these findings as a first public exposure baseline before manual validation and remediation planning.</span>
+					</div>
+				</article>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Findings</p>
+						<h2>Public exposure signals</h2>
+					</div>
+					<div class="action-row">
+						<a class="btn btn-primary" th:href="@{/osint(domain=${scan.target.domain},name=${scan.target.name})}">
+							<i class="bi bi-arrow-repeat"></i>
+							<span>Re-run</span>
+						</a>
+						<a class="btn btn-secondary" th:href="@{/osint}">
+							<i class="bi bi-radar"></i>
+							<span>New target</span>
+						</a>
+					</div>
+				</div>
+
+				<div class="osint-findings" th:if="${!#lists.isEmpty(findings)}">
+					<article class="osint-finding-card" th:each="finding : ${findings}">
+						<div class="finding-top">
+							<div>
+								<span class="category" th:text="${finding.category.label}">OSINT</span>
+								<h3 th:text="${finding.title}">Finding</h3>
+							</div>
+							<span class="badge severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
+								  th:text="${finding.severity.label}">Info</span>
+						</div>
+						<div class="finding-body">
+							<div>
+								<h4>Evidence</h4>
+								<p th:text="${finding.evidence}">Evidence</p>
+							</div>
+							<div>
+								<h4>Recommendation</h4>
+								<p th:text="${finding.recommendation}">Recommendation</p>
+							</div>
+						</div>
+					</article>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(findings)}">
+					<i class="bi bi-check2-circle"></i>
+					<strong>No findings were created</strong>
+					<span>The passive OSINT run did not produce reportable signals.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

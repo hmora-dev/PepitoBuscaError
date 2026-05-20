@@ -622,6 +622,11 @@ small,
 	color: var(--green);
 }
 
+.severity-badge.info {
+	background: #e0f2fe;
+	color: #0369a1;
+}
+
 .risk-badge.medium,
 .severity-badge.medium,
 .priority-badge.medium {
@@ -884,6 +889,80 @@ label span {
 	background: #f0fdf4;
 	color: var(--green);
 	font-weight: 850;
+}
+
+.authorization-row {
+	align-items: flex-start;
+	padding: 14px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: var(--surface-soft);
+}
+
+.authorization-row span {
+	line-height: 1.45;
+}
+
+.osint-method-box {
+	margin-top: 16px;
+}
+
+.osint-findings {
+	display: grid;
+	gap: 14px;
+}
+
+.osint-finding-card {
+	padding: 18px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: var(--surface-soft);
+}
+
+.finding-top,
+.finding-body {
+	display: grid;
+	gap: 14px;
+}
+
+.finding-top {
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: start;
+	margin-bottom: 14px;
+}
+
+.finding-top h3 {
+	margin: 0;
+	font-size: 18px;
+	overflow-wrap: anywhere;
+}
+
+.category {
+	display: inline-flex;
+	margin-bottom: 7px;
+	color: var(--accent);
+	font-size: 12px;
+	font-weight: 900;
+	text-transform: uppercase;
+}
+
+.finding-body {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.finding-body h4 {
+	margin: 0 0 6px;
+	color: var(--muted);
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+.finding-body p {
+	margin: 0;
+	color: #374151;
+	line-height: 1.55;
+	overflow-wrap: anywhere;
+	white-space: pre-line;
 }
 
 .breadcrumbs {
@@ -1458,7 +1537,8 @@ label span {
 
 	.hero-panel,
 	.form-grid.two,
-	.indicator-grid {
+	.indicator-grid,
+	.finding-body {
 		grid-template-columns: 1fr;
 	}
 
@@ -1534,9 +1614,14 @@ label span {
 
 	.section-title,
 	.compact-row,
+	.finding-top,
 	.app-footer {
 		align-items: stretch;
 		flex-direction: column;
+	}
+
+	.finding-top {
+		grid-template-columns: 1fr;
 	}
 
 	.table-actions,

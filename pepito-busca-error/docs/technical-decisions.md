@@ -48,6 +48,14 @@ Leaflet was added to display the live position on a real interactive map with Op
 
 This design was chosen because it works in real life without needing a native mobile application. It is also privacy-aware because the device owner must open the page and grant permission. A limitation is that browser geolocation only runs while the page is open; continuous background tracking would require a native mobile app or a more advanced PWA architecture.
 
+## OSINT Intelligence Module
+
+The OSINT module was added as a passive public-footprint feature for owned or explicitly authorized domains. It reuses the audit target, scan run, and finding model so each OSINT report is stored with a target, status, score, and ordered findings.
+
+The module collects DNS records, likely third-party providers, public verification tokens, mail security posture, web technology and CDN fingerprints, web security headers, TLS certificate metadata, robots.txt, sitemap.xml, and security.txt. These checks are intentionally passive and bounded. They do not brute force directories, scan address ranges, exploit services, or attempt login bypass.
+
+This feature improves the project because it connects cybersecurity analysis with realistic OSINT work: identifying what the organization exposes publicly, documenting provider dependencies, and producing remediation actions that a technician can explain.
+
 ## MVC Architecture
 
 MVC separates responsibilities clearly:

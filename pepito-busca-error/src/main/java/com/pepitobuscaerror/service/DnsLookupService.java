@@ -54,6 +54,6 @@ public class DnsLookupService {
 		if (trimmed.startsWith("\"") && trimmed.endsWith("\"") && trimmed.length() > 1) {
 			trimmed = trimmed.substring(1, trimmed.length() - 1);
 		}
-		return trimmed.replace("\" \"", "");
+		return trimmed.replaceAll("\"\\s+\"", "").trim();
 	}
 }

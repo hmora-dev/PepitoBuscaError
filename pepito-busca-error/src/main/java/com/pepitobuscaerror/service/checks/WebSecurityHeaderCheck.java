@@ -6,14 +6,7 @@ import com.pepitobuscaerror.model.FindingCategory;
 import com.pepitobuscaerror.model.FindingSeverity;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -22,46 +15,40 @@ import java.util.Optional;
 @Component
 public class WebSecurityHeaderCheck implements SecurityCheck {
 
-	private final HttpClient httpClient = HttpClient.newBuilder()
-			.connectTimeout(Duration.ofSeconds(6))
-			.followRedirects(HttpClient.Redirect.NORMAL)
-			.build();
+	private final HttpProbeClient httpProbeClient;
+
+	public WebSecurityHeaderCheck(HttpProbeClient httpProbeClient) {
+		this.httpProbeClient = httpProbeClient;
+	}
 
 	@Override
 	public List<Finding> analyze(AuditTarget target) {
 		List<Finding> findings = new ArrayList<>();
-		URI uri = URI.create(target.getUrl());
+		HttpProbeClient.ProbeResult response = httpProbeClient.get(target, "", 0);
 
-		if (!"https".equalsIgnoreCase(uri.getScheme())) {
-			findings.add(new Finding(
-					FindingCategory.WEB,
-					FindingSeverity.HIGH,
-					"Target URL does not use HTTPS",
-					"Configured URL: " + target.getUrl(),
-					"Serve the site over HTTPS and redirect all HTTP traffic to HTTPS."
-			));
-		}
-
-		HttpResponse<Void> response;
-		try {
-			HttpRequest request = HttpRequest.newBuilder(uri)
-					.timeout(Duration.ofSeconds(8))
-					.GET()
-					.header("User-Agent", "PepitoBuscaError/0.1 defensive-audit")
-					.build();
-			response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
-		} catch (IOException | InterruptedException | IllegalArgumentException exception) {
-			if (exception instanceof InterruptedException) {
-				Thread.currentThread().interrupt();
-			}
+		if (!response.successful()) {
 			findings.add(new Finding(
 					FindingCategory.AVAILABILITY,
 					FindingSeverity.HIGH,
 					"Web target could not be reached",
-					"Request to " + target.getUrl() + " failed: " + exception.getMessage(),
+					"Request to " + target.getUrl() + " failed: " + response.failureMessage(),
 					"Confirm DNS, firewall rules, TLS configuration, hosting availability, and that the URL is correct."
 			));
 			return findings;
+		}
+
+		if (!"https".equalsIgnoreCase(response.uri().getScheme())) {
+			String evidence = "Final URL: " + response.uri();
+			if (response.usedFallback()) {
+				evidence += "\nHTTPS attempt failed first: " + response.fallbackReason();
+			}
+			findings.add(new Finding(
+					FindingCategory.WEB,
+					FindingSeverity.HIGH,
+					"Target is reachable without confirmed HTTPS",
+					evidence,
+					"Serve the site over HTTPS, redirect all HTTP traffic to HTTPS, and keep the TLS certificate valid."
+			));
 		}
 
 		if (response.statusCode() >= 500) {
@@ -82,10 +69,12 @@ public class WebSecurityHeaderCheck implements SecurityCheck {
 			));
 		}
 
-		Map<String, List<String>> headers = lowerCaseHeaders(response.headers().map());
-		requireHeader(findings, headers, "strict-transport-security", FindingSeverity.HIGH,
-				"HTTP Strict Transport Security is missing",
-				"HSTS tells browsers to use HTTPS only for future visits.");
+		Map<String, List<String>> headers = response.headers();
+		if ("https".equalsIgnoreCase(response.uri().getScheme())) {
+			requireHeader(findings, headers, "strict-transport-security", FindingSeverity.HIGH,
+					"HTTP Strict Transport Security is missing",
+					"HSTS tells browsers to use HTTPS only for future visits.");
+		}
 		requireHeader(findings, headers, "content-security-policy", FindingSeverity.MEDIUM,
 				"Content Security Policy is missing",
 				"CSP reduces the impact of cross-site scripting and content injection flaws.");
@@ -186,11 +175,5 @@ public class WebSecurityHeaderCheck implements SecurityCheck {
 			return Optional.empty();
 		}
 		return Optional.ofNullable(values.get(0));
-	}
-
-	private Map<String, List<String>> lowerCaseHeaders(Map<String, List<String>> source) {
-		Map<String, List<String>> normalized = new HashMap<>();
-		source.forEach((name, values) -> normalized.put(name.toLowerCase(Locale.ROOT), values));
-		return normalized;
 	}
 }

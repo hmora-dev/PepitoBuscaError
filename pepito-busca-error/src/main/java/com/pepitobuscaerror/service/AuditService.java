@@ -29,7 +29,9 @@ public class AuditService {
 			List<SecurityCheck> securityChecks) {
 		this.targetRepository = targetRepository;
 		this.scanRunRepository = scanRunRepository;
-		this.securityChecks = securityChecks;
+		this.securityChecks = securityChecks.stream()
+				.sorted(Comparator.comparing(check -> check.getClass().getSimpleName()))
+				.toList();
 	}
 
 	@Transactional
@@ -45,11 +47,11 @@ public class AuditService {
 		ScanRun scanRun = new ScanRun(target);
 		try {
 			for (SecurityCheck securityCheck : securityChecks) {
-				securityCheck.analyze(target).forEach(scanRun::addFinding);
+				runCheck(securityCheck, target, scanRun);
 			}
 			if (scanRun.getFindings().isEmpty()) {
 				scanRun.addFinding(new Finding(
-						FindingCategory.WEB,
+						FindingCategory.OSINT,
 						FindingSeverity.INFO,
 						"No immediate issues detected",
 						"The first-pass checks completed without producing findings.",
@@ -65,9 +67,24 @@ public class AuditService {
 					exception.getMessage() == null ? exception.getClass().getSimpleName() : exception.getMessage(),
 					"Review the target input and application logs, then run the scan again."
 			));
-			scanRun.fail();
+			scanRun.fail(calculateRiskScore(scanRun.getFindings()));
 		}
 		return scanRunRepository.save(scanRun);
+	}
+
+	private void runCheck(SecurityCheck securityCheck, AuditTarget target, ScanRun scanRun) {
+		try {
+			securityCheck.analyze(target).forEach(scanRun::addFinding);
+		} catch (RuntimeException exception) {
+			scanRun.addFinding(new Finding(
+					FindingCategory.AVAILABILITY,
+					FindingSeverity.LOW,
+					"Passive check could not complete",
+					securityCheck.getClass().getSimpleName() + " failed for " + target.getDomain() + ": "
+							+ describe(exception),
+					"Keep the rest of the report and rerun the OSINT scan later. If this repeats, confirm DNS, outbound HTTP, and TLS connectivity from the application host."
+			));
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -94,6 +111,21 @@ public class AuditService {
 		return counts;
 	}
 
+	public Map<FindingCategory, Long> countByCategory(List<Finding> findings) {
+		Map<FindingCategory, Long> counts = new EnumMap<>(FindingCategory.class);
+		for (FindingCategory category : FindingCategory.values()) {
+			counts.put(category, findings.stream().filter(finding -> finding.getCategory() == category).count());
+		}
+		return counts;
+	}
+
+	public List<Finding> priorityFindings(List<Finding> findings) {
+		return sortFindings(findings).stream()
+				.filter(finding -> finding.getSeverity() != FindingSeverity.INFO)
+				.limit(5)
+				.toList();
+	}
+
 	public List<Finding> sortFindings(List<Finding> findings) {
 		return findings.stream()
 				.sorted(Comparator.comparing((Finding finding) -> finding.getSeverity().getScoreWeight()).reversed()
@@ -106,5 +138,12 @@ public class AuditService {
 		return findings.stream()
 				.mapToInt(finding -> finding.getSeverity().getScoreWeight())
 				.sum();
+	}
+
+	private String describe(RuntimeException exception) {
+		if (exception.getMessage() == null || exception.getMessage().isBlank()) {
+			return exception.getClass().getSimpleName();
+		}
+		return exception.getMessage();
 	}
 }

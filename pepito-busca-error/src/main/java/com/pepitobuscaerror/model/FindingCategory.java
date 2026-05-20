@@ -1,6 +1,7 @@
 package com.pepitobuscaerror.model;
 
 public enum FindingCategory {
+	OSINT("OSINT"),
 	WEB("Web"),
 	MAIL("Mail"),
 	DNS("DNS"),

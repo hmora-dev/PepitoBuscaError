@@ -47,6 +47,54 @@ Stores the recommended remediation actions generated for an analysis.
 - `description`: short recommendation.
 - `action`: practical action to perform.
 
+### tracked_devices
+
+Stores owned devices used by the geolocation module.
+
+- `id_device`: primary key.
+- `name`: device name.
+- `device_type`: phone, laptop, tablet, or other device type.
+- `owner`: owner or responsible person.
+- `latitude` and `longitude`: last browser-reported coordinates.
+- `accuracy_meters`: browser-reported GPS/network accuracy.
+- `location_label`: readable place label when available.
+- `tracking_token`: private token used by the live tracking link.
+- `active`: whether the tracking link can update the device.
+- `registered_at` and `last_seen_at`: creation and latest update dates.
+
+### audit_target
+
+Stores domains or URLs analyzed by the OSINT module.
+
+- `id`: primary key.
+- `name`: readable asset name.
+- `domain`: normalized public domain.
+- `url`: normalized HTTP or HTTPS URL.
+- `created_at`: first time the target was registered.
+
+### scan_run
+
+Stores each passive OSINT report execution.
+
+- `id`: primary key.
+- `target_id`: foreign key to `audit_target`.
+- `started_at`: start date.
+- `completed_at`: completion date.
+- `status`: `RUNNING`, `COMPLETED`, or `FAILED`.
+- `risk_score`: exposure score calculated from findings.
+
+### finding
+
+Stores OSINT and security findings generated during a scan run.
+
+- `id`: primary key.
+- `scan_run_id`: foreign key to `scan_run`.
+- `category`: `OSINT`, `WEB`, `MAIL`, `DNS`, `DATA`, or `AVAILABILITY`.
+- `severity`: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`.
+- `title`: short finding title.
+- `evidence`: observed public signal.
+- `recommendation`: suggested remediation.
+
 ## Relationships
 
 - One company can have many analyses.
@@ -55,5 +103,9 @@ Stores the recommended remediation actions generated for an analysis.
 - One indicator belongs to one analysis.
 - One analysis can have many recommendations.
 - One recommendation belongs to one analysis.
+- One audit target can have many scan runs.
+- One scan run belongs to one audit target.
+- One scan run can have many findings.
+- One finding belongs to one scan run.
 
 The foreign keys use `ON DELETE CASCADE` so deleting a company removes its analyses, indicators, and recommendations.

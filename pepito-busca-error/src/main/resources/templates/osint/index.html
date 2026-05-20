@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('OSINT Intelligence - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('osint')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('osint')}"></div>
+
+		<main class="page-content">
+			<section class="page-heading">
+				<div>
+					<p class="eyebrow">Passive intelligence</p>
+					<h1>OSINT Intelligence</h1>
+					<p class="muted">Collect public DNS, mail, TLS, web/CDN metadata, and exposure signals for owned or authorized assets.</p>
+				</div>
+				<span class="badge neutral">Passive checks only</span>
+			</section>
+
+			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Completed</div>
+
+			<section class="detail-grid">
+				<article class="dark-summary-card">
+					<div class="summary-topline">
+						<span>Authorized OSINT</span>
+						<span class="pulse-dot"></span>
+					</div>
+					<strong>8</strong>
+					<p>Build a public footprint report from safe external signals before deeper manual review.</p>
+					<div class="dark-metrics">
+						<div>
+							<span>DNS</span>
+							<strong>MX</strong>
+						</div>
+						<div>
+							<span>Web</span>
+							<strong>TLS</strong>
+						</div>
+						<div>
+							<span>Files</span>
+							<strong>TXT</strong>
+						</div>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">New report</p>
+							<h2>Analyze public footprint</h2>
+						</div>
+					</div>
+
+					<form class="entity-form" th:action="@{/osint/run}" th:object="${targetForm}" method="post">
+						<div class="global-error" th:if="${#fields.hasGlobalErrors()}">
+							<p th:each="error : ${#fields.globalErrors()}" th:text="${error}">Invalid target</p>
+						</div>
+
+						<div class="form-grid two">
+							<label>
+								<span>Asset name</span>
+								<input type="text" th:field="*{name}" placeholder="Client website">
+								<small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+							</label>
+							<label>
+								<span>Domain or URL</span>
+								<input type="text" th:field="*{domainOrUrl}" placeholder="example.com">
+								<small class="field-error" th:if="${#fields.hasErrors('domainOrUrl')}" th:errors="*{domainOrUrl}"></small>
+							</label>
+						</div>
+
+						<label class="check-row authorization-row">
+							<input type="checkbox" th:field="*{authorized}">
+							<span>I confirm that I own this asset or have explicit authorization to analyze it.</span>
+						</label>
+						<small class="field-error" th:if="${#fields.hasErrors('authorized')}" th:errors="*{authorized}"></small>
+
+						<div class="info-box">
+							<i class="bi bi-shield-lock"></i>
+							<span>This module performs passive discovery against the supplied domain: DNS records, standard web/CDN metadata, TLS certificate information, and public well-known files.</span>
+						</div>
+
+						<div class="form-actions">
+							<button class="btn btn-primary" type="submit">
+								<i class="bi bi-radar"></i>
+								<span>Run OSINT report</span>
+							</button>
+						</div>
+					</form>
+				</article>
+			</section>
+
+			<section class="section-grid three">
+				<article class="content-panel">
+					<p class="eyebrow">DNS footprint</p>
+					<h2>Infrastructure</h2>
+					<p class="muted panel-copy">A, AAAA, NS, MX, TXT, CAA, DNSSEC delegation, and provider hints.</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Web presence</p>
+					<h2>Metadata</h2>
+					<p class="muted panel-copy">HTTP response, headers, cookies, robots.txt, sitemap.xml, and security.txt.</p>
+				</article>
+				<article class="content-panel">
+					<p class="eyebrow">Certificates</p>
+					<h2>TLS posture</h2>
+					<p class="muted panel-copy">Certificate issuer, subject, expiry window, and Certificate Transparency names.</p>
+				</article>
+			</section>
+
+			<section class="section-grid two">
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">History</p>
+							<h2>Recent OSINT reports</h2>
+						</div>
+						<span class="badge neutral" th:text="${recentScans.size() + ' reports'}">0 reports</span>
+					</div>
+
+					<div class="compact-list" th:if="${!#lists.isEmpty(recentScans)}">
+						<a class="compact-row" th:each="scan : ${recentScans}" th:href="@{/osint/scans/{id}(id=${scan.id})}">
+							<span>
+								<strong th:text="${scan.target.name}">Asset</strong>
+								<small th:text="${scan.target.domain}">example.com</small>
+							</span>
+							<span class="badge severity-badge" th:classappend="${scan.riskClass}"
+								  th:text="${scan.riskScore + ' pts'}">0 pts</span>
+						</a>
+					</div>
+
+					<div class="empty-state" th:if="${#lists.isEmpty(recentScans)}">
+						<i class="bi bi-radar"></i>
+						<strong>No OSINT reports yet</strong>
+						<span>Run the first authorized report to build a public exposure history.</span>
+					</div>
+				</article>
+
+				<article class="content-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Targets</p>
+							<h2>Known assets</h2>
+						</div>
+						<span class="badge neutral" th:text="${recentTargets.size() + ' assets'}">0 assets</span>
+					</div>
+
+					<div class="compact-list" th:if="${!#lists.isEmpty(recentTargets)}">
+						<a class="compact-row" th:each="target : ${recentTargets}"
+						   th:href="@{/osint(domain=${target.domain},name=${target.name})}">
+							<span>
+								<strong th:text="${target.name}">Asset</strong>
+								<small th:text="${target.domain}">example.com</small>
+							</span>
+							<i class="bi bi-arrow-repeat"></i>
+						</a>
+					</div>
+
+					<div class="empty-state" th:if="${#lists.isEmpty(recentTargets)}">
+						<i class="bi bi-diagram-3"></i>
+						<strong>No saved assets yet</strong>
+						<span>Saved OSINT targets will appear here for fast retesting.</span>
+					</div>
+				</article>
+			</section>
+
+			<section class="content-panel">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Report archive</p>
+						<h2>Full OSINT history</h2>
+					</div>
+					<span class="badge neutral" th:text="${recentScans.size() + ' reports'}">0 reports</span>
+				</div>
+
+				<div class="table-wrap" th:if="${!#lists.isEmpty(recentScans)}">
+					<table class="data-table">
+						<thead>
+						<tr>
+							<th>Asset</th>
+							<th>Domain</th>
+							<th>Started</th>
+							<th>Status</th>
+							<th>Score</th>
+							<th>Action</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="scan : ${recentScans}">
+							<td>
+								<a class="table-title" th:href="@{/osint/scans/{id}(id=${scan.id})}"
+								   th:text="${scan.target.name}">Asset</a>
+								<small th:text="${scan.target.url}">https://example.com</small>
+							</td>
+							<td th:text="${scan.target.domain}">example.com</td>
+							<td th:text="${scan.startedAt}">Date</td>
+							<td>
+								<span class="badge" th:classappend="${scan.status.name() == 'COMPLETED' ? ' success' : ' neutral'}"
+									  th:text="${scan.status}">COMPLETED</span>
+							</td>
+							<td>
+								<strong th:text="${scan.riskScore}">0</strong>
+								<small th:text="${scan.riskLabel}">Low</small>
+							</td>
+							<td>
+								<a class="btn btn-small btn-secondary" th:href="@{/osint/scans/{id}(id=${scan.id})}">
+									<i class="bi bi-eye"></i>
+									<span>Open report</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(recentScans)}">
+					<i class="bi bi-archive"></i>
+					<strong>No archived reports</strong>
+					<span>The archive will populate after the first completed OSINT run.</span>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

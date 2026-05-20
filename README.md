@@ -31,7 +31,7 @@ The main user is a technical consultant, IT student, or small-business support t
 - Professional responsive home page and dashboard.
 - Left sidebar navigation on desktop and a compact top navigation on mobile.
 - Dashboard with total companies, total analyses, average risk, critical analyses, critical indicators, recent companies, recent analyses, and risk distribution.
-- Separate pages for dashboard, companies, analyses, indicators, recommendations, documentation, and geolocation.
+- Separate pages for dashboard, companies, analyses, indicators, recommendations, OSINT, documentation, and geolocation.
 - Full company CRUD.
 - Company search by name, domain, or sector.
 - Company detail page with profile data, latest risk summary, and analysis history.
@@ -42,8 +42,10 @@ The main user is a technical consultant, IT student, or small-business support t
 - Indicators grouped by severity with clear risk badges.
 - Recommendations grouped by priority with clear priority badges.
 - Real geolocation module for owned devices using the browser Geolocation API.
-- Private tracking links that send live device coordinates to Spring Boot while the page is open and permission is granted.
+- Private tracking links that automatically send live browser-reported location to Spring Boot while the page is open and permission is granted.
 - Professional live map view using Leaflet and OpenStreetMap tiles.
+- OSINT Intelligence area for authorized passive public-footprint reports.
+- Passive OSINT checks for DNS, mail, web/CDN metadata, TLS certificates, robots.txt, sitemap.xml, and security.txt.
 - User-friendly error page.
 - Responsive SaaS-style interface with cards, tables, dark metric panels, thin borders, and soft shadows.
 
@@ -54,15 +56,32 @@ The geolocation module works with real browser location permission:
 1. Register a device from `Geolocation > New device`.
 2. Open the device detail page.
 3. Open the private live tracking link on that same device.
-4. Press `Start live tracking`.
-5. Accept the browser location permission.
-6. The browser sends latitude, longitude, and accuracy to Spring Boot.
-7. Spring Boot saves the last known position in MySQL.
-8. The live tracker moves the marker on the map, and the device detail page refreshes the saved position automatically.
+4. Accept the browser location permission.
+5. The browser sends latitude, longitude, accuracy, and a readable location label when available.
+6. Spring Boot saves the last known position in MySQL.
+7. The live tracker moves the marker on the map, and the device detail page refreshes the saved position automatically.
 
 This is real geolocation, but it is still a web application. Tracking only works while the tracking page is open and the browser grants permission. Background tracking when the browser is closed would require a native mobile app or a more advanced PWA approach.
 
 The map is rendered with Leaflet and OpenStreetMap tiles, so the map view needs internet access to load tile images.
+
+## OSINT Intelligence
+
+The OSINT module is designed for domains the user owns or is authorized to review. It creates a passive public-footprint report without brute forcing paths, scanning address ranges, exploiting services, or bypassing authentication.
+
+The report collects:
+
+- DNS records and likely external providers.
+- Mail posture such as MX, SPF, DMARC, MTA-STS, and TLS-RPT.
+- Web response metadata, security headers, and likely CDN/hosting fingerprints.
+- TLS certificate subject, issuer, and expiry window.
+- Public well-known files such as `security.txt`, `robots.txt`, and `sitemap.xml`.
+
+Open it from:
+
+```text
+OSINT > Run OSINT report
+```
 
 ## Visual Design
 
@@ -95,7 +114,7 @@ Relationships:
 - One analysis belongs to one company.
 - One analysis has many indicators.
 - One analysis has many recommendations.
-- One tracked device stores owner, status, private tracking token, last known latitude, longitude, accuracy, and update date.
+- One tracked device stores owner, status, private tracking token, last known latitude, longitude, accuracy, location label, and update date.
 
 More details are available in `pepito-busca-error/docs/database-model.md`.
 
@@ -166,7 +185,7 @@ http://localhost:8080
 6. Submit the form to calculate risk.
 7. Review the result page with indicators and recommendations.
 8. Use the separate analyses, indicators, and recommendations pages for detailed review.
-9. Use the geolocation page to register your own devices and store their last known coordinates.
+9. Use the geolocation page to register your own devices and store their last browser-reported location.
 
 ## AI Usage Statement
 

@@ -57,8 +57,13 @@ public class ScanRun {
 	}
 
 	public void fail() {
+		fail(riskScore);
+	}
+
+	public void fail(int riskScore) {
 		this.status = ScanStatus.FAILED;
 		this.completedAt = Instant.now();
+		this.riskScore = Math.min(100, Math.max(0, riskScore));
 	}
 
 	public void addFinding(Finding finding) {
@@ -88,6 +93,23 @@ public class ScanRun {
 
 	public int getRiskScore() {
 		return riskScore;
+	}
+
+	public String getRiskLabel() {
+		if (riskScore >= 60) {
+			return "Critical";
+		}
+		if (riskScore >= 25) {
+			return "High";
+		}
+		if (riskScore >= 10) {
+			return "Medium";
+		}
+		return "Low";
+	}
+
+	public String getRiskClass() {
+		return getRiskLabel().toLowerCase();
 	}
 
 	public List<Finding> getFindings() {

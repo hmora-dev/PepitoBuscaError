@@ -31,6 +31,10 @@
 						<i class="bi bi-plus-lg"></i>
 						<span>New analysis</span>
 					</a>
+					<a class="btn btn-secondary" th:href="@{/osint(domain=${company.domain},name=${company.name})}">
+						<i class="bi bi-radar"></i>
+						<span>OSINT</span>
+					</a>
 					<a class="btn btn-secondary" th:href="@{/companies/edit/{id}(id=${company.idCompany})}">
 						<i class="bi bi-pencil"></i>
 						<span>Edit</span>
