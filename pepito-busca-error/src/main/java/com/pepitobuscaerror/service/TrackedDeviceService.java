@@ -80,7 +80,7 @@ public class TrackedDeviceService {
 		if (!device.isActive()) {
 			throw new IllegalArgumentException("This device is inactive.");
 		}
-		device.updatePosition(latitude, longitude, accuracyMeters);
+		device.updatePosition(latitude, longitude, cleanAccuracy(accuracyMeters));
 		String cleanLocationLabel = cleanLocationLabel(locationLabel);
 		if (cleanLocationLabel != null) {
 			device.setLocationLabel(cleanLocationLabel);
@@ -115,12 +115,28 @@ public class TrackedDeviceService {
 		if (latitude == null || longitude == null) {
 			throw new IllegalArgumentException("Latitude and longitude are required.");
 		}
+		if (!Double.isFinite(latitude)) {
+			throw new IllegalArgumentException("Latitude must be a finite number.");
+		}
+		if (!Double.isFinite(longitude)) {
+			throw new IllegalArgumentException("Longitude must be a finite number.");
+		}
 		if (latitude < -90 || latitude > 90) {
 			throw new IllegalArgumentException("Latitude must be between -90 and 90.");
 		}
 		if (longitude < -180 || longitude > 180) {
 			throw new IllegalArgumentException("Longitude must be between -180 and 180.");
 		}
+	}
+
+	private Double cleanAccuracy(Double accuracyMeters) {
+		if (accuracyMeters == null) {
+			return null;
+		}
+		if (!Double.isFinite(accuracyMeters) || accuracyMeters < 0) {
+			throw new IllegalArgumentException("Accuracy must be a non-negative finite number.");
+		}
+		return accuracyMeters;
 	}
 
 	private String clean(String value) {

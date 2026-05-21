@@ -47,10 +47,10 @@
 							<th>Company</th>
 							<th>Domain</th>
 							<th>Sector</th>
-							<th>Corporate email</th>
-							<th>Registered</th>
+							<th>Latest scan score</th>
+							<th>Findings</th>
 							<th>Analyses</th>
-							<th>Latest risk</th>
+							<th>Risk health</th>
 							<th>Actions</th>
 						</tr>
 						</thead>
@@ -62,8 +62,11 @@
 							</td>
 							<td th:text="${company.domain}">example.com</td>
 							<td th:text="${company.sector}">Sector</td>
-							<td th:text="${company.corporateEmail}">mail@example.com</td>
-							<td th:text="${#temporals.format(company.registrationDate, 'dd MMM yyyy')}">Date</td>
+							<td>
+								<strong th:text="${company.latestRiskScore == null ? 'No scan' : company.latestRiskScore + ' pts'}">0 pts</strong>
+								<small th:text="${#temporals.format(company.registrationDate, 'dd MMM yyyy')}">Date</small>
+							</td>
+							<td><span class="badge neutral" th:text="${company.latestFindingCount}">0</span></td>
 							<td><span class="badge neutral" th:text="${company.analysisCount}">0</span></td>
 							<td>
 								<span class="badge neutral" th:if="${company.latestRiskLevel == null}">Not analyzed</span>

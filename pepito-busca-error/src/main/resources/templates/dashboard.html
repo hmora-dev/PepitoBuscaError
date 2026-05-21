@@ -8,127 +8,349 @@
 	<div class="app-main">
 		<div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
 
-		<main class="page-content">
-			<section class="page-heading">
-				<div>
-					<p class="eyebrow">Business overview</p>
-					<h1>Security dashboard</h1>
-					<p class="muted">A clear operational view of companies, analyses, and current risk exposure.</p>
+		<main class="page-content dashboard-page">
+			<section class="hero-dashboard">
+				<div class="hero-dashboard-copy">
+					<p class="eyebrow">Cyber Risk Intelligence</p>
+					<h1>Security Overview</h1>
+					<p class="hero-text">Digital risk intelligence for small and medium businesses.</p>
+
+					<form class="search-pill" th:action="@{/companies}" method="get">
+						<i class="bi bi-search"></i>
+						<label class="sr-only" for="dashboard-search">Search companies</label>
+						<input id="dashboard-search" name="q" type="search" placeholder="Search company, domain, or sector">
+						<button class="btn btn-primary btn-small" type="submit">Search</button>
+					</form>
+
+					<div class="action-row">
+						<a class="btn btn-primary action-button" th:href="@{/companies}">
+							<i class="bi bi-activity"></i>
+							<span>New Analysis</span>
+						</a>
+						<a class="btn btn-secondary action-button" th:href="@{/companies}">
+							<i class="bi bi-buildings"></i>
+							<span>View Companies</span>
+						</a>
+					</div>
 				</div>
-				<div class="action-row">
-					<a class="btn btn-secondary" th:href="@{/companies}">
-						<i class="bi bi-buildings"></i>
-						<span>View companies</span>
-					</a>
-					<a class="btn btn-primary" th:href="@{/companies/new}">
-						<i class="bi bi-plus-lg"></i>
-						<span>Register company</span>
-					</a>
+
+				<div class="cyber-visual glass-card" aria-hidden="true">
+					<div class="security-grid"></div>
+					<div class="risk-orb">
+						<i class="bi bi-shield-lock"></i>
+						<span>PB</span>
+					</div>
+					<span class="network-node node-a"></span>
+					<span class="network-node node-b"></span>
+					<span class="network-node node-c"></span>
+					<span class="network-node node-d"></span>
+					<span class="network-line line-a"></span>
+					<span class="network-line line-b"></span>
+					<span class="network-line line-c"></span>
+					<div class="visual-chip chip-a">DNS</div>
+					<div class="visual-chip chip-b">OSINT</div>
+					<div class="visual-chip chip-c">TLS</div>
 				</div>
 			</section>
 
-			<section class="stats-grid">
-				<article class="stat-card">
+			<section class="metrics-grid">
+				<article class="metric-card">
+					<div class="metric-icon"><i class="bi bi-buildings"></i></div>
 					<span>Total companies</span>
 					<strong th:text="${stats.totalCompanies}">0</strong>
-					<small>Registered company profiles</small>
+					<small>Registered business profiles</small>
 				</article>
-				<article class="stat-card">
-					<span>Total analyses</span>
+				<article class="metric-card">
+					<div class="metric-icon"><i class="bi bi-activity"></i></div>
+					<span>Company analyses</span>
 					<strong th:text="${stats.totalAnalyses}">0</strong>
-					<small>Completed risk evaluations</small>
+					<small>Completed company analyses</small>
 				</article>
-				<article class="stat-card">
+				<article class="metric-card">
+					<div class="metric-icon"><i class="bi bi-radar"></i></div>
+					<span>OSINT reports</span>
+					<strong th:text="${stats.totalOsintChecks}">0</strong>
+					<small>Passive public exposure reports</small>
+				</article>
+				<article class="metric-card">
+					<div class="metric-icon"><i class="bi bi-speedometer2"></i></div>
 					<span>Average risk score</span>
 					<strong th:text="${stats.averageRiskScore}">0</strong>
-					<small>Current portfolio average</small>
+					<small>Portfolio score from 0 to 100</small>
 				</article>
-				<article class="stat-card danger">
-					<span>Critical risks</span>
-					<strong th:text="${stats.criticalAnalyses}">0</strong>
-					<small>Analyses requiring attention</small>
+				<article class="metric-card danger">
+					<div class="metric-icon"><i class="bi bi-exclamation-octagon"></i></div>
+					<span>Critical findings</span>
+					<strong th:text="${stats.criticalFindings}">0</strong>
+					<small>Critical indicators and OSINT findings</small>
+				</article>
+				<article class="metric-card danger">
+					<div class="metric-icon"><i class="bi bi-exclamation-triangle"></i></div>
+					<span>High findings</span>
+					<strong th:text="${stats.highFindings}">0</strong>
+					<small>High-priority indicators and findings</small>
+				</article>
+				<article class="metric-card">
+					<div class="metric-icon"><i class="bi bi-lightning-charge"></i></div>
+					<span>Open recommendations</span>
+					<strong th:text="${stats.openRecommendations}">0</strong>
+					<small>Remediation actions generated</small>
 				</article>
 			</section>
 
-			<section class="dark-panel-grid">
-				<article class="dark-metric-panel">
-					<span>Current average risk</span>
-					<strong th:text="${stats.averageRiskScore}">0</strong>
-					<div class="risk-bar">
-						<span th:style="'width:' + ${stats.averageRiskScore} + '%'"></span>
+			<section class="dashboard-grid dashboard-grid-featured">
+				<article class="metric-card-dark">
+					<div class="summary-topline">
+						<span>Company Security Overview</span>
+						<span class="badge neutral">Live data</span>
+					</div>
+					<div class="risk-ring"
+						 th:style="'background: conic-gradient(#60a5fa 0 ' + ${stats.averageRiskScore} + '%, rgba(255, 255, 255, 0.14) ' + ${stats.averageRiskScore} + '% 100%)'">
+						<div>
+							<strong th:text="${stats.averageRiskScore}">0</strong>
+							<span>avg risk</span>
+						</div>
+					</div>
+					<p th:if="${stats.totalAnalyses > 0}">Portfolio risk is calculated from the analyses stored in MySQL.</p>
+					<p th:if="${stats.totalAnalyses == 0}">Run the first company analysis to activate risk scoring.</p>
+					<div class="dark-metrics">
+						<div>
+							<span>Companies</span>
+							<strong th:text="${stats.totalCompanies}">0</strong>
+						</div>
+						<div>
+							<span>Analyses</span>
+							<strong th:text="${stats.totalAnalyses}">0</strong>
+						</div>
+						<div>
+							<span>OSINT</span>
+							<strong th:text="${stats.totalOsintChecks}">0</strong>
+						</div>
 					</div>
 				</article>
-				<article class="dark-metric-panel">
-					<span>Latest high-risk company</span>
-					<strong th:if="${stats.latestHighRiskAnalysis != null}"
-							th:text="${stats.latestHighRiskAnalysis.company.name}">Company</strong>
-					<strong th:if="${stats.latestHighRiskAnalysis == null}">None</strong>
-					<small th:if="${stats.latestHighRiskAnalysis != null}"
-						   th:text="${stats.latestHighRiskAnalysis.riskLevel.label + ' risk'}">High risk</small>
-					<small th:if="${stats.latestHighRiskAnalysis == null}">No high-risk analyses yet</small>
-				</article>
-				<article class="dark-metric-panel">
-					<span>Critical findings</span>
-					<strong th:text="${stats.criticalIndicators}">0</strong>
-					<small>Critical indicators detected</small>
+
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Risk distribution</p>
+							<h2>Analyses by risk level</h2>
+						</div>
+						<span class="badge neutral" th:text="${stats.totalAnalyses + ' analyses'}">0 analyses</span>
+					</div>
+					<div class="chart-shell" th:if="${stats.hasRiskDistributionData()}">
+						<canvas id="riskDistributionChart" aria-label="Analyses by risk level chart"></canvas>
+					</div>
+					<div class="mini-chart" th:if="${stats.hasRiskDistributionData()}">
+						<div class="mini-chart-row" th:each="level : ${T(com.pepitobuscaerror.model.RiskLevel).values()}">
+							<span class="badge risk-badge" th:classappend="${level.cssClass}" th:text="${level.label}">Low</span>
+							<div class="mini-bar">
+								<span th:classappend="${level.cssClass}"
+									  th:style="'width:' + ${stats.riskDistributionPercentage(level)} + '%'"></span>
+							</div>
+							<strong th:text="${stats.riskDistribution.get(level)}">0</strong>
+						</div>
+					</div>
+					<div class="empty-state compact-empty" th:if="${!stats.hasRiskDistributionData()}">
+						<i class="bi bi-pie-chart"></i>
+						<strong>No risk distribution yet</strong>
+						<span>Create company analyses to render the risk chart.</span>
+					</div>
 				</article>
 			</section>
 
 			<section class="dashboard-grid">
-				<div class="content-panel" id="risk-distribution">
+				<article class="chart-card">
 					<div class="section-title">
 						<div>
-							<p class="eyebrow">Risk summary</p>
-							<h2>Risk distribution</h2>
+							<p class="eyebrow">Findings visualization</p>
+							<h2>Indicators by severity</h2>
 						</div>
-						<span class="badge neutral" th:text="${stats.totalAnalyses + ' analyses'}">0 analyses</span>
+						<span class="badge neutral" th:text="${stats.totalIndicators + ' indicators'}">0 indicators</span>
 					</div>
-
-					<div class="distribution-list">
-						<div class="distribution-row" th:each="level : ${T(com.pepitobuscaerror.model.RiskLevel).values()}">
+					<div class="chart-shell" th:if="${stats.hasIndicatorSeverityData()}">
+						<canvas id="indicatorSeverityChart" aria-label="Indicators by severity chart"></canvas>
+					</div>
+					<div class="severity-bars" th:if="${stats.hasIndicatorSeverityData()}">
+						<div class="severity-bar-card" th:each="severity : ${T(com.pepitobuscaerror.model.Severity).values()}">
 							<div>
-								<span class="badge risk-badge" th:classappend="${level.cssClass}" th:text="${level.label}">Low</span>
-								<strong th:text="${stats.riskDistribution.get(level)}">0</strong>
+								<span class="badge severity-badge" th:classappend="${severity.cssClass}" th:text="${severity.label}">Low</span>
+								<strong th:text="${stats.indicatorSeverityDistribution.get(severity)}">0</strong>
 							</div>
-							<div class="progress-track">
-								<span th:style="'width:' + ${stats.totalAnalyses == 0 ? 0 : (stats.riskDistribution.get(level) * 100 / stats.totalAnalyses)} + '%'"></span>
+							<div class="vertical-meter">
+								<span th:classappend="${severity.cssClass}"
+									  th:style="'height:' + ${stats.indicatorSeverityPercentage(severity)} + '%'"></span>
 							</div>
 						</div>
 					</div>
-				</div>
+					<div class="empty-state compact-empty" th:if="${!stats.hasIndicatorSeverityData()}">
+						<i class="bi bi-bar-chart"></i>
+						<strong>No indicators yet</strong>
+						<span>Analysis indicators will appear here after the first company assessment.</span>
+					</div>
+				</article>
 
-				<div class="content-panel">
+				<article class="timeline-card">
 					<div class="section-title">
 						<div>
-							<p class="eyebrow">Registry</p>
+							<p class="eyebrow">Recent activity</p>
+							<h2>Latest analyses timeline</h2>
+						</div>
+						<a class="text-link" th:href="@{/analyses}">Open analyses</a>
+					</div>
+					<div class="timeline-list" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
+						<a class="timeline-item" th:each="analysis : ${stats.latestAnalyses}"
+						   th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
+							<span class="timeline-dot" th:classappend="${analysis.riskLevel.cssClass}"></span>
+							<span>
+								<strong th:text="${analysis.company.name}">Company</strong>
+								<small th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</small>
+							</span>
+							<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+								  th:text="${analysis.riskScore + ' pts'}">0 pts</span>
+						</a>
+					</div>
+					<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
+						<i class="bi bi-activity"></i>
+						<strong>No analyses available</strong>
+						<span>Create a company and run the first analysis to populate this timeline.</span>
+					</div>
+				</article>
+			</section>
+
+			<section class="dashboard-grid">
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Finding categories</p>
+							<h2>OSINT findings by area</h2>
+						</div>
+						<span class="badge neutral" th:text="${stats.totalOsintFindings + ' findings'}">0 findings</span>
+					</div>
+					<div class="chart-shell" th:if="${stats.hasFindingCategoryData()}">
+						<canvas id="findingCategoryChart" aria-label="OSINT findings by category chart"></canvas>
+					</div>
+					<div class="mini-chart" th:if="${stats.hasFindingCategoryData()}">
+						<div class="mini-chart-row category-row"
+							 th:each="category : ${T(com.pepitobuscaerror.model.FindingCategory).values()}">
+							<span class="badge neutral" th:text="${category.label}">DNS</span>
+							<div class="mini-bar">
+								<span th:style="'width:' + ${stats.findingCategoryPercentage(category)} + '%'"></span>
+							</div>
+							<strong th:text="${stats.findingCategoryDistribution.get(category)}">0</strong>
+						</div>
+					</div>
+					<div class="empty-state compact-empty" th:if="${!stats.hasFindingCategoryData()}">
+						<i class="bi bi-diagram-3"></i>
+						<strong>No OSINT findings yet</strong>
+						<span>Run a passive OSINT report to populate category metrics.</span>
+					</div>
+				</article>
+
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Risk trend</p>
+							<h2>Recent analysis scores</h2>
+						</div>
+						<span class="badge neutral" th:text="${stats.latestAnalyses.size() + ' recent'}">0 recent</span>
+					</div>
+					<div class="chart-shell trend-chart" th:if="${stats.hasRecentRiskTrendData()}">
+						<canvas id="riskTrendChart" aria-label="Recent risk trend chart"></canvas>
+					</div>
+					<div class="empty-state" th:if="${!stats.hasRecentRiskTrendData()}">
+						<i class="bi bi-graph-up"></i>
+						<strong>Risk trend needs more history</strong>
+						<span>At least two company analyses are needed to draw a recent score trend.</span>
+					</div>
+				</article>
+			</section>
+
+			<section class="section-grid three">
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Company health</p>
 							<h2>Latest companies</h2>
 						</div>
-						<a class="text-link" th:href="@{/companies}">Open companies</a>
+						<a class="text-link" th:href="@{/companies}">View all</a>
 					</div>
-
 					<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestCompanies)}">
-						<a class="compact-row" th:each="company : ${stats.latestCompanies}"
+						<a class="compact-row health-row" th:each="company : ${stats.latestCompanies}"
 						   th:href="@{/companies/{id}(id=${company.idCompany})}">
 							<span>
 								<strong th:text="${company.name}">Company</strong>
 								<small th:text="${company.domain}">example.com</small>
 							</span>
-							<span class="badge neutral" th:text="${company.analysisCount + ' analyses'}">0 analyses</span>
+							<span class="badge neutral" th:if="${company.latestRiskLevel == null}">Not analyzed</span>
+							<span class="badge risk-badge" th:if="${company.latestRiskLevel != null}"
+								  th:classappend="${company.latestRiskLevel.cssClass}"
+								  th:text="${company.latestRiskScore + ' pts'}">0 pts</span>
 						</a>
 					</div>
-
 					<div class="empty-state" th:if="${#lists.isEmpty(stats.latestCompanies)}">
 						<i class="bi bi-buildings"></i>
 						<strong>No companies registered yet</strong>
-						<span>Add the first company to start building the risk overview.</span>
+						<span>Add the first company to start building the overview.</span>
 					</div>
-				</div>
+				</article>
+
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">OSINT Intelligence</p>
+							<h2>Recent exposure scans</h2>
+						</div>
+						<a class="text-link" th:href="@{/osint}">Open OSINT</a>
+					</div>
+					<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestOsintScans)}">
+						<a class="compact-row" th:each="scan : ${stats.latestOsintScans}"
+						   th:href="@{/osint/scans/{id}(id=${scan.id})}">
+							<span>
+								<strong th:text="${scan.target.name}">Asset</strong>
+								<small th:text="${scan.target.domain}">example.com</small>
+							</span>
+							<span class="badge severity-badge" th:classappend="${scan.riskClass}"
+								  th:text="${scan.riskScore + ' pts'}">0 pts</span>
+						</a>
+					</div>
+					<div class="empty-state" th:if="${#lists.isEmpty(stats.latestOsintScans)}">
+						<i class="bi bi-radar"></i>
+						<strong>No OSINT reports yet</strong>
+						<span>Run a passive report from the OSINT console.</span>
+					</div>
+				</article>
+
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Action plan</p>
+							<h2>Top recommendations</h2>
+						</div>
+						<a class="text-link" th:href="@{/recommendations}">Open actions</a>
+					</div>
+					<div class="compact-list" th:if="${!#lists.isEmpty(stats.topRecommendations)}">
+						<a class="compact-row" th:each="recommendation : ${stats.topRecommendations}"
+						   th:href="@{/analyses/{id}(id=${recommendation.analysis.idAnalysis})}">
+							<span>
+								<strong th:text="${recommendation.description}">Recommendation</strong>
+								<small th:text="${recommendation.analysis.company.name}">Company</small>
+							</span>
+							<span class="badge priority-badge" th:classappend="${recommendation.priority.cssClass}"
+								  th:text="${recommendation.priority.label}">High</span>
+						</a>
+					</div>
+					<div class="empty-state" th:if="${#lists.isEmpty(stats.topRecommendations)}">
+						<i class="bi bi-lightning-charge"></i>
+						<strong>No recommendations yet</strong>
+						<span>Recommendations appear after analyses detect risk indicators.</span>
+					</div>
+				</article>
 			</section>
 
 			<section class="content-panel" id="risk-notifications">
 				<div class="section-title">
 					<div>
-						<p class="eyebrow">Risk notifications</p>
+						<p class="eyebrow">Risk monitor</p>
 						<h2>Critical and high-risk analyses</h2>
 					</div>
 					<span class="badge neutral" th:text="${stats.latestHighRiskAnalyses.size() + ' open signals'}">0 open signals</span>
@@ -149,102 +371,200 @@
 				<div class="empty-state" th:if="${#lists.isEmpty(stats.latestHighRiskAnalyses)}">
 					<i class="bi bi-check2-circle"></i>
 					<strong>No critical or high-risk analyses</strong>
-					<span>This is an internal risk-notification view, not an email alerting system.</span>
+					<span>This internal risk monitor will highlight new priority analyses.</span>
 				</div>
-			</section>
-
-			<section class="content-panel" id="latest-analyses">
-				<div class="section-title">
-					<div>
-						<p class="eyebrow">Analysis history</p>
-						<h2>Latest analyses</h2>
-					</div>
-					<a class="text-link" th:href="@{/analyses}">Open analyses</a>
-				</div>
-
-				<div class="table-wrap" th:if="${!#lists.isEmpty(stats.latestAnalyses)}">
-					<table class="data-table">
-						<thead>
-						<tr>
-							<th>Company</th>
-							<th>Date</th>
-							<th>Score</th>
-							<th>Risk</th>
-							<th>Status</th>
-							<th>Action</th>
-						</tr>
-						</thead>
-						<tbody>
-						<tr th:each="analysis : ${stats.latestAnalyses}">
-							<td>
-								<a class="table-title" th:href="@{/companies/{id}(id=${analysis.company.idCompany})}"
-								   th:text="${analysis.company.name}">Company</a>
-								<small th:text="${analysis.company.domain}">example.com</small>
-							</td>
-							<td th:text="${#temporals.format(analysis.analysisDate, 'dd MMM yyyy HH:mm')}">Date</td>
-							<td><strong th:text="${analysis.riskScore}">0</strong></td>
-							<td>
-								<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
-									  th:text="${analysis.riskLevel.label}">Low</span>
-							</td>
-							<td><span class="badge success" th:text="${analysis.status}">COMPLETED</span></td>
-							<td>
-								<a class="btn btn-small btn-secondary" th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
-									<i class="bi bi-eye"></i>
-									<span>View</span>
-								</a>
-							</td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
-
-				<div class="empty-state" th:if="${#lists.isEmpty(stats.latestAnalyses)}">
-					<i class="bi bi-activity"></i>
-					<strong>No analyses available</strong>
-					<span>Create a company and run the first analysis to populate this dashboard.</span>
-				</div>
-			</section>
-
-			<section class="section-grid three">
-				<article class="content-panel">
-					<p class="eyebrow">OSINT intelligence</p>
-					<h2>Public footprint review</h2>
-					<p class="muted panel-copy">
-						Collect passive DNS, mail, web, TLS, and metadata signals for authorized domains.
-					</p>
-					<a class="btn btn-secondary panel-action" th:href="@{/osint}">
-						<i class="bi bi-radar"></i>
-						<span>Open OSINT</span>
-					</a>
-				</article>
-				<article class="content-panel">
-					<p class="eyebrow">Recommendations</p>
-					<h2>Prioritized remediation</h2>
-					<p class="muted panel-copy">
-						Open the dedicated recommendations window to review remediation actions without crowding the dashboard.
-					</p>
-					<a class="btn btn-secondary panel-action" th:href="@{/recommendations}">
-						<i class="bi bi-lightning-charge"></i>
-						<span>Open recommendations</span>
-					</a>
-				</article>
-				<article class="content-panel">
-					<p class="eyebrow">Geolocation</p>
-					<h2>Owned device tracking</h2>
-					<p class="muted panel-copy">
-						Register your own devices and store their last browser-reported location in a separate project area.
-					</p>
-					<a class="btn btn-secondary panel-action" th:href="@{/geolocation}">
-						<i class="bi bi-geo-alt"></i>
-						<span>Open geolocation</span>
-					</a>
-				</article>
 			</section>
 		</main>
 
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+	const chartTextColor = "#64748b";
+	const chartGridColor = "rgba(226, 232, 240, 0.9)";
+	const riskDistributionLabels = /*[[${stats.riskDistributionLabels}]]*/ [];
+	const riskDistributionData = /*[[${stats.riskDistributionData}]]*/ [];
+	const riskDistributionColors = /*[[${stats.riskDistributionColors}]]*/ [];
+	const indicatorSeverityLabels = /*[[${stats.indicatorSeverityLabels}]]*/ [];
+	const indicatorSeverityData = /*[[${stats.indicatorSeverityData}]]*/ [];
+	const indicatorSeverityColors = /*[[${stats.indicatorSeverityColors}]]*/ [];
+	const findingCategoryLabels = /*[[${stats.findingCategoryLabels}]]*/ [];
+	const findingCategoryData = /*[[${stats.findingCategoryData}]]*/ [];
+	const findingCategoryColors = /*[[${stats.findingCategoryColors}]]*/ [];
+	const recentRiskTrendLabels = /*[[${stats.recentRiskTrendLabels}]]*/ [];
+	const recentRiskTrendData = /*[[${stats.recentRiskTrendData}]]*/ [];
+
+	function valuesHaveData(values) {
+		return Array.isArray(values) && values.some(function (value) {
+			return Number(value) > 0;
+		});
+	}
+
+	function createChart(canvasId, config) {
+		const canvas = document.getElementById(canvasId);
+		if (!canvas || !window.Chart) {
+			return;
+		}
+		new Chart(canvas, config);
+	}
+
+	const sharedScaleOptions = {
+		ticks: {
+			color: chartTextColor,
+			font: {
+				weight: 700
+			}
+		},
+		grid: {
+			color: chartGridColor,
+			drawBorder: false
+		}
+	};
+
+	if (valuesHaveData(riskDistributionData)) {
+		createChart("riskDistributionChart", {
+			type: "doughnut",
+			data: {
+				labels: riskDistributionLabels,
+				datasets: [{
+					data: riskDistributionData,
+					backgroundColor: riskDistributionColors,
+					borderColor: "#ffffff",
+					borderWidth: 4,
+					hoverOffset: 4
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				cutout: "68%",
+				plugins: {
+					legend: {
+						position: "bottom",
+						labels: {
+							color: chartTextColor,
+							boxWidth: 10,
+							font: {
+								weight: 800
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	if (valuesHaveData(indicatorSeverityData)) {
+		createChart("indicatorSeverityChart", {
+			type: "bar",
+			data: {
+				labels: indicatorSeverityLabels,
+				datasets: [{
+					label: "Indicators",
+					data: indicatorSeverityData,
+					backgroundColor: indicatorSeverityColors,
+					borderRadius: 8,
+					maxBarThickness: 46
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false
+					}
+				},
+				scales: {
+					x: sharedScaleOptions,
+					y: {
+						...sharedScaleOptions,
+						beginAtZero: true,
+						ticks: {
+							...sharedScaleOptions.ticks,
+							precision: 0
+						}
+					}
+				}
+			}
+		});
+	}
+
+	if (valuesHaveData(findingCategoryData)) {
+		createChart("findingCategoryChart", {
+			type: "bar",
+			data: {
+				labels: findingCategoryLabels,
+				datasets: [{
+					label: "Findings",
+					data: findingCategoryData,
+					backgroundColor: findingCategoryColors,
+					borderRadius: 8,
+					maxBarThickness: 42
+				}]
+			},
+			options: {
+				indexAxis: "y",
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false
+					}
+				},
+				scales: {
+					x: {
+						...sharedScaleOptions,
+						beginAtZero: true,
+						ticks: {
+							...sharedScaleOptions.ticks,
+							precision: 0
+						}
+					},
+					y: sharedScaleOptions
+				}
+			}
+		});
+	}
+
+	if (recentRiskTrendData.length > 1) {
+		createChart("riskTrendChart", {
+			type: "line",
+			data: {
+				labels: recentRiskTrendLabels,
+				datasets: [{
+					label: "Risk score",
+					data: recentRiskTrendData,
+					borderColor: "#2563eb",
+					backgroundColor: "rgba(37, 99, 235, 0.14)",
+					fill: true,
+					tension: 0.32,
+					pointRadius: 4,
+					pointBackgroundColor: "#ffffff",
+					pointBorderColor: "#2563eb",
+					pointBorderWidth: 2
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false
+					}
+				},
+				scales: {
+					x: sharedScaleOptions,
+					y: {
+						...sharedScaleOptions,
+						beginAtZero: true,
+						max: 100
+					}
+				}
+			}
+		});
+	}
+</script>
 </body>
 </html>

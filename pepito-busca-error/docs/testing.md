@@ -24,17 +24,21 @@ cd C:\Users\hecto\Desktop\pepito-busca-error\pepito-busca-error
 1. Start the application.
 2. Open `/`.
 3. Open `/dashboard`.
-4. Register a company.
-5. Create an analysis.
-6. Review the result action plan.
-7. Open the company detail page and check risk history.
-8. Open `/osint`.
-9. Submit a domain without API keys and confirm demo data.
-10. Submit an email without HIBP key and confirm demo data.
-11. Open `/geolocation`.
-12. Register a device and open its live tracking link.
-13. Confirm the browser asks for location permission.
-14. Deactivate the device and confirm live updates are rejected.
+4. Confirm empty states are shown if there are no analyses or OSINT reports.
+5. Register a company.
+6. Create at least two analyses.
+7. Confirm the dashboard charts render risk distribution, indicator severity, and recent risk trend from those records.
+8. Review the result action plan.
+9. Open the company detail page and check risk history.
+10. Open `/osint`.
+11. Submit a domain without API keys and confirm demo data.
+12. Run a saved OSINT report and confirm the dashboard category chart uses the stored findings.
+13. Submit an email without HIBP key and confirm demo data.
+14. Open `/geolocation`.
+15. Register a device and open its live tracking link.
+16. Confirm the browser asks for location permission.
+17. Deactivate the device and confirm live updates are rejected.
+18. Open a missing URL and confirm the friendly 404 page appears.
 
 ## Future Test Improvements
 

@@ -134,6 +134,70 @@
 				</article>
 			</section>
 
+			<section class="section-grid two">
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Findings summary</p>
+							<h2>Latest detected indicators</h2>
+						</div>
+						<span class="badge neutral" th:text="${company.latestFindingCount + ' findings'}">0 findings</span>
+					</div>
+
+					<div class="compact-list"
+						 th:if="${company.latestAnalysis != null && !#lists.isEmpty(company.latestAnalysis.indicators)}">
+						<a class="compact-row" th:each="indicator : ${company.latestAnalysis.indicators}"
+						   th:href="@{/analyses/{id}(id=${company.latestAnalysis.idAnalysis})}">
+							<span>
+								<strong th:text="${indicator.type}">Indicator</strong>
+								<small th:text="${indicator.value}">Value</small>
+							</span>
+							<span class="badge severity-badge" th:classappend="${indicator.severity.cssClass}"
+								  th:text="${indicator.severity.label}">High</span>
+						</a>
+					</div>
+
+					<div class="empty-state"
+						 th:if="${company.latestAnalysis == null || #lists.isEmpty(company.latestAnalysis.indicators)}">
+						<i class="bi bi-shield-check"></i>
+						<strong>No findings in the latest analysis</strong>
+						<span>Create or review an analysis to populate this security profile.</span>
+					</div>
+				</article>
+
+				<article class="chart-card">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Recommendations preview</p>
+							<h2>Priority action plan</h2>
+						</div>
+						<span class="badge neutral" th:text="${company.latestRecommendationCount + ' actions'}">0 actions</span>
+					</div>
+
+					<div class="compact-list"
+						 th:if="${company.latestAnalysis != null && !#lists.isEmpty(company.latestAnalysis.recommendations)}">
+						<a class="compact-row" th:each="recommendation : ${company.latestAnalysis.recommendations}"
+						   th:href="@{/analyses/{id}(id=${company.latestAnalysis.idAnalysis})}">
+							<span>
+								<strong th:text="${recommendation.description}">Recommendation</strong>
+								<small th:text="${recommendation.responsibleRole + ' / ' + recommendation.suggestedDeadline}">
+									Owner / Deadline
+								</small>
+							</span>
+							<span class="badge priority-badge" th:classappend="${recommendation.priority.cssClass}"
+								  th:text="${recommendation.priority.label}">High</span>
+						</a>
+					</div>
+
+					<div class="empty-state"
+						 th:if="${company.latestAnalysis == null || #lists.isEmpty(company.latestAnalysis.recommendations)}">
+						<i class="bi bi-lightning-charge"></i>
+						<strong>No open recommendations</strong>
+						<span>Recommendations appear when an analysis detects risk indicators.</span>
+					</div>
+				</article>
+			</section>
+
 			<section class="content-panel">
 				<div class="section-title">
 					<div>

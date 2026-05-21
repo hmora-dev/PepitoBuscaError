@@ -6,36 +6,36 @@
 		<span class="brand-mark">PB</span>
 		<span>PepitoBuscaError</span>
 	</a>
-	<nav class="mobile-nav" aria-label="Mobile navigation">
-		<a th:href="@{/dashboard}" th:classappend="${active == 'dashboard'} ? ' active' : ''">
+	<nav class="top-nav mobile-nav" aria-label="Main navigation">
+		<a class="nav-pill" th:href="@{/dashboard}" th:classappend="${active == 'dashboard'} ? ' active' : ''">
 			<i class="bi bi-grid-1x2"></i>
 			<span>Dashboard</span>
 		</a>
-		<a th:href="@{/companies}" th:classappend="${active == 'companies'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/companies}" th:classappend="${active == 'companies'} ? ' active' : ''">
 			<i class="bi bi-buildings"></i>
 			<span>Companies</span>
 		</a>
-		<a th:href="@{/analyses}" th:classappend="${active == 'analyses'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/analyses}" th:classappend="${active == 'analyses'} ? ' active' : ''">
 			<i class="bi bi-activity"></i>
 			<span>Analyses</span>
 		</a>
-		<a th:href="@{/indicators}" th:classappend="${active == 'indicators'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/indicators}" th:classappend="${active == 'indicators'} ? ' active' : ''">
 			<i class="bi bi-shield-check"></i>
 			<span>Indicators</span>
 		</a>
-		<a th:href="@{/recommendations}" th:classappend="${active == 'recommendations'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/recommendations}" th:classappend="${active == 'recommendations'} ? ' active' : ''">
 			<i class="bi bi-lightning-charge"></i>
 			<span>Recommendations</span>
 		</a>
-		<a th:href="@{/osint}" th:classappend="${active == 'osint'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/osint}" th:classappend="${active == 'osint'} ? ' active' : ''">
 			<i class="bi bi-radar"></i>
 			<span>OSINT</span>
 		</a>
-		<a th:href="@{/geolocation}" th:classappend="${active == 'geolocation'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/geolocation}" th:classappend="${active == 'geolocation'} ? ' active' : ''">
 			<i class="bi bi-geo-alt"></i>
 			<span>Geolocation</span>
 		</a>
-		<a th:href="@{/documentation}" th:classappend="${active == 'documentation'} ? ' active' : ''">
+		<a class="nav-pill" th:href="@{/documentation}" th:classappend="${active == 'documentation'} ? ' active' : ''">
 			<i class="bi bi-journal-text"></i>
 			<span>Docs</span>
 		</a>

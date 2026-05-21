@@ -1,5 +1,6 @@
 package com.pepitobuscaerror.service;
 
+import com.pepitobuscaerror.model.Analysis;
 import com.pepitobuscaerror.model.Company;
 import com.pepitobuscaerror.repository.CompanyRepository;
 import com.pepitobuscaerror.util.TargetNormalizer;
@@ -19,19 +20,25 @@ public class CompanyService {
 
 	@Transactional(readOnly = true)
 	public List<Company> findCompanies(String query) {
+		List<Company> companies;
 		if (query == null || query.isBlank()) {
-			return companyRepository.findAllByOrderByRegistrationDateDesc();
+			companies = companyRepository.findAllByOrderByRegistrationDateDesc();
+		} else {
+			String term = query.trim();
+			companies = companyRepository
+					.findByNameContainingIgnoreCaseOrDomainContainingIgnoreCaseOrSectorContainingIgnoreCaseOrderByRegistrationDateDesc(
+							term, term, term);
 		}
-		String term = query.trim();
-		return companyRepository
-				.findByNameContainingIgnoreCaseOrDomainContainingIgnoreCaseOrSectorContainingIgnoreCaseOrderByRegistrationDateDesc(
-						term, term, term);
+		companies.forEach(this::initializeCompanyDashboardData);
+		return companies;
 	}
 
 	@Transactional(readOnly = true)
 	public Company getCompany(Long id) {
-		return companyRepository.findByIdCompany(id)
+		Company company = companyRepository.findByIdCompany(id)
 				.orElseThrow(() -> new ResourceNotFoundException("The requested company does not exist."));
+		initializeCompanyDashboardData(company);
+		return company;
 	}
 
 	@Transactional
@@ -70,5 +77,13 @@ public class CompanyService {
 
 	private String clean(String value) {
 		return value == null ? null : value.trim();
+	}
+
+	private void initializeCompanyDashboardData(Company company) {
+		Analysis latestAnalysis = company.getLatestAnalysis();
+		if (latestAnalysis != null) {
+			latestAnalysis.getIndicators().size();
+			latestAnalysis.getRecommendations().size();
+		}
 	}
 }

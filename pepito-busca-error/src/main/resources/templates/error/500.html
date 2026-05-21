@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('500 - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('')}"></div>
+
+		<main class="page-content narrow">
+			<section class="content-panel error-panel">
+				<p class="eyebrow">500</p>
+				<h1 th:text="${title != null ? title : 'Something went wrong'}">Something went wrong</h1>
+				<p class="muted" th:text="${message != null ? message : 'The application could not complete the requested action.'}">
+					The application could not complete the requested action.
+				</p>
+				<div class="warning-box">
+					<i class="bi bi-shield-exclamation"></i>
+					<span>No raw stack trace is shown in the interface. Review the application logs for technical details.</span>
+				</div>
+				<div class="action-row">
+					<a class="btn btn-primary" th:href="@{/dashboard}">
+						<i class="bi bi-grid-1x2"></i>
+						<span>Go to dashboard</span>
+					</a>
+					<a class="btn btn-secondary" th:href="@{/osint}">
+						<i class="bi bi-radar"></i>
+						<span>Open OSINT</span>
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

@@ -31,11 +31,13 @@ The main user is an analyst or technician performing authorized defensive review
 - H2 for tests
 - HTML5 and CSS3
 - Bootstrap Icons
+- Chart.js from CDN for data-backed dashboard charts
 - Leaflet and OpenStreetMap tiles for geolocation maps
 
 ## Current Features
 
 - Responsive SaaS-style dashboard.
+- Data-backed dashboard charts for risk distribution, indicator severity, OSINT finding categories, and recent risk score trend.
 - Company CRUD with domain, corporate email, and sector.
 - Manual risk analysis creation using selected indicators.
 - Automatic risk score and risk level calculation.
@@ -95,6 +97,21 @@ The project follows a simple MVC structure:
 - Thymeleaf templates render the UI.
 
 The project intentionally avoids React, JWT, Docker, microservices, GraphQL, and WebFlux to keep the architecture appropriate for the academic scope.
+
+## Visual design and dashboard
+
+The UI was redesigned as a professional SaaS dashboard for cybersecurity risk analysis. It uses Thymeleaf templates and custom CSS, without adding a complex frontend framework.
+
+The design includes KPI cards, risk score visuals, Chart.js charts, recent activity timelines, OSINT exposure panels, clean tables, premium forms, and responsive layouts. The goal is to help companies understand cybersecurity information quickly: which assets have risk, which findings are critical, and which recommendations should be prioritized.
+
+Dashboard charts use backend data from repositories through `DashboardService`:
+
+- Risk distribution: company analyses grouped by `RiskLevel`.
+- Indicator severity: stored analysis indicators grouped by `Severity`.
+- OSINT finding categories: saved OSINT findings grouped by `FindingCategory`.
+- Recent risk trend: latest company analysis scores ordered by date.
+
+When there is no data yet, the dashboard shows empty states instead of fake chart values.
 
 ## MySQL Configuration
 

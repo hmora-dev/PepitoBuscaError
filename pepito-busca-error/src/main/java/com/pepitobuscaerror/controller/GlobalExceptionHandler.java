@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 	public String handleNotFound(ResourceNotFoundException exception, Model model) {
 		model.addAttribute("title", "Page not found");
 		model.addAttribute("message", exception.getMessage());
-		return "error";
+		return "error/404";
 	}
 
 	@ExceptionHandler({ NoHandlerFoundException.class, NoResourceFoundException.class })
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 	public String handleMissingRoute(Exception exception, Model model) {
 		model.addAttribute("title", "Page not found");
 		model.addAttribute("message", "The requested page does not exist.");
-		return "error";
+		return "error/404";
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -33,6 +33,6 @@ public class GlobalExceptionHandler {
 	public String handleUnexpectedError(Exception exception, Model model) {
 		model.addAttribute("title", "Something went wrong");
 		model.addAttribute("message", "The application could not complete the requested action. Please return to the dashboard and try again.");
-		return "error";
+		return "error/500";
 	}
 }

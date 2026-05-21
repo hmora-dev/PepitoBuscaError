@@ -138,6 +138,16 @@ public class Company {
 		return latestAnalysis == null ? null : latestAnalysis.getRiskScore();
 	}
 
+	public int getLatestFindingCount() {
+		Analysis latestAnalysis = getLatestAnalysis();
+		return latestAnalysis == null ? 0 : latestAnalysis.getIndicators().size();
+	}
+
+	public int getLatestRecommendationCount() {
+		Analysis latestAnalysis = getLatestAnalysis();
+		return latestAnalysis == null ? 0 : latestAnalysis.getRecommendations().size();
+	}
+
 	public Analysis getPreviousAnalysis() {
 		List<Analysis> sortedAnalyses = analyses.stream()
 				.sorted(Comparator.comparing(Analysis::getAnalysisDate).reversed())

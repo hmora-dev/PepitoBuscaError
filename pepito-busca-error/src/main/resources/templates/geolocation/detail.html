@@ -143,6 +143,10 @@
 					</div>
 					<span class="badge neutral">Private token</span>
 				</div>
+				<div class="warning-box" th:if="${#lists.isEmpty(trackingLinks.networkUrls) && trackingLinks.configuredUrl == ''}">
+					<i class="bi bi-exclamation-triangle"></i>
+					<span>No reachable network address was detected. Set APP_PUBLIC_BASE_URL to an HTTPS URL or run the app with SERVER_ADDRESS=0.0.0.0 on a network adapter that other devices can reach.</span>
+				</div>
 				<div class="tracking-link-stack">
 					<div class="tracking-link-entry" th:if="${trackingLinks.configuredUrl != ''}">
 						<label for="public-tracking-link">Public tracking link</label>
@@ -159,16 +163,19 @@
 							</a>
 						</div>
 					</div>
-					<div class="tracking-link-entry" th:if="${trackingLinks.networkUrl != ''}">
-						<label for="network-tracking-link">Same Wi-Fi tracking link</label>
+					<div class="tracking-link-entry" th:each="networkLink, linkStatus : ${trackingLinks.networkUrls}">
+						<label th:for="|network-tracking-link-${linkStatus.index}|"
+							   th:text="${linkStatus.index == 0 ? 'Same Wi-Fi tracking link' : 'Alternate network tracking link'}">
+							Same Wi-Fi tracking link
+						</label>
 						<div class="tracking-link-box">
-							<input id="network-tracking-link" type="text" readonly th:value="${trackingLinks.networkUrl}">
+							<input th:id="|network-tracking-link-${linkStatus.index}|" type="text" readonly th:value="${networkLink}">
 							<button class="btn btn-secondary copy-tracking-link" type="button"
-									data-copy-target="network-tracking-link">
+									th:attr="data-copy-target=|network-tracking-link-${linkStatus.index}|">
 								<i class="bi bi-clipboard"></i>
 								<span>Copy</span>
 							</button>
-							<a class="btn btn-secondary" th:href="${trackingLinks.networkUrl}" target="_blank" rel="noopener">
+							<a class="btn btn-secondary" th:href="${networkLink}" target="_blank" rel="noopener">
 								<i class="bi bi-broadcast-pin"></i>
 								<span>Open</span>
 							</a>
@@ -191,7 +198,7 @@
 					</div>
 				</div>
 				<p class="muted panel-copy">
-					Send the same Wi-Fi link only to an owned or authorized device. The device owner must open the link and grant browser location permission. Deactivate the device in Edit device to stop accepting updates from this token.
+					Send the public or same-Wi-Fi link to the other device. Do not send the current browser link if it contains localhost. For phone GPS, use an HTTPS public tracking link when possible because mobile browsers commonly block location on plain LAN HTTP links.
 				</p>
 			</section>
 		</main>
@@ -199,8 +206,8 @@
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</div>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:src="@{/webjars/leaflet/1.9.4/dist/leaflet.js}"
+		src="/webjars/leaflet/1.9.4/dist/leaflet.js"></script>
 <script th:inline="javascript">
 	const positionUrl = /*[[@{/geolocation/{id}/position(id=${device.idDevice})}]]*/ "";
 	const initialHasCoordinates = /*[[${device.hasCoordinates()}]]*/ false;
@@ -266,7 +273,7 @@
 	}).setView(startPosition, initialHasCoordinates ? 15 : 6);
 
 	const detailZoomControl = L.control.zoom({position: "bottomright"}).addTo(detailMap);
-	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+	const detailTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 		maxZoom: 19,
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(detailMap);
@@ -289,9 +296,18 @@
 
 	function refreshDetailMapSize() {
 		detailMap.invalidateSize({pan: false});
+		detailTileLayer.redraw();
 		if (lastDetailPosition !== null && followDetailMap) {
-			detailMap.panTo(lastDetailPosition, {animate: false});
+			detailMap.setView(lastDetailPosition, detailMap.getZoom(), {animate: false});
 		}
+	}
+
+	function scheduleDetailMapRefresh() {
+		refreshDetailMapSize();
+		window.requestAnimationFrame(refreshDetailMapSize);
+		[100, 300, 700, 1200, 2200].forEach(function (delay) {
+			setTimeout(refreshDetailMapSize, delay);
+		});
 	}
 
 	function updateDetailMap(latitude, longitude, accuracy, locationLabel) {
@@ -339,14 +355,16 @@
 		updateDetailMap(initialLatitude, initialLongitude, initialAccuracy || 20, initialLocationLabel);
 	}
 
-	detailMap.whenReady(function () {
-		[150, 500, 1200].forEach(function (delay) {
-			setTimeout(refreshDetailMapSize, delay);
-		});
-	});
+	detailMap.whenReady(scheduleDetailMapRefresh);
 
 	window.addEventListener("resize", function () {
 		refreshDetailMapSize();
+	});
+	window.addEventListener("load", scheduleDetailMapRefresh);
+	document.addEventListener("visibilitychange", function () {
+		if (!document.hidden) {
+			scheduleDetailMapRefresh();
+		}
 	});
 
 	if ("ResizeObserver" in window) {

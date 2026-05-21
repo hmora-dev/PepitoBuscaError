@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('404 - PepitoBuscaError')}"></head>
+<body>
+<div class="app-shell">
+	<div th:replace="~{fragments/sidebar :: sidebar('')}"></div>
+
+	<div class="app-main">
+		<div th:replace="~{fragments/navbar :: navbar('')}"></div>
+
+		<main class="page-content narrow">
+			<section class="content-panel error-panel">
+				<p class="eyebrow">404</p>
+				<h1 th:text="${title != null ? title : 'Page not found'}">Page not found</h1>
+				<p class="muted" th:text="${message != null ? message : 'The requested page does not exist.'}">
+					The requested page does not exist.
+				</p>
+				<div class="action-row">
+					<a class="btn btn-primary" th:href="@{/dashboard}">
+						<i class="bi bi-grid-1x2"></i>
+						<span>Go to dashboard</span>
+					</a>
+					<a class="btn btn-secondary" th:href="@{/companies}">
+						<i class="bi bi-buildings"></i>
+						<span>View companies</span>
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+</div>
+</body>
+</html>

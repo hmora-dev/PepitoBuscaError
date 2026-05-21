@@ -24,6 +24,15 @@ osint.demo-mode=${OSINT_DEMO_MODE:true}
 
 When `OSINT_DEMO_MODE=true`, provider clients return safe demo data. When it is `false`, SecurityTrails and HIBP still fall back to demo data if their API key is missing.
 
+## Public Tracking URL
+
+```properties
+server.address=${SERVER_ADDRESS:0.0.0.0}
+app.public-base-url=${APP_PUBLIC_BASE_URL:}
+```
+
+Keep `SERVER_ADDRESS=0.0.0.0` so same-Wi-Fi tracking links can be reached from another device. Set `APP_PUBLIC_BASE_URL` to an HTTPS URL when a phone or another device must open the geolocation tracking link from outside the local network. Browser GPS is usually blocked on plain `http://192.168...` LAN links.
+
 ## Local Environment Example
 
 See the root `.env.example` file for suggested local variables. Do not commit real API keys or production credentials.

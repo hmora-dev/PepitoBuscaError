@@ -6,6 +6,7 @@ import com.pepitobuscaerror.repository.RecommendationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,11 @@ public class RecommendationService {
 
 	@Transactional(readOnly = true)
 	public List<Recommendation> findAllRecommendations() {
-		return recommendationRepository.findAllByOrderByPriorityDescDescriptionAsc();
+		return recommendationRepository.findAllByOrderByPriorityDescDescriptionAsc().stream()
+				.sorted(Comparator.comparing((Recommendation recommendation) -> recommendation.getPriority().ordinal())
+						.reversed()
+						.thenComparing(Recommendation::getDescription))
+				.toList();
 	}
 
 	@Transactional(readOnly = true)

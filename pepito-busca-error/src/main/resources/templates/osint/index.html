@@ -118,20 +118,20 @@
 						<span>Authorized OSINT</span>
 						<span class="pulse-dot"></span>
 					</div>
-					<strong>8</strong>
-					<p>Build a public footprint report from safe external signals before deeper manual review.</p>
+					<strong th:text="${recentScans.size()}">0</strong>
+					<p>Stored passive exposure reports from safe external signals before deeper manual review.</p>
 					<div class="dark-metrics">
 						<div>
-							<span>DNS</span>
-							<strong>MX</strong>
+							<span>Reports</span>
+							<strong th:text="${recentScans.size()}">0</strong>
 						</div>
 						<div>
-							<span>Web</span>
-							<strong>TLS</strong>
+							<span>Targets</span>
+							<strong th:text="${recentTargets.size()}">0</strong>
 						</div>
 						<div>
-							<span>Files</span>
-							<strong>TXT</strong>
+							<span>Mode</span>
+							<strong>Safe</strong>
 						</div>
 					</div>
 				</article>

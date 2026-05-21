@@ -38,9 +38,21 @@ Dashboard cards were chosen because they make key information easy to understand
 
 Risk badges were added because they help identify priorities quickly. Different colors for low, medium, high, and critical levels make the result easier to scan in tables and reports.
 
+Chart.js was added only on the dashboard page because it provides clear charts without introducing React, Vue, Angular, a JavaScript build pipeline, or a separate API layer. The chart inputs are produced by `DashboardService` from repository data: risk levels from analyses, indicator severities from stored indicators, OSINT categories from findings, and recent risk scores from the latest analyses.
+
+Empty states are shown when there is no database data for a chart. This avoids fake dashboard graphics and makes it clear during a presentation which parts are populated by real records.
+
 The responsive design was chosen to improve usability on desktop, tablet, and mobile. Cards stack vertically, tables can scroll horizontally, and action buttons remain easy to tap.
 
 Thymeleaf was kept as the rendering technology because it aligns with Spring Boot MVC and keeps the project simple. Reusable fragments for the layout, sidebar, navbar, and footer avoid repeated HTML without introducing a complex frontend framework.
+
+## Why the dashboard design was improved
+
+The dashboard design was improved because visual dashboards help non-technical users understand risk quickly. A small business owner or technician can scan KPI cards, severity badges, and charts faster than reading long technical tables.
+
+KPI cards summarize company exposure: registered companies, analyses, average risk, critical findings, open recommendations, and OSINT checks. Risk badges and chart-style components make priorities easier to identify, especially when several companies have different levels of exposure.
+
+The design remains simple because it uses Thymeleaf, HTML, and custom CSS instead of React, Vue, Angular, or a complex build system. This keeps the project suitable for DAM 1 while still presenting cybersecurity information with a more professional SaaS dashboard interface.
 
 ## Real Geolocation Module
 

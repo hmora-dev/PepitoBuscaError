@@ -44,7 +44,7 @@ class CorePageSmokeTests {
 				.andExpect(content().string(containsString("PepitoBuscaError")));
 		mockMvc.perform(get("/dashboard"))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("Security dashboard")));
+				.andExpect(content().string(containsString("Security Overview")));
 		mockMvc.perform(get("/companies"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Companies")));
@@ -85,9 +85,11 @@ class CorePageSmokeTests {
 
 		mockMvc.perform(get("/geolocation/{id}", savedDevice.getIdDevice()))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("Real tracking link")));
+				.andExpect(content().string(containsString("Real tracking link")))
+				.andExpect(content().string(containsString("/webjars/leaflet/1.9.4/dist/leaflet.js")));
 		mockMvc.perform(get("/geolocation/live/{token}", savedDevice.getTrackingToken()))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("no hidden background tracking")));
+				.andExpect(content().string(containsString("no hidden background tracking")))
+				.andExpect(content().string(containsString("/webjars/leaflet/1.9.4/dist/leaflet.js")));
 	}
 }

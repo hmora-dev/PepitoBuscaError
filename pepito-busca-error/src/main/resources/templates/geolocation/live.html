@@ -94,8 +94,8 @@
 	</main>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:src="@{/webjars/leaflet/1.9.4/dist/leaflet.js}"
+		src="/webjars/leaflet/1.9.4/dist/leaflet.js"></script>
 <script th:inline="javascript">
 	const updateUrl = /*[[@{/geolocation/live/{token}/position(token=${device.trackingToken})}]]*/ "";
 	const initialHasCoordinates = /*[[${device.hasCoordinates()}]]*/ false;
@@ -136,7 +136,7 @@
 	}).setView(startPosition, initialHasCoordinates ? 15 : 6);
 
 	const liveZoomControl = L.control.zoom({position: "bottomright"}).addTo(liveMap);
-	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+	const liveTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 		maxZoom: 19,
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(liveMap);
@@ -159,9 +159,18 @@
 
 	function refreshLiveMapSize() {
 		liveMap.invalidateSize({pan: false});
+		liveTileLayer.redraw();
 		if (lastLivePosition !== null && followLiveMap) {
-			liveMap.panTo(lastLivePosition, {animate: false});
+			liveMap.setView(lastLivePosition, liveMap.getZoom(), {animate: false});
 		}
+	}
+
+	function scheduleLiveMapRefresh() {
+		refreshLiveMapSize();
+		window.requestAnimationFrame(refreshLiveMapSize);
+		[100, 300, 700, 1200, 2200].forEach(function (delay) {
+			setTimeout(refreshLiveMapSize, delay);
+		});
 	}
 
 	function updateMap(latitude, longitude, accuracy) {
@@ -199,14 +208,16 @@
 		updateMap(initialLatitude, initialLongitude, initialAccuracy || 20);
 	}
 
-	liveMap.whenReady(function () {
-		[150, 500, 1200].forEach(function (delay) {
-			setTimeout(refreshLiveMapSize, delay);
-		});
-	});
+	liveMap.whenReady(scheduleLiveMapRefresh);
 
 	window.addEventListener("resize", function () {
 		refreshLiveMapSize();
+	});
+	window.addEventListener("load", scheduleLiveMapRefresh);
+	document.addEventListener("visibilitychange", function () {
+		if (!document.hidden) {
+			scheduleLiveMapRefresh();
+		}
 	});
 
 	if ("ResizeObserver" in window) {
@@ -264,10 +275,18 @@
 	}
 
 	function shouldResolveLocation(latitude, longitude) {
-		return !lastResolvedLabel
-			|| lastResolvedPosition === null
-			|| distanceMeters(lastResolvedPosition, latitude, longitude) > 100
+		return !cachedLocationLabel(latitude, longitude)
 			|| Date.now() - lastResolvedAt > 300000;
+	}
+
+	function cachedLocationLabel(latitude, longitude) {
+		if (!lastResolvedLabel || lastResolvedPosition === null) {
+			return "";
+		}
+		if (distanceMeters(lastResolvedPosition, latitude, longitude) > 100) {
+			return "";
+		}
+		return lastResolvedLabel;
 	}
 
 	function formatLocationLabel(data) {
@@ -289,16 +308,22 @@
 
 	function resolveLocationLabel(latitude, longitude) {
 		if (!shouldResolveLocation(latitude, longitude)) {
-			return Promise.resolve(lastResolvedLabel);
+			return Promise.resolve({label: cachedLocationLabel(latitude, longitude), latitude: latitude, longitude: longitude});
 		}
 		if (activeLocationLookup !== null) {
-			return activeLocationLookup;
+			if (distanceMeters([activeLocationLookup.latitude, activeLocationLookup.longitude], latitude, longitude) <= 100) {
+				return activeLocationLookup.promise;
+			}
+			return Promise.resolve({label: "", latitude: latitude, longitude: longitude});
 		}
 		const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&lat="
 			+ encodeURIComponent(latitude) + "&lon=" + encodeURIComponent(longitude);
-		activeLocationLookup = fetch(url, {
+		const lookupLatitude = latitude;
+		const lookupLongitude = longitude;
+		const lookupPromise = fetch(url, {
 			headers: {"Accept": "application/json"},
-			credentials: "omit"
+			credentials: "omit",
+			referrerPolicy: "strict-origin-when-cross-origin"
 		})
 			.then(function (response) {
 				if (!response.ok) {
@@ -310,25 +335,28 @@
 				const label = formatLocationLabel(data);
 				if (label) {
 					lastResolvedLabel = label;
-					lastResolvedPosition = [latitude, longitude];
+					lastResolvedPosition = [lookupLatitude, lookupLongitude];
 					lastResolvedAt = Date.now();
 				}
-				return label;
+				return {label: label, latitude: lookupLatitude, longitude: lookupLongitude};
 			})
 			.catch(function () {
-				return lastResolvedLabel || "Location detected on map";
+				return {label: "", latitude: lookupLatitude, longitude: lookupLongitude};
 			})
 			.finally(function () {
 				activeLocationLookup = null;
 			});
-		return activeLocationLookup;
+		activeLocationLookup = {promise: lookupPromise, latitude: lookupLatitude, longitude: lookupLongitude};
+		return lookupPromise;
 	}
 
 	function postPosition(latitude, longitude, accuracy, locationLabel) {
 		const body = new URLSearchParams();
 		body.append("latitude", latitude);
 		body.append("longitude", longitude);
-		body.append("accuracy", accuracy);
+		if (Number.isFinite(accuracy)) {
+			body.append("accuracy", accuracy);
+		}
 		if (locationLabel) {
 			body.append("locationLabel", locationLabel);
 		}
@@ -339,41 +367,74 @@
 			body: body
 		})
 			.then(function (response) {
-				if (!response.ok) {
-					throw new Error("Server rejected the position");
-				}
-				return response.json();
+				return response.json().catch(function () {
+					return {};
+				}).then(function (data) {
+					if (!response.ok) {
+						throw new Error(data.message || "Server rejected the position");
+					}
+					return data;
+				});
 			});
+	}
+
+	function handlePositionSaved(data) {
+		if (data.locationLabel) {
+			locationElement.textContent = data.locationLabel;
+			lastResolvedLabel = data.locationLabel;
+			if (Number.isFinite(data.latitude) && Number.isFinite(data.longitude)) {
+				lastResolvedPosition = [data.latitude, data.longitude];
+				lastResolvedAt = Date.now();
+			}
+		}
+		setStatus("Live");
+		lastSentElement.textContent = new Date().toLocaleString();
+	}
+
+	function handlePostError(error) {
+		setStatus(error.message || "Server rejected the position");
+		if (error.message === "This device is inactive.") {
+			resetTrackingControls();
+		}
+	}
+
+	function isResolvedLabelCurrent(result, latitude, longitude) {
+		return result
+			&& result.label
+			&& distanceMeters([result.latitude, result.longitude], latitude, longitude) <= 100;
 	}
 
 	function sendPosition(position) {
 		const latitude = position.coords.latitude;
 		const longitude = position.coords.longitude;
-		const accuracy = position.coords.accuracy;
+		const accuracy = Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : null;
+		const currentLocationLabel = cachedLocationLabel(latitude, longitude);
 
-		accuracyElement.textContent = Math.round(accuracy) + " m";
-		positionQualityElement.textContent = Math.round(accuracy) + " m accuracy";
-		updateMap(latitude, longitude, accuracy);
-		setStatus("Detecting location");
+		accuracyElement.textContent = accuracy === null ? "-" : Math.round(accuracy) + " m";
+		positionQualityElement.textContent = accuracy === null ? "Accuracy not reported" : Math.round(accuracy) + " m accuracy";
+		updateMap(latitude, longitude, accuracy || 20);
+		locationElement.textContent = currentLocationLabel || "Location detected on map";
+		setStatus("Sending location");
+
+		postPosition(latitude, longitude, accuracy, currentLocationLabel)
+			.then(handlePositionSaved)
+			.catch(handlePostError);
 
 		resolveLocationLabel(latitude, longitude)
-			.then(function (locationLabel) {
-				if (locationLabel) {
-					locationElement.textContent = locationLabel;
+			.then(function (result) {
+				if (!isResolvedLabelCurrent(result, latitude, longitude)) {
+					return null;
 				}
-				setStatus("Sending location");
-				return postPosition(latitude, longitude, accuracy, locationLabel);
-			})
-			.then(function (data) {
-				if (data.locationLabel) {
-					locationElement.textContent = data.locationLabel;
-					lastResolvedLabel = data.locationLabel;
+				locationElement.textContent = result.label;
+				if (result.label === currentLocationLabel) {
+					return null;
 				}
-				setStatus("Live");
-				lastSentElement.textContent = new Date().toLocaleString();
+				return postPosition(latitude, longitude, accuracy, result.label).then(handlePositionSaved);
 			})
 			.catch(function (error) {
-				setStatus(error.message);
+				if (error) {
+					handlePostError(error);
+				}
 			});
 	}
 
@@ -391,7 +452,8 @@
 	}
 
 	function isLocalhost() {
-		return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+		const hostname = window.location.hostname;
+		return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1" || hostname === "[::1]";
 	}
 
 	function resetTrackingControls() {
@@ -412,7 +474,9 @@
 			return;
 		}
 		if (!window.isSecureContext && !isLocalhost()) {
-			setStatus("HTTPS required for GPS");
+			setStatus("Open with HTTPS");
+			positionQualityElement.textContent = "HTTPS required";
+			locationElement.textContent = "Browser blocked GPS";
 			return;
 		}
 		watchId = navigator.geolocation.watchPosition(sendPosition, handleError, {

@@ -72,6 +72,26 @@
 				</article>
 			</section>
 
+			<section class="chart-card">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Severity distribution</p>
+						<h2>Findings by priority</h2>
+					</div>
+					<span class="badge neutral" th:text="${analysis.indicators.size() + ' indicators'}">0 indicators</span>
+				</div>
+				<div class="mini-chart">
+					<div class="mini-chart-row" th:each="severity : ${T(com.pepitobuscaerror.model.Severity).values()}">
+						<span class="badge severity-badge" th:classappend="${severity.cssClass}" th:text="${severity.label}">High</span>
+						<div class="mini-bar">
+							<span th:classappend="${severity.cssClass}"
+								  th:style="'width:' + ${analysis.indicators.size() == 0 ? 0 : (indicatorGroups.get(severity).size() * 100 / analysis.indicators.size())} + '%'"></span>
+						</div>
+						<strong th:text="${indicatorGroups.get(severity).size()}">0</strong>
+					</div>
+				</div>
+			</section>
+
 			<section class="section-grid two">
 				<div class="content-panel">
 					<div class="section-title">
