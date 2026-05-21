@@ -103,7 +103,7 @@
 							<p class="eyebrow">Registry</p>
 							<h2>Latest companies</h2>
 						</div>
-					<a class="text-link" th:href="@{/companies}">Open companies</a>
+						<a class="text-link" th:href="@{/companies}">Open companies</a>
 					</div>
 
 					<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestCompanies)}">
@@ -122,6 +122,34 @@
 						<strong>No companies registered yet</strong>
 						<span>Add the first company to start building the risk overview.</span>
 					</div>
+				</div>
+			</section>
+
+			<section class="content-panel" id="risk-notifications">
+				<div class="section-title">
+					<div>
+						<p class="eyebrow">Risk notifications</p>
+						<h2>Critical and high-risk analyses</h2>
+					</div>
+					<span class="badge neutral" th:text="${stats.latestHighRiskAnalyses.size() + ' open signals'}">0 open signals</span>
+				</div>
+
+				<div class="compact-list" th:if="${!#lists.isEmpty(stats.latestHighRiskAnalyses)}">
+					<a class="compact-row" th:each="analysis : ${stats.latestHighRiskAnalyses}"
+					   th:href="@{/analyses/{id}(id=${analysis.idAnalysis})}">
+						<span>
+							<strong th:text="${analysis.company.name}">Company</strong>
+							<small th:text="${analysis.company.domain + ' / score ' + analysis.riskScore}">example.com</small>
+						</span>
+						<span class="badge risk-badge" th:classappend="${analysis.riskLevel.cssClass}"
+							  th:text="${analysis.riskLevel.label}">High</span>
+					</a>
+				</div>
+
+				<div class="empty-state" th:if="${#lists.isEmpty(stats.latestHighRiskAnalyses)}">
+					<i class="bi bi-check2-circle"></i>
+					<strong>No critical or high-risk analyses</strong>
+					<span>This is an internal risk-notification view, not an email alerting system.</span>
 				</div>
 			</section>
 

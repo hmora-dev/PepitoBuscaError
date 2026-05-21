@@ -1,16 +1,22 @@
 # PepitoBuscaError
 
-PepitoBuscaError is a Spring Boot MVC web application for registering companies and performing basic digital risk analysis. It is designed as a polished DAM 1 final project: professional enough to present as a small SaaS platform, but simple enough to understand and defend.
+PepitoBuscaError is a Spring Boot MVC cybersecurity web application for small and medium-sized businesses. It helps register companies, create simple digital risk analyses, review passive OSINT findings, generate remediation recommendations, and manage consent-based browser geolocation for owned devices.
 
-The application now includes a modern responsive dashboard inspired by professional SaaS cybersecurity tools. The interface uses Thymeleaf templates, reusable fragments, and custom CSS to keep the frontend understandable without adding React, JWT, Docker, or other advanced architecture.
+The project is built as a DAM 1 final project: professional enough to present as a small SaaS-style platform, but still simple enough to understand and defend orally.
 
 ## Objective
 
-The objective is to help small and medium-sized businesses understand basic digital risk indicators. The application stores companies, creates analyses, calculates a risk score, assigns a risk level, and generates practical recommendations.
+The objective is to give a technical consultant, IT student, or small-business support technician a clear first view of digital risk:
+
+- which companies are registered,
+- which indicators were detected,
+- which recommendations should be prioritized,
+- what public OSINT signals are visible,
+- and which owned devices have voluntarily reported a browser location.
 
 ## Main User
 
-The main user is a technical consultant, IT student, or small-business support technician who wants to register a company and create a first digital risk report.
+The main user is an analyst or technician performing authorized defensive reviews for small organizations. The application is not designed for offensive testing, exploitation, hidden tracking, or credential collection.
 
 ## Technologies Used
 
@@ -22,150 +28,101 @@ The main user is a technical consultant, IT student, or small-business support t
 - Spring Data JPA
 - Hibernate
 - MySQL 8
+- H2 for tests
 - HTML5 and CSS3
-- Thymeleaf fragments for the reusable layout
-- Custom responsive CSS for the SaaS dashboard interface
+- Bootstrap Icons
+- Leaflet and OpenStreetMap tiles for geolocation maps
 
-## Features
+## Current Features
 
-- Professional responsive home page and dashboard.
-- Left sidebar navigation on desktop and a compact top navigation on mobile.
-- Dashboard with total companies, total analyses, average risk, critical analyses, critical indicators, recent companies, recent analyses, and risk distribution.
-- Separate pages for dashboard, companies, analyses, indicators, recommendations, OSINT, documentation, and geolocation.
-- Full company CRUD.
-- Company search by name, domain, or sector.
-- Company detail page with profile data, latest risk summary, and analysis history.
-- Analysis creation with selectable risk indicators.
-- Automatic risk score calculation.
-- Automatic risk level assignment.
-- Automatic recommendation generation.
-- Indicators grouped by severity with clear risk badges.
-- Recommendations grouped by priority with clear priority badges.
-- Real geolocation module for owned devices using the browser Geolocation API.
-- Private tracking links that automatically send live browser-reported location to Spring Boot while the page is open and permission is granted.
-- Professional live map view using Leaflet and OpenStreetMap tiles.
-- OSINT Intelligence area for authorized passive public-footprint reports.
-- DNSDumpster-style domain intelligence with safe demo subdomain data.
+- Responsive SaaS-style dashboard.
+- Company CRUD with domain, corporate email, and sector.
+- Manual risk analysis creation using selected indicators.
+- Automatic risk score and risk level calculation.
+- Recommendation generation grouped into an action plan.
+- Company detail page with latest score, average score, previous score, and risk trend.
+- Dashboard risk-notification section for latest high and critical analyses.
+- Indicator and recommendation list pages.
+- Passive OSINT scan flow with audit targets, scan runs, findings, severity counts, and categories.
+- DNSDumpster-style domain intelligence with safe demo/passive subdomain data.
 - SecurityTrails-style DNS intelligence with optional API key support.
 - Have I Been Pwned-style corporate email exposure checks with optional API key support.
-- Passive OSINT checks for DNS, mail, web/CDN metadata, TLS certificates, robots.txt, sitemap.xml, and security.txt.
-- User-friendly error page.
-- Responsive SaaS-style interface with cards, tables, dark metric panels, thin borders, and soft shadows.
-
-## Real Geolocation
-
-The geolocation module works with real browser location permission:
-
-1. Register a device from `Geolocation > New device`.
-2. Open the device detail page.
-3. Open the private live tracking link on that same device.
-4. Accept the browser location permission.
-5. The browser sends latitude, longitude, accuracy, and a readable location label when available.
-6. Spring Boot saves the last known position in MySQL.
-7. The live tracker moves the marker on the map, and the device detail page refreshes the saved position automatically.
-
-This is real geolocation, but it is still a web application. Tracking only works while the tracking page is open and the browser grants permission. Background tracking when the browser is closed would require a native mobile app or a more advanced PWA approach.
-
-The map is rendered with Leaflet and OpenStreetMap tiles, so the map view needs internet access to load tile images.
-
-## OSINT Intelligence Module
-
-The OSINT module is designed for domains and corporate emails the user owns or is authorized to review. It is passive and defensive: it does not brute force subdomains, scan address ranges, exploit services, bypass authentication, or look up passwords.
-
-The section is available at:
-
-```text
-http://localhost:8080/osint
-```
-
-It includes three provider-style checks:
-
-- DNSDumpster-style analysis: summarizes public DNS records and shows realistic passive/demo subdomain intelligence such as `mail`, `vpn`, `dev`, `admin`, and `portal`.
-- SecurityTrails-style analysis: shows current DNS records, subdomains, associated IPs, nameservers, mail servers, historical DNS notes, and risk interpretation.
-- Have I Been Pwned-style analysis: checks whether a corporate email appears in known breach exposure data and shows only high-level breach names, dates, and data classes.
-
-SecurityTrails and Have I Been Pwned require API keys for real provider calls. Configure them through environment variables or `application.properties`:
-
-```properties
-osint.securitytrails.api-key=${SECURITYTRAILS_API_KEY:}
-osint.hibp.api-key=${HIBP_API_KEY:}
-osint.demo-mode=true
-```
-
-When `osint.demo-mode=true` or an API key is missing, the application returns safe demo data and shows a warning in the UI. This keeps the project functional during academic presentations without paid API keys.
-
-The existing saved OSINT report flow still works through `OSINT > Run OSINT report`. Provider-style domain intelligence is also converted into high-level `Finding` records for scan reports, without storing raw sensitive breach data.
-
-## Visual Design
-
-The visual design is inspired by premium cybersecurity SaaS dashboards. It uses a light workspace, a dark left sidebar, dark metric panels for important risk numbers, clean tables for company management, and color-coded badges for risk levels, severities, and priorities.
-
-The main sections are separated into their own pages instead of being placed inside a single dashboard page. This makes the application easier to navigate and easier to explain in an oral defense.
-
-The UI is built with Thymeleaf templates and custom CSS in:
-
-```text
-pepito-busca-error/src/main/resources/templates
-pepito-busca-error/src/main/resources/static/css/style.css
-```
-
-This keeps the frontend simple enough for a DAM 1 project while still looking like a professional web application.
+- Finding lifecycle status field with default `OPEN`.
+- Consent-based geolocation module for owned or authorized devices.
+- Private tracking links that only send updates while the browser page is open and permission is granted.
+- Friendly error page for not-found and unexpected errors.
+- Documentation section and supporting files under `pepito-busca-error/docs`.
 
 ## Database Model
 
-The main tables are:
+Main business tables:
 
 - `companies`
 - `analyses`
 - `indicators`
 - `recommendations`
+
+Passive OSINT/audit tables:
+
+- `audit_target`
+- `scan_run`
+- `finding`
+
+Geolocation tables:
+
 - `tracked_devices`
 
-Relationships:
+Main relationships:
 
 - One company has many analyses.
-- One analysis belongs to one company.
 - One analysis has many indicators.
 - One analysis has many recommendations.
-- One tracked device stores owner, status, private tracking token, last known latitude, longitude, accuracy, location label, and update date.
+- One audit target has many scan runs.
+- One scan run has many findings.
+- One tracked device stores its private token, active status, last known coordinates, accuracy, location label, and timestamps.
 
-More details are available in `pepito-busca-error/docs/database-model.md`.
+More detail is available in `pepito-busca-error/docs/database-model.md`.
 
-## MVC Architecture
+## Architecture
 
-- Controllers manage routes and form validation.
-- Services contain business logic, CRUD operations, risk calculation, and recommendation generation.
-- Repositories use Spring Data JPA to access MySQL.
-- Thymeleaf templates render the user interface.
+The project follows a simple MVC structure:
 
-## MySQL Setup
+- Controllers handle routes and form validation.
+- Services contain business logic.
+- Repositories use Spring Data JPA.
+- Entities model database tables.
+- DTO/result classes carry form and OSINT response data.
+- Thymeleaf templates render the UI.
 
-Requirements:
+The project intentionally avoids React, JWT, Docker, microservices, GraphQL, and WebFlux to keep the architecture appropriate for the academic scope.
 
-- Java 17 or newer
-- MySQL Server 8
-- MySQL Workbench
+## MySQL Configuration
 
-Open and execute:
+Default local configuration is in:
+
+```text
+pepito-busca-error/src/main/resources/application.properties
+```
+
+The application supports environment variables:
+
+```properties
+DB_URL=jdbc:mysql://localhost:3306/pepito_busca_error?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Europe/Madrid&allowPublicKeyRetrieval=true
+DB_USERNAME=pepito_app
+DB_PASSWORD=change_this_password
+```
+
+The default password is only for local development. Use a different password outside a classroom/local environment.
+
+You can use `.env.example` as a reference for local variables.
+
+To prepare MySQL, run:
 
 ```text
 pepito-busca-error/docs/mysql-workbench-setup.sql
 ```
 
-The script creates:
-
-- database: `pepito_busca_error`
-- user: `pepito_app`
-- default password: `change_this_password`
-- core tables for companies, analyses, indicators, and recommendations
-
-For sample data, execute:
-
-```text
-pepito-busca-error/docs/dump.sql
-```
-
-## Run the Application
+## Run The Application
 
 From Windows PowerShell:
 
@@ -188,30 +145,79 @@ Open:
 http://localhost:8080
 ```
 
-## How to Use
+Run tests:
 
-1. Open the home page.
-2. Register a company from `Companies > New company`.
-3. Open the company detail page.
-4. Click `New analysis`.
-5. Select the detected indicators.
-6. Submit the form to calculate risk.
-7. Review the result page with indicators and recommendations.
-8. Use the separate analyses, indicators, and recommendations pages for detailed review.
-9. Use the geolocation page to register your own devices and store their last browser-reported location.
+```powershell
+cd C:\Users\hecto\Desktop\pepito-busca-error\pepito-busca-error
+.\mvnw.cmd test
+```
+
+## OSINT Intelligence Module
+
+The OSINT module is passive and defensive. It must only be used with domains and corporate emails that the user owns or is authorized to review.
+
+Routes:
+
+- `GET /osint`
+- `POST /osint/domain`
+- `POST /osint/email`
+- `POST /osint/run`
+- `GET /osint/scans/{id}`
+
+Configuration:
+
+```properties
+osint.securitytrails.api-key=${SECURITYTRAILS_API_KEY:}
+osint.hibp.api-key=${HIBP_API_KEY:}
+osint.demo-mode=${OSINT_DEMO_MODE:true}
+```
+
+When demo mode is enabled or an API key is missing, the application shows safe demo data and a clear warning. No API key is hardcoded.
+
+The HIBP-style module displays only high-level exposure information. It does not ask for passwords and does not store raw sensitive breach data.
+
+## Geolocation Module
+
+The geolocation feature is consent-based:
+
+- The device owner opens a private tracking link.
+- The browser asks for location permission.
+- Updates are sent only while the live tracking page remains open.
+- There is no hidden background tracking.
+- Inactive devices reject live updates.
+
+This module is intended only for owned or explicitly authorized devices. More detail is available in `pepito-busca-error/docs/geolocation-privacy.md`.
 
 ## AI Usage Statement
 
-AI was used as a development assistant to improve code structure, UI polish, SQL scripts, and documentation. The final application runs locally with Spring Boot MVC and MySQL. More details are available in `pepito-busca-error/docs/ai-usage.md`.
+AI was used as a development assistant for code review, UI polish, documentation, tests, and architecture cleanup. The final project remains a local Spring Boot MVC application that can be compiled and reviewed directly.
+
+More detail is available in `pepito-busca-error/docs/ai-usage.md`.
+
+## Current Limitations
+
+- No real authentication or roles are implemented yet.
+- No PDF export is implemented yet.
+- No real alert delivery exists; the dashboard shows internal risk notifications only.
+- No scheduled scans are implemented.
+- OSINT real provider calls require valid external API keys.
+- Browser geolocation works only while the live page is open and permission is granted.
+- The project is not production hardened.
 
 ## Future Improvements
 
-- Add user login with simple session-based security.
-- Add PDF export for analysis results.
-- Add more indicator types.
-- Add charts for risk evolution.
-- Add pagination for companies and analyses.
-- Add unit tests for the risk calculator and services.
+- Session-based Spring Security login.
+- Roles: `ADMIN`, `ANALYST`, and `VIEWER`.
+- Organization-based access control.
+- Executive and technical PDF report generation.
+- Real alerting with email or webhook notifications.
+- Scheduled passive scans.
+- More OSINT providers.
+- Finding status update UI.
+- More unit and integration tests.
+- Production deployment hardening.
+
+See `pepito-busca-error/docs/future-improvements.md`.
 
 ## Author
 

@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -66,7 +65,7 @@ public class HaveIBeenPwnedClient {
 					"HIGH", "Change passwords, enable MFA, review reused credentials.", Instant.now());
 		} catch (HttpClientErrorException.NotFound exception) {
 			return noBreaches(email, false, "HIBP API returned no breach exposure for this email.");
-		} catch (IOException | RestClientException | RuntimeException exception) {
+		} catch (IOException | RuntimeException exception) {
 			return demoResult(email, "HIBP API request could not complete safely. Showing demo data.");
 		}
 	}

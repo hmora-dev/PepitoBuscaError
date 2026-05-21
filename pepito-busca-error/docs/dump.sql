@@ -1,5 +1,7 @@
 -- dump.sql
--- Complete academic database dump with realistic test data.
+-- Core academic sample data for companies, analyses, indicators, and recommendations.
+-- Other modules can create their tables automatically with spring.jpa.hibernate.ddl-auto=update
+-- or through mysql-workbench-setup.sql.
 
 CREATE DATABASE IF NOT EXISTS pepito_busca_error
   CHARACTER SET utf8mb4

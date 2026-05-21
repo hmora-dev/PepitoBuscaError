@@ -63,6 +63,7 @@
 				</div>
 				<span class="severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
 					  th:text="${finding.severity.label}">Medium</span>
+				<span class="status-chip" th:text="${finding.status.label}">Open</span>
 			</div>
 			<div class="finding-body">
 				<div>

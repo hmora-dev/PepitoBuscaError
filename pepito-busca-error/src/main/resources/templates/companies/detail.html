@@ -65,6 +65,26 @@
 				</article>
 			</section>
 
+			<section class="section-grid three">
+				<article class="stat-card">
+					<span>Latest score</span>
+					<strong th:text="${company.latestRiskScore == null ? 'No data' : company.latestRiskScore}">0</strong>
+					<small>Most recent analysis</small>
+				</article>
+				<article class="stat-card">
+					<span>Average score</span>
+					<strong th:text="${company.averageRiskScore == null ? 'No data' : company.averageRiskScore}">0</strong>
+					<small>Historical company average</small>
+				</article>
+				<article class="stat-card">
+					<span>Risk trend</span>
+					<strong th:text="${company.riskTrendLabel}">Stable</strong>
+					<small th:text="${company.previousRiskScore == null ? 'Needs at least two analyses' : 'Previous score: ' + company.previousRiskScore}">
+						Previous score
+					</small>
+				</article>
+			</section>
+
 			<section class="detail-grid">
 				<article class="dark-summary-card">
 					<div class="summary-topline">
@@ -96,6 +116,19 @@
 						<div>
 							<dt>Sector</dt>
 							<dd th:text="${company.sector}">Sector</dd>
+						</div>
+						<div>
+							<dt>Risk trend</dt>
+							<dd>
+								<span class="badge risk-badge" th:classappend="${company.riskTrendClass}"
+									  th:text="${company.riskTrendLabel}">Stable</span>
+							</dd>
+						</div>
+						<div>
+							<dt>Recommended next step</dt>
+							<dd th:text="${company.latestRiskLevel == null ? 'Run the first analysis.' : 'Review open recommendations and repeat analysis after remediation.'}">
+								Next step
+							</dd>
 						</div>
 					</dl>
 				</article>

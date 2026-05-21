@@ -24,6 +24,10 @@ JPA and Hibernate reduce repetitive SQL for basic CRUD operations and map the Ja
 
 Thymeleaf was chosen because the application is a server-rendered Spring MVC project. It avoids unnecessary frontend complexity, extra build tools, API layers, and advanced authentication requirements.
 
+## Spring MVC
+
+Spring MVC was chosen because it fits the project workflow: controllers receive form submissions, services process business rules, repositories access data, and Thymeleaf renders HTML responses. This is easier to explain than a separate frontend and API architecture.
+
 ## Why This Visual Design Was Chosen
 
 The sidebar layout was chosen because it improves navigation in a dashboard-style application. It keeps the main sections visible on desktop and changes to a compact top navigation on smaller screens.
@@ -48,6 +52,10 @@ Leaflet was added to display the live position on a real interactive map with Op
 
 This design was chosen because it works in real life without needing a native mobile application. It is also privacy-aware because the device owner must open the page and grant permission. A limitation is that browser geolocation only runs while the page is open; continuous background tracking would require a native mobile app or a more advanced PWA architecture.
 
+## Why Geolocation Requires Consent
+
+The browser Geolocation API was used because it enforces a visible permission prompt. PepitoBuscaError does not bypass browser controls, does not track in the background, and rejects updates from inactive devices. This keeps the module suitable for owned or explicitly authorized devices.
+
 ## OSINT Intelligence Module
 
 The OSINT module was added as a passive public-footprint feature for owned or explicitly authorized domains. It reuses the audit target, scan run, and finding model so each OSINT report is stored with a target, status, score, and ordered findings.
@@ -65,6 +73,10 @@ DNSDumpster-style and SecurityTrails-style intelligence help identify exposed su
 Have I Been Pwned-style email exposure checks help identify whether corporate accounts may have appeared in known breach datasets. The application only displays high-level breach information and defensive recommendations, such as changing passwords, enabling MFA, and reviewing reused credentials.
 
 Demo mode was added so the project remains functional without paid API keys. When SecurityTrails or HIBP keys are missing, the UI clearly explains that demo data is being shown. This keeps the implementation suitable for academic and defensive use while avoiding hardcoded secrets.
+
+## Passive Checks Only
+
+Passive checks were chosen because the project is defensive and academic. The OSINT and audit modules collect public records, metadata, DNS information, TLS information, and well-known files. They do not brute force subdomains, scan networks, exploit services, or bypass authentication.
 
 ## MVC Architecture
 

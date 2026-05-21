@@ -17,11 +17,13 @@ public class DashboardStats {
 	private final List<Company> latestCompanies;
 	private final List<Analysis> latestAnalyses;
 	private final Analysis latestHighRiskAnalysis;
+	private final List<Analysis> latestHighRiskAnalyses;
 	private final Map<RiskLevel, Long> riskDistribution;
 
 	public DashboardStats(long totalCompanies, long totalAnalyses, int averageRiskScore, long criticalAnalyses,
 			long criticalIndicators, List<Company> latestCompanies, List<Analysis> latestAnalyses,
-			Analysis latestHighRiskAnalysis, Map<RiskLevel, Long> riskDistribution) {
+			Analysis latestHighRiskAnalysis, List<Analysis> latestHighRiskAnalyses,
+			Map<RiskLevel, Long> riskDistribution) {
 		this.totalCompanies = totalCompanies;
 		this.totalAnalyses = totalAnalyses;
 		this.averageRiskScore = averageRiskScore;
@@ -30,6 +32,7 @@ public class DashboardStats {
 		this.latestCompanies = latestCompanies;
 		this.latestAnalyses = latestAnalyses;
 		this.latestHighRiskAnalysis = latestHighRiskAnalysis;
+		this.latestHighRiskAnalyses = latestHighRiskAnalyses;
 		this.riskDistribution = riskDistribution;
 	}
 
@@ -63,6 +66,10 @@ public class DashboardStats {
 
 	public Analysis getLatestHighRiskAnalysis() {
 		return latestHighRiskAnalysis;
+	}
+
+	public List<Analysis> getLatestHighRiskAnalyses() {
+		return latestHighRiskAnalyses;
 	}
 
 	public Map<RiskLevel, Long> getRiskDistribution() {

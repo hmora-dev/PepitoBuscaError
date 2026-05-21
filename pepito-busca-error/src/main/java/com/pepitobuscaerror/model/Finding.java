@@ -29,6 +29,10 @@ public class Finding {
 	@Column(nullable = false, length = 40)
 	private FindingSeverity severity;
 
+	@Enumerated(EnumType.STRING)
+	@Column(length = 40)
+	private FindingStatus status = FindingStatus.OPEN;
+
 	@Column(nullable = false, length = 180)
 	private String title;
 
@@ -43,7 +47,8 @@ public class Finding {
 	protected Finding() {
 	}
 
-	public Finding(FindingCategory category, FindingSeverity severity, String title, String evidence, String recommendation) {
+	public Finding(FindingCategory category, FindingSeverity severity, String title, String evidence,
+			String recommendation) {
 		this.category = category;
 		this.severity = severity;
 		this.title = title;
@@ -65,6 +70,14 @@ public class Finding {
 
 	public FindingSeverity getSeverity() {
 		return severity;
+	}
+
+	public FindingStatus getStatus() {
+		return status == null ? FindingStatus.OPEN : status;
+	}
+
+	public void setStatus(FindingStatus status) {
+		this.status = status == null ? FindingStatus.OPEN : status;
 	}
 
 	public String getTitle() {

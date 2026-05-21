@@ -42,7 +42,7 @@ Configure optional API keys in `application.properties` or as environment variab
 ```properties
 osint.securitytrails.api-key=${SECURITYTRAILS_API_KEY:}
 osint.hibp.api-key=${HIBP_API_KEY:}
-osint.demo-mode=true
+osint.demo-mode=${OSINT_DEMO_MODE:true}
 ```
 
 For real provider mode:

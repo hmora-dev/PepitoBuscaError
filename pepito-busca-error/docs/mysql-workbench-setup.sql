@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS finding (
   scan_run_id BIGINT NOT NULL,
   category VARCHAR(40) NOT NULL,
   severity VARCHAR(40) NOT NULL,
+  status VARCHAR(40) NULL DEFAULT 'OPEN',
   title VARCHAR(180) NOT NULL,
   evidence LONGTEXT NOT NULL,
   recommendation LONGTEXT NOT NULL,

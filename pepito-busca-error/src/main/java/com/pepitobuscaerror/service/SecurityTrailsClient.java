@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -73,7 +72,7 @@ public class SecurityTrailsClient {
 					List.of("SecurityTrails supports historical DNS review. This application stores only a current summary, not raw historical datasets."),
 					subdomains, new ArrayList<>(associatedIps), new ArrayList<>(nameservers),
 					new ArrayList<>(mailServers), buildRiskNotes(subdomains, currentRecords));
-		} catch (IOException | RestClientException | RuntimeException exception) {
+		} catch (IOException | RuntimeException exception) {
 			return demoResult(domain, "SecurityTrails API request could not complete safely. Showing demo data.");
 		}
 	}

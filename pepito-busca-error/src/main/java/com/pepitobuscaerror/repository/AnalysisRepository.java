@@ -26,6 +26,9 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
 	@EntityGraph(attributePaths = "company")
 	Optional<Analysis> findFirstByRiskLevelInOrderByAnalysisDateDesc(Collection<RiskLevel> riskLevels);
 
+	@EntityGraph(attributePaths = "company")
+	List<Analysis> findTop5ByRiskLevelInOrderByAnalysisDateDesc(Collection<RiskLevel> riskLevels);
+
 	long countByRiskLevel(RiskLevel riskLevel);
 
 	@Query("select coalesce(avg(a.riskScore), 0) from Analysis a")

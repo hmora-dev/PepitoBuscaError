@@ -617,32 +617,37 @@ small,
 
 .risk-badge.low,
 .severity-badge.low,
-.priority-badge.low {
+.priority-badge.low,
+.status-badge.resolved {
 	background: #dcfce7;
 	color: var(--green);
 }
 
-.severity-badge.info {
+.severity-badge.info,
+.status-badge.open {
 	background: #e0f2fe;
 	color: #0369a1;
 }
 
 .risk-badge.medium,
 .severity-badge.medium,
-.priority-badge.medium {
+.priority-badge.medium,
+.status-badge.in-progress {
 	background: #fef3c7;
 	color: var(--yellow);
 }
 
 .risk-badge.high,
 .severity-badge.high,
-.priority-badge.high {
+.priority-badge.high,
+.status-badge.accepted-risk {
 	background: #fee2e2;
 	color: var(--red);
 }
 
 .risk-badge.critical,
-.severity-badge.critical {
+.severity-badge.critical,
+.status-badge.false-positive {
 	background: #111827;
 	color: #ffffff;
 }

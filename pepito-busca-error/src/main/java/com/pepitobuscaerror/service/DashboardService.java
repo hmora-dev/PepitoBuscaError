@@ -40,6 +40,8 @@ public class DashboardService {
 				analysisRepository.findTop8ByOrderByAnalysisDateDesc(),
 				analysisRepository.findFirstByRiskLevelInOrderByAnalysisDateDesc(
 						List.of(RiskLevel.CRITICAL, RiskLevel.HIGH)).orElse(null),
+				analysisRepository.findTop5ByRiskLevelInOrderByAnalysisDateDesc(
+						List.of(RiskLevel.CRITICAL, RiskLevel.HIGH)),
 				distribution
 		);
 	}

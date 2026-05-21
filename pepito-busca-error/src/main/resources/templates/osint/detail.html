@@ -67,7 +67,9 @@
 						<div class="compact-row" th:each="finding : ${priorityFindings}">
 							<span>
 								<strong th:text="${finding.title}">Finding</strong>
-								<small th:text="${finding.category.label + ' / ' + finding.severity.label}">OSINT / Low</small>
+								<small th:text="${finding.category.label + ' / ' + finding.severity.label + ' / ' + finding.status.label}">
+									OSINT / Low / Open
+								</small>
 							</span>
 							<span class="badge severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
 								  th:text="${finding.severity.label}">Low</span>
@@ -185,8 +187,12 @@
 								<span class="category" th:text="${finding.category.label}">OSINT</span>
 								<h3 th:text="${finding.title}">Finding</h3>
 							</div>
-							<span class="badge severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
-								  th:text="${finding.severity.label}">Info</span>
+							<div class="action-row">
+								<span class="badge status-badge" th:classappend="${finding.status.cssClass}"
+									  th:text="${finding.status.label}">Open</span>
+								<span class="badge severity-badge" th:classappend="${#strings.toLowerCase(finding.severity.name())}"
+									  th:text="${finding.severity.label}">Info</span>
+							</div>
 						</div>
 						<div class="finding-body">
 							<div>

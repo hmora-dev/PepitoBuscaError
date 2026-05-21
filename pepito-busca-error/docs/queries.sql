@@ -74,3 +74,16 @@ FROM companies c
 JOIN analyses a ON a.id_company = c.id_company
 WHERE a.risk_level = 'CRITICAL'
 ORDER BY a.analysis_date DESC;
+
+-- 8. Show latest OSINT findings if passive scans have been executed.
+SELECT
+  at.domain,
+  sr.started_at,
+  f.category,
+  f.severity,
+  COALESCE(f.status, 'OPEN') AS status,
+  f.title
+FROM finding f
+JOIN scan_run sr ON sr.id = f.scan_run_id
+JOIN audit_target at ON at.id = sr.target_id
+ORDER BY sr.started_at DESC, f.severity DESC;

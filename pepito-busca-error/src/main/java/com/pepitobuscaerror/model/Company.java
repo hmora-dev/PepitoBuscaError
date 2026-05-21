@@ -137,4 +137,50 @@ public class Company {
 		Analysis latestAnalysis = getLatestAnalysis();
 		return latestAnalysis == null ? null : latestAnalysis.getRiskScore();
 	}
+
+	public Analysis getPreviousAnalysis() {
+		List<Analysis> sortedAnalyses = analyses.stream()
+				.sorted(Comparator.comparing(Analysis::getAnalysisDate).reversed())
+				.toList();
+		return sortedAnalyses.size() < 2 ? null : sortedAnalyses.get(1);
+	}
+
+	public Integer getPreviousRiskScore() {
+		Analysis previousAnalysis = getPreviousAnalysis();
+		return previousAnalysis == null ? null : previousAnalysis.getRiskScore();
+	}
+
+	public Integer getAverageRiskScore() {
+		if (analyses.isEmpty()) {
+			return null;
+		}
+		return (int) Math.round(analyses.stream()
+				.mapToInt(Analysis::getRiskScore)
+				.average()
+				.orElse(0));
+	}
+
+	public String getRiskTrendLabel() {
+		Integer latestRiskScore = getLatestRiskScore();
+		Integer previousRiskScore = getPreviousRiskScore();
+		if (latestRiskScore == null || previousRiskScore == null) {
+			return "No trend yet";
+		}
+		if (latestRiskScore < previousRiskScore) {
+			return "Improving";
+		}
+		if (latestRiskScore > previousRiskScore) {
+			return "Worsening";
+		}
+		return "Stable";
+	}
+
+	public String getRiskTrendClass() {
+		return switch (getRiskTrendLabel()) {
+			case "Improving" -> "low";
+			case "Worsening" -> "high";
+			case "Stable" -> "medium";
+			default -> "neutral";
+		};
+	}
 }

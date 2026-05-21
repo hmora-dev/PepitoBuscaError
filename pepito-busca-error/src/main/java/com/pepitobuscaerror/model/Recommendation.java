@@ -67,6 +67,26 @@ public class Recommendation {
 		return action;
 	}
 
+	public String getResponsibleRole() {
+		return switch (priority) {
+			case HIGH -> "IT / Security owner";
+			case MEDIUM -> "Technical owner";
+			case LOW -> "Operations owner";
+		};
+	}
+
+	public String getSuggestedDeadline() {
+		return switch (priority) {
+			case HIGH -> "7 days";
+			case MEDIUM -> "30 days";
+			case LOW -> "90 days";
+		};
+	}
+
+	public String getTrackingStatus() {
+		return "Planned";
+	}
+
 	public Analysis getAnalysis() {
 		return analysis;
 	}

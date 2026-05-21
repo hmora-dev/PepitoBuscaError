@@ -124,6 +124,13 @@
 						<article class="detail-card" th:each="recommendation : ${recommendationGroups.get(priority)}">
 							<strong th:text="${recommendation.description}">Recommendation</strong>
 							<p th:text="${recommendation.action}">Action</p>
+							<p>
+								<span th:text="${'Owner: ' + recommendation.responsibleRole}">Owner</span>
+								<span> / </span>
+								<span th:text="${'Deadline: ' + recommendation.suggestedDeadline}">Deadline</span>
+								<span> / </span>
+								<span th:text="${'Status: ' + recommendation.trackingStatus}">Status</span>
+							</p>
 						</article>
 					</div>
 				</div>

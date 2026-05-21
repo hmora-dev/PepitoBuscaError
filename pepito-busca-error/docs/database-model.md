@@ -91,6 +91,7 @@ Stores OSINT and security findings generated during a scan run.
 - `scan_run_id`: foreign key to `scan_run`.
 - `category`: `OSINT`, `WEB`, `MAIL`, `DNS`, `DATA`, or `AVAILABILITY`.
 - `severity`: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`.
+- `status`: `OPEN`, `IN_PROGRESS`, `ACCEPTED_RISK`, `RESOLVED`, or `FALSE_POSITIVE`.
 - `title`: short finding title.
 - `evidence`: observed public signal.
 - `recommendation`: suggested remediation.

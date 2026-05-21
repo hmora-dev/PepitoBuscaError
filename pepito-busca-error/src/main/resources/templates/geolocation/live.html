@@ -12,7 +12,7 @@
 			</div>
 			<h1 th:text="${device.name}">Device</h1>
 			<p>
-				This page detects this device browser's real location and sends it to PepitoBuscaError while it remains open.
+				This page detects this device browser's real location only after browser permission and sends it to PepitoBuscaError while it remains open.
 			</p>
 
 			<div class="live-status-grid">
@@ -35,6 +35,10 @@
 					<i class="bi bi-stop-circle"></i>
 					<span>Stop</span>
 				</button>
+			</div>
+			<div class="warning-box live-note">
+				<i class="bi bi-shield-lock"></i>
+				<span>Use this private link only on owned or authorized devices. There is no hidden background tracking: closing this page or pressing Stop ends browser updates.</span>
 			</div>
 		</section>
 
@@ -84,7 +88,7 @@
 
 			<div class="info-box live-note">
 				<i class="bi bi-info-circle"></i>
-				<span>Location starts automatically after browser permission. Most mobile browsers require HTTPS for GPS access.</span>
+				<span>The browser controls the permission prompt. Most mobile browsers require HTTPS for GPS access.</span>
 			</div>
 		</section>
 	</main>
