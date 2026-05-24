@@ -13,6 +13,8 @@ public interface ScanRunRepository extends JpaRepository<ScanRun, Long> {
 
 	List<ScanRun> findTop12ByOrderByStartedAtDesc();
 
+	List<ScanRun> findByTarget_IdOrderByStartedAtDesc(Long targetId);
+
 	@Query("select count(f) from Finding f where f.severity = :severity")
 	long countFindingsBySeverity(@Param("severity") FindingSeverity severity);
 

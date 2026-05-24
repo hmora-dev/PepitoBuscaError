@@ -106,6 +106,20 @@ public class OsintController {
 		return "osint/detail";
 	}
 
+	@PostMapping("/scans/{id}/delete")
+	public String deleteScan(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+		auditService.deleteScan(id);
+		redirectAttributes.addFlashAttribute("successMessage", "OSINT report deleted successfully.");
+		return "redirect:/osint";
+	}
+
+	@PostMapping("/targets/{id}/delete")
+	public String deleteTarget(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+		auditService.deleteTarget(id);
+		redirectAttributes.addFlashAttribute("successMessage", "OSINT target and its reports were deleted successfully.");
+		return "redirect:/osint";
+	}
+
 	private void addIndexData(Model model) {
 		model.addAttribute("recentScans", auditService.recentScans());
 		model.addAttribute("recentTargets", auditService.recentTargets());

@@ -1,7 +1,8 @@
 package com.pepitobuscaerror.controller;
 
+import com.pepitobuscaerror.dto.PublicLinkInfo;
 import com.pepitobuscaerror.model.TrackedDevice;
-import com.pepitobuscaerror.service.TrackingLinkService;
+import com.pepitobuscaerror.service.PublicLinkService;
 import com.pepitobuscaerror.service.TrackedDeviceService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -27,11 +29,11 @@ import java.util.Map;
 public class GeolocationController {
 
 	private final TrackedDeviceService trackedDeviceService;
-	private final TrackingLinkService trackingLinkService;
+	private final PublicLinkService publicLinkService;
 
-	public GeolocationController(TrackedDeviceService trackedDeviceService, TrackingLinkService trackingLinkService) {
+	public GeolocationController(TrackedDeviceService trackedDeviceService, PublicLinkService publicLinkService) {
 		this.trackedDeviceService = trackedDeviceService;
-		this.trackingLinkService = trackingLinkService;
+		this.publicLinkService = publicLinkService;
 	}
 
 	@GetMapping
@@ -39,6 +41,7 @@ public class GeolocationController {
 		model.addAttribute("devices", trackedDeviceService.findDevices(q));
 		model.addAttribute("query", q == null ? "" : q);
 		model.addAttribute("activeDevices", trackedDeviceService.countActiveDevices());
+		model.addAttribute("locatedDevices", trackedDeviceService.countLocatedDevices());
 		return "geolocation/list";
 	}
 
@@ -66,10 +69,16 @@ public class GeolocationController {
 	@GetMapping("/{id}")
 	public String deviceDetail(@PathVariable Long id, HttpServletRequest request, Model model) {
 		TrackedDevice device = trackedDeviceService.getDevice(id);
-		TrackingLinkService.TrackingLinks trackingLinks =
-				trackingLinkService.buildLinks(request, device.getTrackingToken());
+		PublicLinkInfo publicLinkInfo = publicLinkService.buildGpsLink(device.getTrackingToken(), request);
 		model.addAttribute("device", device);
-		model.addAttribute("trackingLinks", trackingLinks);
+		model.addAttribute("publicLinkInfo", publicLinkInfo);
+		model.addAttribute("publicClientLink", publicLinkInfo.getUrl());
+		model.addAttribute("publicLinkStatus", publicLinkInfo.getStatusLabel());
+		model.addAttribute("publicLinkWarning", publicLinkInfo.getWarningMessage());
+		model.addAttribute("publicHttpsReady", publicLinkInfo.isPublicHttpsReady());
+		model.addAttribute("usableFromAnotherNetwork", publicLinkInfo.isUsableFromAnotherNetwork());
+		model.addAttribute("publicLinkReady", publicLinkInfo.isPublicHttpsReady());
+		model.addAttribute("usableFromDifferentNetwork", publicLinkInfo.isUsableFromAnotherNetwork());
 		return "geolocation/detail";
 	}
 
@@ -86,6 +95,10 @@ public class GeolocationController {
 		body.put("longitude", device.getLongitude());
 		body.put("accuracy", device.getAccuracyMeters());
 		body.put("locationLabel", device.getLocationLabel());
+		body.put("lastClientIp", device.getLastClientIp());
+		body.put("lastUserAgent", device.getLastUserAgent());
+		body.put("trackingStatus", device.getTrackingStatusLabel());
+		body.put("trackingStatusClass", device.getTrackingStatusClass());
 		body.put("lastSeenAt", device.getLastSeenAt().toString());
 		return ResponseEntity.ok(body);
 	}
@@ -101,10 +114,11 @@ public class GeolocationController {
 	public ResponseEntity<Map<String, Object>> updateLivePosition(@PathVariable String trackingToken,
 			@RequestParam Double latitude, @RequestParam Double longitude,
 			@RequestParam(required = false) Double accuracy,
-			@RequestParam(required = false) String locationLabel) {
+			@RequestParam(required = false) String locationLabel,
+			HttpServletRequest request) {
 		try {
 			TrackedDevice device = trackedDeviceService.updateLivePosition(trackingToken, latitude, longitude, accuracy,
-					locationLabel);
+					locationLabel, resolveClientIp(request), request.getHeader("User-Agent"));
 			Map<String, Object> body = new LinkedHashMap<>();
 			body.put("status", "ok");
 			body.put("deviceId", device.getIdDevice());
@@ -112,6 +126,8 @@ public class GeolocationController {
 			body.put("longitude", device.getLongitude());
 			body.put("accuracy", device.getAccuracyMeters() == null ? 0 : device.getAccuracyMeters());
 			body.put("locationLabel", device.getLocationLabel());
+			body.put("lastClientIp", device.getLastClientIp());
+			body.put("lastUserAgent", device.getLastUserAgent());
 			body.put("lastSeenAt", device.getLastSeenAt().toString());
 			return ResponseEntity.ok(body);
 		} catch (IllegalArgumentException exception) {
@@ -145,5 +161,62 @@ public class GeolocationController {
 		trackedDeviceService.deleteDevice(id);
 		redirectAttributes.addFlashAttribute("successMessage", "Device deleted successfully.");
 		return "redirect:/geolocation";
+	}
+
+	private String resolveClientIp(HttpServletRequest request) {
+		for (String headerName : List.of("CF-Connecting-IP", "X-Real-IP", "X-Forwarded-For")) {
+			String candidate = firstHeaderValue(request.getHeader(headerName));
+			if (candidate != null) {
+				return candidate;
+			}
+		}
+		String forwardedCandidate = forwardedForValue(request.getHeader("Forwarded"));
+		if (forwardedCandidate != null) {
+			return forwardedCandidate;
+		}
+		return cleanIpCandidate(request.getRemoteAddr());
+	}
+
+	private String firstHeaderValue(String headerValue) {
+		if (headerValue == null || headerValue.isBlank()) {
+			return null;
+		}
+		return cleanIpCandidate(headerValue.split(",", 2)[0]);
+	}
+
+	private String forwardedForValue(String headerValue) {
+		String firstForwardedEntry = firstHeaderValue(headerValue);
+		if (firstForwardedEntry == null) {
+			return null;
+		}
+		for (String part : firstForwardedEntry.split(";")) {
+			String cleanPart = part.trim();
+			if (cleanPart.regionMatches(true, 0, "for=", 0, 4)) {
+				return cleanIpCandidate(cleanPart.substring(4));
+			}
+		}
+		return null;
+	}
+
+	private String cleanIpCandidate(String value) {
+		if (value == null) {
+			return null;
+		}
+		String cleanValue = value.trim();
+		if (cleanValue.isBlank() || "unknown".equalsIgnoreCase(cleanValue)) {
+			return null;
+		}
+		if (cleanValue.startsWith("\"") && cleanValue.endsWith("\"") && cleanValue.length() > 1) {
+			cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
+		}
+		if (cleanValue.startsWith("[") && cleanValue.contains("]")) {
+			return cleanValue.substring(1, cleanValue.indexOf(']'));
+		}
+		int portSeparator = cleanValue.lastIndexOf(':');
+		if (portSeparator > 0 && cleanValue.indexOf(':') == portSeparator
+				&& cleanValue.substring(0, portSeparator).contains(".")) {
+			return cleanValue.substring(0, portSeparator);
+		}
+		return cleanValue;
 	}
 }

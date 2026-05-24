@@ -212,14 +212,28 @@
 					</div>
 
 					<div class="compact-list" th:if="${!#lists.isEmpty(recentScans)}">
-						<a class="compact-row" th:each="scan : ${recentScans}" th:href="@{/osint/scans/{id}(id=${scan.id})}">
+						<div class="compact-row manage-row" th:each="scan : ${recentScans}">
 							<span>
-								<strong th:text="${scan.target.name}">Asset</strong>
+								<a class="table-title" th:href="@{/osint/scans/{id}(id=${scan.id})}"
+								   th:text="${scan.target.name}">Asset</a>
 								<small th:text="${scan.target.domain}">example.com</small>
 							</span>
-							<span class="badge severity-badge" th:classappend="${scan.riskClass}"
-								  th:text="${scan.riskScore + ' pts'}">0 pts</span>
-						</a>
+							<div class="action-row">
+								<span class="badge severity-badge" th:classappend="${scan.riskClass}"
+									  th:text="${scan.riskScore + ' pts'}">0 pts</span>
+								<a class="btn btn-small btn-secondary" th:href="@{/osint/scans/{id}(id=${scan.id})}">
+									<i class="bi bi-eye"></i>
+									<span>Open</span>
+								</a>
+								<form th:action="@{/osint/scans/{id}/delete(id=${scan.id})}" method="post">
+									<button class="btn btn-small btn-danger" type="submit"
+											onclick="return confirm('Delete this OSINT report?');">
+										<i class="bi bi-trash"></i>
+										<span>Delete</span>
+									</button>
+								</form>
+							</div>
+						</div>
 					</div>
 
 					<div class="empty-state" th:if="${#lists.isEmpty(recentScans)}">
@@ -239,14 +253,27 @@
 					</div>
 
 					<div class="compact-list" th:if="${!#lists.isEmpty(recentTargets)}">
-						<a class="compact-row" th:each="target : ${recentTargets}"
-						   th:href="@{/osint(domain=${target.domain},name=${target.name})}">
+						<div class="compact-row manage-row" th:each="target : ${recentTargets}">
 							<span>
-								<strong th:text="${target.name}">Asset</strong>
+								<a class="table-title" th:href="@{/osint(domain=${target.domain},name=${target.name})}"
+								   th:text="${target.name}">Asset</a>
 								<small th:text="${target.domain}">example.com</small>
 							</span>
-							<i class="bi bi-arrow-repeat"></i>
-						</a>
+							<div class="action-row">
+								<a class="btn btn-small btn-secondary"
+								   th:href="@{/osint(domain=${target.domain},name=${target.name})}">
+									<i class="bi bi-arrow-repeat"></i>
+									<span>Reuse</span>
+								</a>
+								<form th:action="@{/osint/targets/{id}/delete(id=${target.id})}" method="post">
+									<button class="btn btn-small btn-danger" type="submit"
+											onclick="return confirm('Delete this OSINT target and all its reports?');">
+										<i class="bi bi-trash"></i>
+										<span>Delete</span>
+									</button>
+								</form>
+							</div>
+						</div>
 					</div>
 
 					<div class="empty-state" th:if="${#lists.isEmpty(recentTargets)}">
@@ -296,10 +323,19 @@
 								<small th:text="${scan.riskLabel}">Low</small>
 							</td>
 							<td>
-								<a class="btn btn-small btn-secondary" th:href="@{/osint/scans/{id}(id=${scan.id})}">
-									<i class="bi bi-eye"></i>
-									<span>Open report</span>
-								</a>
+								<div class="table-actions">
+									<a class="btn btn-small btn-secondary" th:href="@{/osint/scans/{id}(id=${scan.id})}">
+										<i class="bi bi-eye"></i>
+										<span>Open</span>
+									</a>
+									<form th:action="@{/osint/scans/{id}/delete(id=${scan.id})}" method="post">
+										<button class="btn btn-small btn-danger" type="submit"
+												onclick="return confirm('Delete this OSINT report?');">
+											<i class="bi bi-trash"></i>
+											<span>Delete</span>
+										</button>
+									</form>
+								</div>
 							</td>
 						</tr>
 						</tbody>

@@ -8,14 +8,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
+import java.net.URI;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 @Service
 public class TrackingLinkService {
@@ -34,14 +29,9 @@ public class TrackingLinkService {
 				.path(path)
 				.build()
 				.toUriString();
-		List<String> networkUrls = findPrivateIpv4Addresses().stream()
-				.map(ipAddress -> buildUrl(request.getScheme(), ipAddress, request.getServerPort(),
-						request.getContextPath(), path))
-				.toList();
-		String networkUrl = networkUrls.isEmpty() ? "" : networkUrls.get(0);
 		String configuredUrl = buildConfiguredUrl(path);
 
-		return new TrackingLinks(currentUrl, networkUrl, networkUrls, configuredUrl);
+		return new TrackingLinks(currentUrl, "", List.of(), configuredUrl);
 	}
 
 	private String buildConfiguredUrl(String path) {
@@ -69,112 +59,83 @@ public class TrackingLinkService {
 		return configuredBaseUrl == null ? "" : configuredBaseUrl.trim();
 	}
 
-	private String buildUrl(String scheme, String host, int port, String contextPath, String path) {
-		UriComponentsBuilder builder = UriComponentsBuilder.newInstance()
-				.scheme(scheme)
-				.host(host);
-		if (!isDefaultPort(scheme, port)) {
-			builder.port(port);
-		}
-		if (contextPath != null && !contextPath.isBlank()) {
-			builder.path(contextPath);
-		}
-		return builder.path(path).build().toUriString();
-	}
-
-	private boolean isDefaultPort(String scheme, int port) {
-		return ("http".equalsIgnoreCase(scheme) && port == 80)
-				|| ("https".equalsIgnoreCase(scheme) && port == 443);
-	}
-
-	private List<String> findPrivateIpv4Addresses() {
-		List<NetworkAddressCandidate> candidates = findIpv4AddressCandidates(true);
-		if (candidates.isEmpty()) {
-			candidates = findIpv4AddressCandidates(false);
-		}
-		Set<String> addresses = new LinkedHashSet<>();
-		candidates.stream()
-				.sorted(Comparator.comparingInt(NetworkAddressCandidate::score)
-						.thenComparing(NetworkAddressCandidate::hostAddress))
-				.map(NetworkAddressCandidate::hostAddress)
-				.forEach(addresses::add);
-		return List.copyOf(addresses);
-	}
-
-	private List<NetworkAddressCandidate> findIpv4AddressCandidates(boolean skipLikelyVirtualAdapters) {
-		List<NetworkAddressCandidate> candidates = new ArrayList<>();
-		try {
-			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-			while (interfaces.hasMoreElements()) {
-				NetworkInterface networkInterface = interfaces.nextElement();
-				if (!networkInterface.isUp() || networkInterface.isLoopback() || networkInterface.isVirtual()) {
-					continue;
-				}
-				if (skipLikelyVirtualAdapters && isLikelyVirtualAdapter(networkInterface)) {
-					continue;
-				}
-				Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-				while (addresses.hasMoreElements()) {
-					InetAddress address = addresses.nextElement();
-					if (!(address instanceof Inet4Address) || address.isLoopbackAddress() || address.isLinkLocalAddress()) {
-						continue;
-					}
-					if (!address.isSiteLocalAddress()) {
-						continue;
-					}
-					String hostAddress = address.getHostAddress();
-					if (isLikelyHostOnlyAddress(hostAddress)) {
-						continue;
-					}
-					candidates.add(new NetworkAddressCandidate(hostAddress, adapterScore(networkInterface)));
-				}
-			}
-		} catch (SocketException exception) {
-			return List.of();
-		}
-		return candidates;
-	}
-
-	private boolean isLikelyVirtualAdapter(NetworkInterface networkInterface) {
-		String name = networkInterface.getName() == null ? "" : networkInterface.getName();
-		String displayName = networkInterface.getDisplayName() == null ? "" : networkInterface.getDisplayName();
-		String adapterName = (name + " " + displayName).toLowerCase();
-		return adapterName.contains("docker")
-				|| adapterName.contains("container")
-				|| adapterName.contains("veth")
-				|| adapterName.contains("vethernet")
-				|| adapterName.contains("virtual")
-				|| adapterName.contains("virtualbox")
-				|| adapterName.contains("vmware")
-				|| adapterName.contains("vbox")
-				|| adapterName.contains("hyper-v")
-				|| adapterName.contains("host-only")
-				|| adapterName.contains("wsl")
-				|| adapterName.contains("loopback")
-				|| adapterName.contains("bluetooth");
-	}
-
-	private int adapterScore(NetworkInterface networkInterface) {
-		String name = networkInterface.getName() == null ? "" : networkInterface.getName();
-		String displayName = networkInterface.getDisplayName() == null ? "" : networkInterface.getDisplayName();
-		String adapterName = (name + " " + displayName).toLowerCase();
-		if (adapterName.contains("wi-fi") || adapterName.contains("wifi") || adapterName.contains("wireless")
-				|| adapterName.contains("wlan")) {
-			return 0;
-		}
-		if (adapterName.contains("ethernet") || adapterName.startsWith("eth")) {
-			return 10;
-		}
-		return 20;
-	}
-
-	private boolean isLikelyHostOnlyAddress(String hostAddress) {
-		return hostAddress.startsWith("192.168.56.");
-	}
-
-	private record NetworkAddressCandidate(String hostAddress, int score) {
-	}
-
 	public record TrackingLinks(String currentUrl, String networkUrl, List<String> networkUrls, String configuredUrl) {
+
+		public String getRecommendedUrl() {
+			return getPublicUrl();
+		}
+
+		public String getPublicUrl() {
+			if (configuredUrl != null && !configuredUrl.isBlank()) {
+				return configuredUrl;
+			}
+			if (isPublicClientUrl(currentUrl)) {
+				return currentUrl;
+			}
+			return "";
+		}
+
+		public String getRecommendedLabel() {
+			return hasPublicUrl() ? "Public client link" : "Public URL required";
+		}
+
+		public boolean hasPublicUrl() {
+			return !getPublicUrl().isBlank();
+		}
+
+		private boolean isPublicClientUrl(String url) {
+			if (url == null || url.isBlank()) {
+				return false;
+			}
+			try {
+				URI uri = URI.create(url);
+				String scheme = uri.getScheme();
+				String host = uri.getHost();
+				if (scheme == null || host == null) {
+					return false;
+				}
+				if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+					return false;
+				}
+				return !isLocalOrPrivateHost(host);
+			} catch (IllegalArgumentException exception) {
+				return false;
+			}
+		}
+
+		private boolean isLocalOrPrivateHost(String host) {
+			String normalizedHost = host.toLowerCase(Locale.ROOT);
+			if ("localhost".equals(normalizedHost) || normalizedHost.endsWith(".localhost")
+					|| normalizedHost.endsWith(".local")) {
+				return true;
+			}
+			if (!isIpLiteral(normalizedHost)) {
+				return false;
+			}
+			try {
+				InetAddress address = InetAddress.getByName(normalizedHost);
+				return address.isAnyLocalAddress()
+						|| address.isLoopbackAddress()
+						|| address.isLinkLocalAddress()
+						|| address.isSiteLocalAddress()
+						|| isCarrierGradeNat(address);
+			} catch (Exception exception) {
+				return true;
+			}
+		}
+
+		private boolean isIpLiteral(String host) {
+			return host.matches("\\d{1,3}(\\.\\d{1,3}){3}") || host.contains(":");
+		}
+
+		private boolean isCarrierGradeNat(InetAddress address) {
+			if (!(address instanceof Inet4Address)) {
+				return false;
+			}
+			byte[] bytes = address.getAddress();
+			int firstOctet = bytes[0] & 0xff;
+			int secondOctet = bytes[1] & 0xff;
+			return firstOctet == 100 && secondOctet >= 64 && secondOctet <= 127;
+		}
 	}
 }

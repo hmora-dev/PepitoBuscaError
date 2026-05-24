@@ -1,364 +1,96 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Live tracking - PepitoBuscaError')}"></head>
+<head th:replace="~{fragments/layout :: head('Location permission - PepitoBuscaError')}"></head>
 <body>
-<div class="tracking-page">
-	<main class="tracking-shell">
-		<section class="dark-summary-card live-tracker-card">
+<div class="tracking-page tracking-permission-page">
+	<main class="tracking-consent-shell">
+		<section class="dark-summary-card tracking-consent-card">
 			<div class="summary-topline">
-				<span>Live device tracking</span>
-				<span class="badge success" th:if="${device.active}">Active</span>
-				<span class="badge neutral" th:if="${!device.active}">Inactive</span>
+				<span>Location permission</span>
+				<span class="badge success" th:if="${device.active}">Active link</span>
+				<span class="badge neutral" th:if="${!device.active}">Inactive link</span>
 			</div>
-			<h1 th:text="${device.name}">Device</h1>
+
+			<div class="permission-icon" aria-hidden="true">
+				<i class="bi bi-geo-alt-fill"></i>
+			</div>
+
+			<h1>Allow location permission</h1>
 			<p>
-				This page detects this device browser's real location only after browser permission and sends it to PepitoBuscaError while it remains open.
+				This window only asks your browser for location permission and sends the current position to the authorized tracker.
+			</p>
+			<p>
+				When your browser asks, tap Allow. Closing this window stops location updates.
 			</p>
 
 			<div class="live-status-grid">
 				<div>
 					<span>Status</span>
-					<strong id="tracking-status">Starting</strong>
+					<strong id="tracking-status">Starting permission request</strong>
 				</div>
 				<div>
-					<span>Accuracy</span>
-					<strong id="tracking-accuracy">-</strong>
+					<span>Last sent</span>
+					<strong id="tracking-last-sent">Not sent yet</strong>
 				</div>
 			</div>
 
 			<div class="form-actions">
 				<button class="btn btn-primary" type="button" id="start-tracking">
-					<i class="bi bi-broadcast-pin"></i>
-					<span>Start live tracking</span>
+					<i class="bi bi-geo-alt"></i>
+					<span>Allow location</span>
 				</button>
 				<button class="btn btn-ghost" type="button" id="stop-tracking" disabled>
 					<i class="bi bi-stop-circle"></i>
-					<span>Stop</span>
+					<span>Stop sharing</span>
 				</button>
 			</div>
+
 			<div class="warning-box live-note">
 				<i class="bi bi-shield-lock"></i>
-				<span>Use this private link only on owned or authorized devices. There is no hidden background tracking: closing this page or pressing Stop ends browser updates.</span>
-			</div>
-		</section>
-
-		<section class="content-panel">
-			<div class="section-title">
-				<div>
-					<p class="eyebrow">Live map</p>
-					<h2>Device position</h2>
-				</div>
-				<span class="badge neutral">GPS / Wi-Fi / network</span>
-			</div>
-
-			<div class="map-shell">
-				<div class="map-toolbar" aria-label="Live map controls">
-					<button class="map-control-button" type="button" id="center-live-map">
-						<i class="bi bi-crosshair"></i>
-						<span>Center</span>
-					</button>
-					<button class="map-control-button active" type="button" id="follow-live-map">
-						<i class="bi bi-broadcast"></i>
-						<span>Follow</span>
-					</button>
-				</div>
-				<div id="live-map" class="leaflet-map live-map"></div>
-			</div>
-
-			<div class="map-readout-grid">
-				<div>
-					<span>Detected location</span>
-					<strong id="live-location"
-							th:text="${device.locationLabel == null || device.locationLabel == '' ? 'Waiting for device' : device.locationLabel}">
-						Waiting
-					</strong>
-				</div>
-				<div>
-					<span>Position quality</span>
-					<strong id="live-position-quality"
-							th:text="${device.accuracyMeters == null ? 'Waiting for GPS' : #numbers.formatDecimal(device.accuracyMeters, 1, 1) + ' m accuracy'}">
-						Waiting
-					</strong>
-				</div>
-				<div>
-					<span>Last sent</span>
-					<strong id="live-last-sent">Not sent yet</strong>
-				</div>
-			</div>
-
-			<div class="info-box live-note">
-				<i class="bi bi-info-circle"></i>
-				<span>The browser controls the permission prompt. Most mobile browsers require HTTPS for GPS access.</span>
+				<span id="tracking-detail">The browser controls the permission prompt. This page has no dashboard, menus, or map.</span>
 			</div>
 		</section>
 	</main>
 </div>
 
-<script th:src="@{/webjars/leaflet/1.9.4/dist/leaflet.js}"
-		src="/webjars/leaflet/1.9.4/dist/leaflet.js"></script>
 <script th:inline="javascript">
 	const updateUrl = /*[[@{/geolocation/live/{token}/position(token=${device.trackingToken})}]]*/ "";
-	const initialHasCoordinates = /*[[${device.hasCoordinates()}]]*/ false;
-	const initialLatitude = /*[[${device.latitude}]]*/ 40.4168;
-	const initialLongitude = /*[[${device.longitude}]]*/ -3.7038;
-	const initialAccuracy = /*[[${device.accuracyMeters}]]*/ null;
-	const deviceName = /*[[${device.name}]]*/ "Device";
-	const initialLocationLabel = /*[[${device.locationLabel}]]*/ "";
-	const markerIconUrl = /*[[@{/img/pepito-map-marker.svg}]]*/ "/img/pepito-map-marker.svg";
+	const deviceActive = /*[[${device.active}]]*/ false;
 	let watchId = null;
-	let mapMarker = null;
-	let accuracyCircle = null;
-	let firstLiveUpdate = true;
-	let followLiveMap = true;
-	let lastLivePosition = null;
-	let lastResolvedLabel = initialLocationLabel || "";
-	let lastResolvedPosition = initialHasCoordinates ? [initialLatitude, initialLongitude] : null;
-	let lastResolvedAt = 0;
-	let activeLocationLookup = null;
 
 	const statusElement = document.getElementById("tracking-status");
-	const accuracyElement = document.getElementById("tracking-accuracy");
-	const locationElement = document.getElementById("live-location");
-	const positionQualityElement = document.getElementById("live-position-quality");
-	const lastSentElement = document.getElementById("live-last-sent");
+	const lastSentElement = document.getElementById("tracking-last-sent");
+	const detailElement = document.getElementById("tracking-detail");
 	const startButton = document.getElementById("start-tracking");
 	const stopButton = document.getElementById("stop-tracking");
-	const centerMapButton = document.getElementById("center-live-map");
-	const followMapButton = document.getElementById("follow-live-map");
-	const fallbackPosition = [40.4168, -3.7038];
-	const startPosition = initialHasCoordinates ? [initialLatitude, initialLongitude] : fallbackPosition;
 
-	const liveMap = L.map("live-map", {
-		zoomControl: false,
-		scrollWheelZoom: true,
-		touchZoom: true,
-		dragging: true
-	}).setView(startPosition, initialHasCoordinates ? 15 : 6);
-
-	const liveZoomControl = L.control.zoom({position: "bottomright"}).addTo(liveMap);
-	const liveTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-		maxZoom: 19,
-		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-	}).addTo(liveMap);
-
-	const deviceMarkerIcon = L.icon({
-		iconUrl: markerIconUrl,
-		iconSize: [48, 58],
-		iconAnchor: [24, 56],
-		popupAnchor: [0, -50]
-	});
-
-	function setLiveFollow(enabled) {
-		followLiveMap = enabled;
-		followMapButton.classList.toggle("active", enabled);
-	}
-
-	function disableLiveFollow() {
-		setLiveFollow(false);
-	}
-
-	function refreshLiveMapSize() {
-		liveMap.invalidateSize({pan: false});
-		liveTileLayer.redraw();
-		if (lastLivePosition !== null && followLiveMap) {
-			liveMap.setView(lastLivePosition, liveMap.getZoom(), {animate: false});
-		}
-	}
-
-	function scheduleLiveMapRefresh() {
-		refreshLiveMapSize();
-		window.requestAnimationFrame(refreshLiveMapSize);
-		[100, 300, 700, 1200, 2200].forEach(function (delay) {
-			setTimeout(refreshLiveMapSize, delay);
-		});
-	}
-
-	function updateMap(latitude, longitude, accuracy) {
-		const position = [latitude, longitude];
-		lastLivePosition = position;
-		if (mapMarker === null) {
-			mapMarker = L.marker(position, {
-				icon: deviceMarkerIcon,
-				title: deviceName
-			}).addTo(liveMap).bindPopup(deviceName);
-		} else {
-			mapMarker.setLatLng(position);
-		}
-
-		if (accuracyCircle === null) {
-			accuracyCircle = L.circle(position, {
-				radius: accuracy || 20,
-				color: "#2563eb",
-				weight: 2,
-				fillColor: "#60a5fa",
-				fillOpacity: 0.16
-			}).addTo(liveMap);
-		} else {
-			accuracyCircle.setLatLng(position);
-			accuracyCircle.setRadius(accuracy || 20);
-		}
-
-		if (followLiveMap || firstLiveUpdate) {
-			liveMap.setView(position, firstLiveUpdate ? 16 : liveMap.getZoom(), {animate: true});
-		}
-		firstLiveUpdate = false;
-	}
-
-	if (initialHasCoordinates) {
-		updateMap(initialLatitude, initialLongitude, initialAccuracy || 20);
-	}
-
-	liveMap.whenReady(scheduleLiveMapRefresh);
-
-	window.addEventListener("resize", function () {
-		refreshLiveMapSize();
-	});
-	window.addEventListener("load", scheduleLiveMapRefresh);
-	document.addEventListener("visibilitychange", function () {
-		if (!document.hidden) {
-			scheduleLiveMapRefresh();
-		}
-	});
-
-	if ("ResizeObserver" in window) {
-		new ResizeObserver(refreshLiveMapSize).observe(document.getElementById("live-map"));
-	}
-
-	liveMap.on("dragstart", disableLiveFollow);
-	liveMap.getContainer().addEventListener("wheel", disableLiveFollow, {passive: true});
-	liveMap.getContainer().addEventListener("touchstart", disableLiveFollow, {passive: true});
-
-	const liveZoomElement = liveZoomControl.getContainer();
-	if (liveZoomElement !== null) {
-		liveZoomElement.addEventListener("click", disableLiveFollow);
-	}
-
-	centerMapButton.addEventListener("click", function () {
-		if (lastLivePosition === null) {
-			liveMap.setView(startPosition, initialHasCoordinates ? 15 : 6, {animate: true});
-			return;
-		}
-		liveMap.setView(lastLivePosition, Math.max(liveMap.getZoom(), 16), {animate: true});
-	});
-
-	followMapButton.addEventListener("click", function () {
-		setLiveFollow(!followLiveMap);
-		if (followLiveMap && lastLivePosition !== null) {
-			liveMap.setView(lastLivePosition, Math.max(liveMap.getZoom(), 16), {animate: true});
-		}
-	});
-
-	function setStatus(value) {
+	function setStatus(value, detail) {
 		statusElement.textContent = value;
+		if (detail) {
+			detailElement.textContent = detail;
+		}
 	}
 
-	function trimLocationLabel(value) {
-		if (!value) {
-			return "";
-		}
-		return value.length <= 180 ? value : value.substring(0, 177) + "...";
+	function isLocalhost() {
+		const hostname = window.location.hostname;
+		return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1" || hostname === "[::1]";
 	}
 
-	function distanceMeters(firstPosition, latitude, longitude) {
-		if (firstPosition === null) {
-			return Number.POSITIVE_INFINITY;
+	function resetTrackingControls() {
+		if (watchId !== null) {
+			navigator.geolocation.clearWatch(watchId);
+			watchId = null;
 		}
-		const earthRadiusMeters = 6371000;
-		const toRadians = Math.PI / 180;
-		const lat1 = firstPosition[0] * toRadians;
-		const lat2 = latitude * toRadians;
-		const deltaLat = (latitude - firstPosition[0]) * toRadians;
-		const deltaLng = (longitude - firstPosition[1]) * toRadians;
-		const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
-			+ Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-		return earthRadiusMeters * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		startButton.disabled = false;
+		stopButton.disabled = true;
 	}
 
-	function shouldResolveLocation(latitude, longitude) {
-		return !cachedLocationLabel(latitude, longitude)
-			|| Date.now() - lastResolvedAt > 300000;
-	}
-
-	function cachedLocationLabel(latitude, longitude) {
-		if (!lastResolvedLabel || lastResolvedPosition === null) {
-			return "";
-		}
-		if (distanceMeters(lastResolvedPosition, latitude, longitude) > 100) {
-			return "";
-		}
-		return lastResolvedLabel;
-	}
-
-	function formatLocationLabel(data) {
-		if (data && data.display_name) {
-			return trimLocationLabel(data.display_name);
-		}
-		if (!data || !data.address) {
-			return "";
-		}
-		const address = data.address;
-		const parts = [
-			address.road || address.neighbourhood || address.suburb,
-			address.city || address.town || address.village || address.municipality,
-			address.state,
-			address.country
-		].filter(Boolean);
-		return trimLocationLabel(parts.join(", "));
-	}
-
-	function resolveLocationLabel(latitude, longitude) {
-		if (!shouldResolveLocation(latitude, longitude)) {
-			return Promise.resolve({label: cachedLocationLabel(latitude, longitude), latitude: latitude, longitude: longitude});
-		}
-		if (activeLocationLookup !== null) {
-			if (distanceMeters([activeLocationLookup.latitude, activeLocationLookup.longitude], latitude, longitude) <= 100) {
-				return activeLocationLookup.promise;
-			}
-			return Promise.resolve({label: "", latitude: latitude, longitude: longitude});
-		}
-		const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&lat="
-			+ encodeURIComponent(latitude) + "&lon=" + encodeURIComponent(longitude);
-		const lookupLatitude = latitude;
-		const lookupLongitude = longitude;
-		const lookupPromise = fetch(url, {
-			headers: {"Accept": "application/json"},
-			credentials: "omit",
-			referrerPolicy: "strict-origin-when-cross-origin"
-		})
-			.then(function (response) {
-				if (!response.ok) {
-					throw new Error("Location lookup failed");
-				}
-				return response.json();
-			})
-			.then(function (data) {
-				const label = formatLocationLabel(data);
-				if (label) {
-					lastResolvedLabel = label;
-					lastResolvedPosition = [lookupLatitude, lookupLongitude];
-					lastResolvedAt = Date.now();
-				}
-				return {label: label, latitude: lookupLatitude, longitude: lookupLongitude};
-			})
-			.catch(function () {
-				return {label: "", latitude: lookupLatitude, longitude: lookupLongitude};
-			})
-			.finally(function () {
-				activeLocationLookup = null;
-			});
-		activeLocationLookup = {promise: lookupPromise, latitude: lookupLatitude, longitude: lookupLongitude};
-		return lookupPromise;
-	}
-
-	function postPosition(latitude, longitude, accuracy, locationLabel) {
+	function postPosition(position) {
 		const body = new URLSearchParams();
-		body.append("latitude", latitude);
-		body.append("longitude", longitude);
-		if (Number.isFinite(accuracy)) {
-			body.append("accuracy", accuracy);
-		}
-		if (locationLabel) {
-			body.append("locationLabel", locationLabel);
+		body.append("latitude", position.coords.latitude);
+		body.append("longitude", position.coords.longitude);
+		if (Number.isFinite(position.coords.accuracy)) {
+			body.append("accuracy", position.coords.accuracy);
 		}
 
 		return fetch(updateUrl, {
@@ -378,105 +110,48 @@
 			});
 	}
 
-	function handlePositionSaved(data) {
-		if (data.locationLabel) {
-			locationElement.textContent = data.locationLabel;
-			lastResolvedLabel = data.locationLabel;
-			if (Number.isFinite(data.latitude) && Number.isFinite(data.longitude)) {
-				lastResolvedPosition = [data.latitude, data.longitude];
-				lastResolvedAt = Date.now();
-			}
-		}
-		setStatus("Live");
-		lastSentElement.textContent = new Date().toLocaleString();
-	}
-
-	function handlePostError(error) {
-		setStatus(error.message || "Server rejected the position");
-		if (error.message === "This device is inactive.") {
-			resetTrackingControls();
-		}
-	}
-
-	function isResolvedLabelCurrent(result, latitude, longitude) {
-		return result
-			&& result.label
-			&& distanceMeters([result.latitude, result.longitude], latitude, longitude) <= 100;
-	}
-
 	function sendPosition(position) {
-		const latitude = position.coords.latitude;
-		const longitude = position.coords.longitude;
-		const accuracy = Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : null;
-		const currentLocationLabel = cachedLocationLabel(latitude, longitude);
-
-		accuracyElement.textContent = accuracy === null ? "-" : Math.round(accuracy) + " m";
-		positionQualityElement.textContent = accuracy === null ? "Accuracy not reported" : Math.round(accuracy) + " m accuracy";
-		updateMap(latitude, longitude, accuracy || 20);
-		locationElement.textContent = currentLocationLabel || "Location detected on map";
-		setStatus("Sending location");
-
-		postPosition(latitude, longitude, accuracy, currentLocationLabel)
-			.then(handlePositionSaved)
-			.catch(handlePostError);
-
-		resolveLocationLabel(latitude, longitude)
-			.then(function (result) {
-				if (!isResolvedLabelCurrent(result, latitude, longitude)) {
-					return null;
-				}
-				locationElement.textContent = result.label;
-				if (result.label === currentLocationLabel) {
-					return null;
-				}
-				return postPosition(latitude, longitude, accuracy, result.label).then(handlePositionSaved);
+		setStatus("Permission granted", "Location permission was accepted. Sending the current position now.");
+		postPosition(position)
+			.then(function () {
+				lastSentElement.textContent = new Date().toLocaleString();
+				setStatus("Location sent", "Keep this window open while location sharing is needed. Close it to stop.");
 			})
 			.catch(function (error) {
-				if (error) {
-					handlePostError(error);
+				setStatus(error.message || "Could not send location", "The browser allowed location, but the app could not store it.");
+				if (error.message === "This device is inactive.") {
+					resetTrackingControls();
 				}
 			});
 	}
 
 	function handleError(error) {
 		if (error.code === error.PERMISSION_DENIED) {
-			setStatus("Permission denied");
+			setStatus("Permission denied", "Location was not shared. Use the Allow button and accept the browser prompt.");
 			resetTrackingControls();
 		} else if (error.code === error.POSITION_UNAVAILABLE) {
-			setStatus("Position unavailable");
+			setStatus("Position unavailable", "The device could not calculate its position right now.");
 		} else if (error.code === error.TIMEOUT) {
-			setStatus("Location timeout");
+			setStatus("Location timeout", "The device took too long to return a location. Try again.");
 		} else {
-			setStatus("Location error");
+			setStatus("Location error", "The browser could not complete the location request.");
 		}
-	}
-
-	function isLocalhost() {
-		const hostname = window.location.hostname;
-		return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1" || hostname === "[::1]";
-	}
-
-	function resetTrackingControls() {
-		if (watchId !== null) {
-			navigator.geolocation.clearWatch(watchId);
-			watchId = null;
-		}
-		startButton.disabled = false;
-		stopButton.disabled = true;
 	}
 
 	function startTracking() {
+		if (!deviceActive) {
+			setStatus("Inactive link", "This tracking link is disabled by the owner.");
+			return;
+		}
 		if (watchId !== null) {
 			return;
 		}
 		if (!navigator.geolocation) {
-			setStatus("Not supported");
+			setStatus("Not supported", "This browser does not support location permission.");
 			return;
 		}
 		if (!window.isSecureContext && !isLocalhost()) {
-			setStatus("Open with HTTPS");
-			positionQualityElement.textContent = "HTTPS required";
-			locationElement.textContent = "Browser blocked GPS";
+			setStatus("Open with HTTPS", "Mobile browsers usually block location on non-HTTPS public links.");
 			return;
 		}
 		watchId = navigator.geolocation.watchPosition(sendPosition, handleError, {
@@ -486,17 +161,19 @@
 		});
 		startButton.disabled = true;
 		stopButton.disabled = false;
-		setStatus("Waiting for permission");
+		setStatus("Waiting for permission", "Your browser may ask for location permission now. Tap Allow.");
 	}
 
 	startButton.addEventListener("click", startTracking);
 
 	stopButton.addEventListener("click", function () {
 		resetTrackingControls();
-		setStatus("Stopped");
+		setStatus("Sharing stopped", "Location updates stopped in this browser window.");
 	});
 
-	startTracking();
+	window.addEventListener("load", function () {
+		window.setTimeout(startTracking, 600);
+	});
 </script>
 </body>
 </html>

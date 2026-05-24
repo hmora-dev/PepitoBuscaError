@@ -11,6 +11,8 @@ import java.util.List;
 public class TrackedDeviceService {
 
 	private static final int MAX_LOCATION_LABEL_LENGTH = 180;
+	private static final int MAX_CLIENT_IP_LENGTH = 45;
+	private static final int MAX_USER_AGENT_LENGTH = 255;
 
 	private final TrackedDeviceRepository trackedDeviceRepository;
 
@@ -54,6 +56,11 @@ public class TrackedDeviceService {
 		return trackedDeviceRepository.countByActiveTrue();
 	}
 
+	@Transactional(readOnly = true)
+	public long countLocatedDevices() {
+		return trackedDeviceRepository.countByLatitudeIsNotNullAndLongitudeIsNotNull();
+	}
+
 	@Transactional
 	public TrackedDevice createDevice(TrackedDevice device) {
 		cleanDevice(device);
@@ -74,13 +81,15 @@ public class TrackedDeviceService {
 
 	@Transactional
 	public TrackedDevice updateLivePosition(String trackingToken, Double latitude, Double longitude, Double accuracyMeters,
-			String locationLabel) {
+			String locationLabel, String clientIp, String userAgent) {
 		validateCoordinates(latitude, longitude);
 		TrackedDevice device = getDeviceByTrackingToken(trackingToken);
 		if (!device.isActive()) {
 			throw new IllegalArgumentException("This device is inactive.");
 		}
 		device.updatePosition(latitude, longitude, cleanAccuracy(accuracyMeters));
+		device.updateClientMetadata(cleanWithMax(clientIp, MAX_CLIENT_IP_LENGTH),
+				cleanWithMax(userAgent, MAX_USER_AGENT_LENGTH));
 		String cleanLocationLabel = cleanLocationLabel(locationLabel);
 		if (cleanLocationLabel != null) {
 			device.setLocationLabel(cleanLocationLabel);
@@ -102,6 +111,8 @@ public class TrackedDeviceService {
 		device.setOwner(clean(device.getOwner()));
 		device.setLocationLabel(clean(device.getLocationLabel()));
 		device.setNotes(clean(device.getNotes()));
+		device.setLastClientIp(null);
+		device.setLastUserAgent(null);
 	}
 
 	private void ensureTrackingToken(TrackedDevice device) {
@@ -152,5 +163,16 @@ public class TrackedDeviceService {
 			return cleanValue;
 		}
 		return cleanValue.substring(0, MAX_LOCATION_LABEL_LENGTH - 3) + "...";
+	}
+
+	private String cleanWithMax(String value, int maxLength) {
+		String cleanValue = clean(value);
+		if (cleanValue == null || cleanValue.isBlank()) {
+			return null;
+		}
+		if (cleanValue.length() <= maxLength) {
+			return cleanValue;
+		}
+		return cleanValue.substring(0, maxLength);
 	}
 }

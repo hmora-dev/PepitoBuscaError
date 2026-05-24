@@ -22,6 +22,7 @@
 			</section>
 
 			<div class="alert success-alert" th:if="${successMessage}" th:text="${successMessage}">Saved</div>
+			<div class="alert info-alert" th:if="${infoMessage}" th:text="${infoMessage}">Choose a company before creating an analysis.</div>
 
 			<section class="content-panel">
 				<form class="search-bar" th:action="@{/companies}" method="get">

@@ -14,9 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -86,5 +88,50 @@ class OsintControllerTests {
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Passive OSINT report")))
 				.andExpect(content().string(containsString("Inventory collected")));
+	}
+
+	@Test
+	void deleteReportRemovesSavedScan() throws Exception {
+		AuditTarget target = targetRepository.save(new AuditTarget("Delete Report", "delete-report.example",
+				"https://delete-report.example"));
+		ScanRun scanRun = new ScanRun(target);
+		scanRun.addFinding(new Finding(
+				FindingCategory.OSINT,
+				FindingSeverity.INFO,
+				"Temporary report",
+				"Evidence",
+				"Recommendation"
+		));
+		scanRun.complete(0);
+		ScanRun saved = scanRunRepository.save(scanRun);
+
+		mockMvc.perform(post("/osint/scans/{id}/delete", saved.getId()))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/osint"));
+
+		assertThat(scanRunRepository.findById(saved.getId())).isEmpty();
+	}
+
+	@Test
+	void deleteTargetRemovesTargetAndItsReports() throws Exception {
+		AuditTarget target = targetRepository.save(new AuditTarget("Delete Target", "delete-target.example",
+				"https://delete-target.example"));
+		ScanRun scanRun = new ScanRun(target);
+		scanRun.addFinding(new Finding(
+				FindingCategory.DNS,
+				FindingSeverity.LOW,
+				"Temporary target report",
+				"Evidence",
+				"Recommendation"
+		));
+		scanRun.complete(3);
+		ScanRun saved = scanRunRepository.save(scanRun);
+
+		mockMvc.perform(post("/osint/targets/{id}/delete", target.getId()))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/osint"));
+
+		assertThat(targetRepository.findById(target.getId())).isEmpty();
+		assertThat(scanRunRepository.findById(saved.getId())).isEmpty();
 	}
 }

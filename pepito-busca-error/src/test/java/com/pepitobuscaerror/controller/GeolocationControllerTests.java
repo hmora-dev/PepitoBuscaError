@@ -31,18 +31,24 @@ class GeolocationControllerTests {
 						.param("latitude", "40.4168")
 						.param("longitude", "-3.7038")
 						.param("accuracy", "12.5")
-						.param("locationLabel", "Madrid, Spain"))
+						.param("locationLabel", "Madrid, Spain")
+						.header("X-Forwarded-For", "203.0.113.42, 10.0.0.5")
+						.header("User-Agent", "JUnit browser"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.latitude").value(40.4168))
 				.andExpect(jsonPath("$.longitude").value(-3.7038))
 				.andExpect(jsonPath("$.accuracy").value(12.5))
-				.andExpect(jsonPath("$.locationLabel").value("Madrid, Spain"));
+				.andExpect(jsonPath("$.locationLabel").value("Madrid, Spain"))
+				.andExpect(jsonPath("$.lastClientIp").value("203.0.113.42"))
+				.andExpect(jsonPath("$.lastUserAgent").value("JUnit browser"));
 
 		TrackedDevice updatedDevice = trackedDeviceService.getDevice(savedDevice.getIdDevice());
 		assertThat(updatedDevice.getLatitude()).isEqualTo(40.4168);
 		assertThat(updatedDevice.getLongitude()).isEqualTo(-3.7038);
 		assertThat(updatedDevice.getAccuracyMeters()).isEqualTo(12.5);
 		assertThat(updatedDevice.getLocationLabel()).isEqualTo("Madrid, Spain");
+		assertThat(updatedDevice.getLastClientIp()).isEqualTo("203.0.113.42");
+		assertThat(updatedDevice.getLastUserAgent()).isEqualTo("JUnit browser");
 	}
 
 	@Test

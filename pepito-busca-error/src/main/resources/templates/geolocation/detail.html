@@ -31,16 +31,166 @@
 						<i class="bi bi-pencil"></i>
 						<span>Edit device</span>
 					</a>
-					<a class="btn btn-secondary" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
+					<a class="btn btn-secondary" th:if="${publicHttpsReady}" th:href="${publicClientLink}" target="_blank" rel="noopener">
 						<i class="bi bi-broadcast-pin"></i>
-						<span>Open live tracker</span>
+						<span>Open public tracker</span>
 					</a>
+					<span class="btn btn-secondary btn-disabled" th:if="${!publicHttpsReady}">
+						<i class="bi bi-broadcast-pin"></i>
+						<span>Public link required</span>
+					</span>
 					<a class="btn btn-danger" th:href="@{/geolocation/delete/{id}(id=${device.idDevice})}"
 					   onclick="return confirm('Delete this tracked device?');">
 						<i class="bi bi-trash"></i>
 						<span>Delete</span>
 					</a>
 				</div>
+			</section>
+
+			<section class="gps-command-grid">
+				<article class="dark-summary-card gps-command-card">
+					<div class="summary-topline">
+						<span>GPS tracking mode</span>
+						<span id="detail-tracking-status" class="badge" th:classappend="${device.trackingStatusClass}"
+							  th:text="${device.trackingStatusLabel}">Waiting for client</span>
+					</div>
+					<strong>Public GPS link only</strong>
+					<p>
+						This screen only exposes links that work from another Wi-Fi or mobile network. Localhost and same-Wi-Fi
+						addresses are blocked from the send flow so the client receives only a public HTTPS link.
+					</p>
+					<div class="dark-metrics">
+						<div>
+							<span>Mode</span>
+							<strong th:text="${device.trackingModeLabel}">GPS live link</strong>
+						</div>
+						<div>
+							<span>Refresh</span>
+							<strong>5s</strong>
+						</div>
+						<div>
+							<span>Consent</span>
+							<strong>Required</strong>
+						</div>
+					</div>
+				</article>
+
+				<article class="content-panel gps-share-panel">
+					<div class="section-title">
+						<div>
+							<p class="eyebrow">Client GPS link</p>
+							<h2 th:text="${publicHttpsReady} ? 'Copy and send this public link' : 'Public link setup required'">
+								Public link setup required
+							</h2>
+						</div>
+						<div class="link-status-badges">
+							<span class="badge"
+								  th:classappend="${publicHttpsReady} ? ' success' : (${publicLinkInfo.localOnly or publicLinkInfo.sameWifiOnly} ? ' medium' : (${publicLinkInfo.requiresHttpsWarning} ? ' high' : ' neutral'))"
+								  th:text="${publicLinkStatus}">Public HTTPS ready</span>
+							<span class="badge high"
+								  th:if="${publicLinkInfo.requiresHttpsWarning and publicLinkStatus != 'HTTPS required'}">HTTPS required</span>
+						</div>
+					</div>
+					<div class="warning-box" th:if="${!publicHttpsReady and publicLinkWarning != null and publicLinkWarning != ''}">
+						<i class="bi bi-exclamation-triangle"></i>
+						<span th:text="${publicLinkWarning}">Public link warning</span>
+					</div>
+					<div class="tracking-link-entry featured-link-entry public-ready-link" th:if="${publicHttpsReady}">
+						<label for="recommended-tracking-link">Public tracking link</label>
+						<div class="tracking-link-box">
+							<input id="recommended-tracking-link" type="text" readonly th:value="${publicClientLink}">
+							<button class="btn btn-primary copy-tracking-link" type="button"
+									data-copy-target="recommended-tracking-link">
+								<i class="bi bi-clipboard-check"></i>
+								<span>Copy public link</span>
+							</button>
+							<a class="btn btn-secondary" th:href="${publicClientLink}" target="_blank" rel="noopener">
+								<i class="bi bi-box-arrow-up-right"></i>
+								<span>Open link</span>
+							</a>
+						</div>
+					</div>
+					<div class="public-link-blocked" th:if="${!publicHttpsReady}">
+						<div class="public-link-blocked-icon">
+							<i class="bi bi-cloud-lock"></i>
+						</div>
+						<div>
+							<p class="eyebrow">Setup required</p>
+							<h3>No public device link yet</h3>
+							<p>
+								The app found a local or same-Wi-Fi address, so no client link is shown. Run easy public link
+								mode or deploy the app behind HTTPS, then this area will show the only link you should send.
+							</p>
+						</div>
+					</div>
+					<div class="info-box" th:if="${publicHttpsReady}">
+						<i class="bi bi-info-circle"></i>
+						<span>This is the only link intended for client devices. It opens a small permission-only page through public HTTPS.</span>
+					</div>
+					<div class="client-no-install-box">
+						<strong>No install on the other device</strong>
+						<p>
+							The phone or other device only opens a browser permission window. It does not show the full app,
+							install anything, or expose dashboard pages.
+						</p>
+						<p th:if="${!publicHttpsReady}">
+							If the badge says <span>Local test link</span> or <span>Same Wi-Fi only</span>, another network cannot reach your computer yet. Use the easy public link mode below or run the project on a public HTTPS server.
+						</p>
+					</div>
+					<div class="gps-steps">
+						<div>
+							<span>1</span>
+							<strong>Send privately</strong>
+							<small>Treat the tokenized link as private and share it only with the authorized device owner.</small>
+						</div>
+						<div>
+							<span>2</span>
+							<strong>Client allows location</strong>
+							<small>The browser permission prompt is required and cannot be bypassed.</small>
+						</div>
+						<div>
+							<span>3</span>
+							<strong>Watch map</strong>
+							<small>The map updates while the client page remains open.</small>
+						</div>
+					</div>
+					<div class="tunnel-helper-card">
+						<div class="section-title compact-title">
+							<div>
+								<p class="eyebrow">Easy public link mode</p>
+								<h3>Use from another Wi-Fi network</h3>
+							</div>
+							<span class="badge" th:classappend="${usableFromAnotherNetwork} ? ' success' : ' medium'"
+								  th:text="${usableFromAnotherNetwork} ? 'Ready' : 'Setup needed'">Setup needed</span>
+						</div>
+						<div class="easy-command-box">
+							<strong>Recommended for non-technical use</strong>
+							<p>Close the app, open PowerShell in the project folder, run these commands, then come back here and copy the GPS link.</p>
+							<code>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass</code>
+							<code>.\scripts\easy-public-gps-link.ps1</code>
+						</div>
+						<div class="tunnel-options">
+							<div>
+								<strong>What the easy command does</strong>
+								<ol>
+									<li>Finds <code>cloudflared</code> or <code>ngrok</code>.</li>
+									<li>Creates a public HTTPS tunnel to this app.</li>
+									<li>Sets <code>APP_PUBLIC_BASE_URL</code> automatically.</li>
+									<li>Starts Spring Boot with only the public device link shown.</li>
+								</ol>
+							</div>
+							<div>
+								<strong>If no tunnel tool is installed</strong>
+								<ol>
+									<li>Run the app on a public HTTPS server, or use a public HTTPS URL you already have.</li>
+									<li>Set <code>APP_PUBLIC_BASE_URL</code> to that URL.</li>
+									<li>Restart the app and copy the generated GPS link.</li>
+									<li>The other device opens the permission page in the browser and taps Allow.</li>
+								</ol>
+							</div>
+						</div>
+					</div>
+				</article>
 			</section>
 
 			<section class="detail-grid">
@@ -55,7 +205,7 @@
 						Waiting for GPS
 					</strong>
 					<p id="detail-location-subtitle"
-					   th:text="${device.hasCoordinates() ? #numbers.formatDecimal(device.latitude, 1, 5) + ', ' + #numbers.formatDecimal(device.longitude, 1, 5) : 'Open the tracking link on the device to detect its location.'}">
+					   th:text="${device.hasCoordinates() ? #numbers.formatDecimal(device.latitude, 1, 5) + ', ' + #numbers.formatDecimal(device.longitude, 1, 5) : 'Open the public GPS link on the device to detect its location.'}">
 						Location detail
 					</p>
 				</article>
@@ -80,6 +230,20 @@
 							<dd id="detail-accuracy"
 								th:text="${device.accuracyMeters == null ? 'No GPS accuracy yet' : #numbers.formatDecimal(device.accuracyMeters, 1, 1) + ' meters'}">
 								Accuracy
+							</dd>
+						</div>
+						<div>
+							<dt>Last client IP</dt>
+							<dd id="detail-client-ip"
+								th:text="${device.lastClientIp == null || device.lastClientIp == '' ? 'Waiting for authorized update' : device.lastClientIp}">
+								Client IP
+							</dd>
+						</div>
+						<div>
+							<dt>Client browser</dt>
+							<dd id="detail-user-agent"
+								th:text="${device.lastUserAgent == null || device.lastUserAgent == '' ? 'Waiting for authorized update' : device.lastUserAgent}">
+								Client browser
 							</dd>
 						</div>
 						<div>
@@ -138,67 +302,20 @@
 			<section class="content-panel">
 				<div class="section-title">
 					<div>
-						<p class="eyebrow">Real tracking link</p>
-						<h2>Open this on the device</h2>
+						<p class="eyebrow">Public tracking link</p>
+						<h2>Remote access requirements</h2>
 					</div>
-					<span class="badge neutral">Private token</span>
-				</div>
-				<div class="warning-box" th:if="${#lists.isEmpty(trackingLinks.networkUrls) && trackingLinks.configuredUrl == ''}">
-					<i class="bi bi-exclamation-triangle"></i>
-					<span>No reachable network address was detected. Set APP_PUBLIC_BASE_URL to an HTTPS URL or run the app with SERVER_ADDRESS=0.0.0.0 on a network adapter that other devices can reach.</span>
-				</div>
-				<div class="tracking-link-stack">
-					<div class="tracking-link-entry" th:if="${trackingLinks.configuredUrl != ''}">
-						<label for="public-tracking-link">Public tracking link</label>
-						<div class="tracking-link-box">
-							<input id="public-tracking-link" type="text" readonly th:value="${trackingLinks.configuredUrl}">
-							<button class="btn btn-secondary copy-tracking-link" type="button"
-									data-copy-target="public-tracking-link">
-								<i class="bi bi-clipboard"></i>
-								<span>Copy</span>
-							</button>
-							<a class="btn btn-secondary" th:href="${trackingLinks.configuredUrl}" target="_blank" rel="noopener">
-								<i class="bi bi-broadcast-pin"></i>
-								<span>Open</span>
-							</a>
-						</div>
-					</div>
-					<div class="tracking-link-entry" th:each="networkLink, linkStatus : ${trackingLinks.networkUrls}">
-						<label th:for="|network-tracking-link-${linkStatus.index}|"
-							   th:text="${linkStatus.index == 0 ? 'Same Wi-Fi tracking link' : 'Alternate network tracking link'}">
-							Same Wi-Fi tracking link
-						</label>
-						<div class="tracking-link-box">
-							<input th:id="|network-tracking-link-${linkStatus.index}|" type="text" readonly th:value="${networkLink}">
-							<button class="btn btn-secondary copy-tracking-link" type="button"
-									th:attr="data-copy-target=|network-tracking-link-${linkStatus.index}|">
-								<i class="bi bi-clipboard"></i>
-								<span>Copy</span>
-							</button>
-							<a class="btn btn-secondary" th:href="${networkLink}" target="_blank" rel="noopener">
-								<i class="bi bi-broadcast-pin"></i>
-								<span>Open</span>
-							</a>
-						</div>
-					</div>
-					<div class="tracking-link-entry">
-						<label for="current-tracking-link">Current browser link</label>
-						<div class="tracking-link-box">
-							<input id="current-tracking-link" type="text" readonly th:value="${trackingLinks.currentUrl}">
-							<button class="btn btn-secondary copy-tracking-link" type="button"
-									data-copy-target="current-tracking-link">
-								<i class="bi bi-clipboard"></i>
-								<span>Copy</span>
-							</button>
-							<a class="btn btn-secondary" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
-								<i class="bi bi-broadcast-pin"></i>
-								<span>Open</span>
-							</a>
-						</div>
-					</div>
+					<span class="badge" th:classappend="${usableFromAnotherNetwork} ? ' success' : ' medium'"
+						  th:text="${usableFromAnotherNetwork} ? 'Different network ready' : 'Limited network scope'">
+						Limited network scope
+					</span>
 				</div>
 				<p class="muted panel-copy">
-					Send the public or same-Wi-Fi link to the other device. Do not send the current browser link if it contains localhost. For phone GPS, use an HTTPS public tracking link when possible because mobile browsers commonly block location on plain LAN HTTP links.
+					Only use this feature with devices or users you are authorized to track. The device owner must open the private link, the browser must ask for permission, and the application does not bypass browser security. Public links should be treated as private tokens and should not be shared publicly.
+				</p>
+				<p class="muted panel-copy">
+					This interface intentionally does not expose localhost or LAN tracking links for client devices. Configure
+					<code>APP_PUBLIC_BASE_URL</code> with a public HTTPS origin such as an ngrok, Cloudflare Tunnel, or reverse proxy URL.
 				</p>
 			</section>
 		</main>
@@ -227,8 +344,11 @@
 
 	const coordinateElement = document.getElementById("detail-coordinate-value");
 	const accuracyElement = document.getElementById("detail-accuracy");
+	const clientIpElement = document.getElementById("detail-client-ip");
+	const userAgentElement = document.getElementById("detail-user-agent");
 	const lastUpdateElement = document.getElementById("detail-last-update");
 	const statusElement = document.getElementById("detail-map-status");
+	const trackingStatusElement = document.getElementById("detail-tracking-status");
 	const openMapElement = document.getElementById("detail-open-map");
 	const locationSubtitleElement = document.getElementById("detail-location-subtitle");
 	const locationLabelElement = document.getElementById("detail-location-label");
@@ -351,6 +471,15 @@
 		openMapElement.textContent = "Open coordinates";
 	}
 
+	function updateClientMetadata(data) {
+		if (clientIpElement !== null) {
+			clientIpElement.textContent = data.lastClientIp || "Waiting for authorized update";
+		}
+		if (userAgentElement !== null) {
+			userAgentElement.textContent = data.lastUserAgent || "Waiting for authorized update";
+		}
+	}
+
 	if (initialHasCoordinates) {
 		updateDetailMap(initialLatitude, initialLongitude, initialAccuracy || 20, initialLocationLabel);
 	}
@@ -402,11 +531,20 @@
 				return response.json();
 			})
 			.then(function (data) {
+				updateClientMetadata(data);
 				if (!data.hasCoordinates) {
 					statusElement.textContent = "Waiting for first live update";
+					if (trackingStatusElement !== null && data.trackingStatus) {
+						trackingStatusElement.textContent = data.trackingStatus;
+						trackingStatusElement.className = "badge " + (data.trackingStatusClass || "neutral");
+					}
 					return;
 				}
 				updateDetailMap(data.latitude, data.longitude, data.accuracy || 20, data.locationLabel);
+				if (trackingStatusElement !== null && data.trackingStatus) {
+					trackingStatusElement.textContent = data.trackingStatus;
+					trackingStatusElement.className = "badge " + (data.trackingStatusClass || "success");
+				}
 				if (data.lastSeenAt) {
 					lastUpdateElement.textContent = new Date(data.lastSeenAt).toLocaleString();
 				}

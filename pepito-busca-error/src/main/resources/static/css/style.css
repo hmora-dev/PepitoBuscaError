@@ -358,6 +358,10 @@ small,
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.dark-panel-grid {
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
 .section-grid.two,
 .dashboard-grid,
 .detail-grid,
@@ -723,6 +727,21 @@ small,
 	color: var(--green);
 }
 
+.badge.low {
+	background: #dbeafe;
+	color: #1d4ed8;
+}
+
+.badge.medium {
+	background: #fef3c7;
+	color: #b45309;
+}
+
+.badge.high {
+	background: #fee2e2;
+	color: var(--red);
+}
+
 .risk-badge.low,
 .severity-badge.low,
 .priority-badge.low {
@@ -906,6 +925,17 @@ small,
 	border: 1px solid var(--line);
 	border-radius: 8px;
 	background: var(--surface-soft);
+}
+
+.manage-row {
+	align-items: flex-start;
+}
+
+.action-row form,
+.table-actions form,
+.manage-row form {
+	display: inline-flex;
+	margin: 0;
 }
 
 .timeline-item {
@@ -1175,6 +1205,15 @@ label span {
 	border: 1px solid #bbf7d0;
 	background: #f0fdf4;
 	color: var(--green);
+	font-weight: 850;
+}
+
+.info-alert {
+	margin-bottom: 16px;
+	padding: 14px 16px;
+	border: 1px solid #bfdbfe;
+	background: #eff6ff;
+	color: #1e3a8a;
 	font-weight: 850;
 }
 
@@ -1458,6 +1497,95 @@ label span {
 		var(--brand-dark);
 }
 
+.exposure-map {
+	isolation: isolate;
+	min-height: 360px;
+	border-color: rgba(147, 197, 253, 0.20);
+	box-shadow: 0 24px 70px rgba(15, 23, 42, 0.20);
+}
+
+.exposure-map canvas,
+.exposure-vignette {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.exposure-map canvas {
+	z-index: 1;
+}
+
+.exposure-vignette {
+	z-index: 2;
+	pointer-events: none;
+	background:
+		linear-gradient(180deg, rgba(2, 6, 23, 0.08), rgba(2, 6, 23, 0.32)),
+		radial-gradient(circle at 50% 52%, rgba(96, 165, 250, 0), rgba(2, 6, 23, 0.42) 78%);
+}
+
+.exposure-panel,
+.exposure-metrics {
+	position: absolute;
+	z-index: 3;
+}
+
+.exposure-panel {
+	top: 16px;
+	left: 16px;
+	right: 16px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+	pointer-events: none;
+}
+
+.exposure-panel span,
+.exposure-metrics span {
+	display: block;
+	color: #bfdbfe;
+	font-size: 11px;
+	font-weight: 900;
+	text-transform: uppercase;
+}
+
+.exposure-panel strong {
+	display: block;
+	margin-top: 4px;
+	color: #ffffff;
+	font-size: 30px;
+	line-height: 1;
+	font-weight: 950;
+}
+
+.exposure-metrics {
+	right: 16px;
+	bottom: 16px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(72px, 1fr));
+	gap: 8px;
+	width: min(360px, calc(100% - 32px));
+}
+
+.exposure-metrics div {
+	padding: 10px;
+	border: 1px solid rgba(147, 197, 253, 0.18);
+	border-radius: 8px;
+	background: rgba(15, 23, 42, 0.68);
+	box-shadow: 0 10px 26px rgba(2, 6, 23, 0.18);
+	backdrop-filter: blur(12px);
+}
+
+.exposure-metrics strong {
+	display: block;
+	margin-top: 3px;
+	color: #ffffff;
+	font-size: 20px;
+	line-height: 1;
+	font-weight: 950;
+}
+
 .security-grid {
 	position: absolute;
 	inset: 0;
@@ -1722,6 +1850,30 @@ label span {
 	gap: 14px;
 }
 
+.gps-command-grid {
+	display: grid;
+	grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.18fr);
+	gap: 18px;
+	margin-bottom: 18px;
+}
+
+.gps-command-card {
+	min-height: 290px;
+}
+
+.gps-share-panel {
+	display: grid;
+	align-content: start;
+	gap: 18px;
+}
+
+.link-status-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
 .tracking-link-entry label {
 	display: block;
 	margin-bottom: 6px;
@@ -1742,6 +1894,201 @@ label span {
 	width: 100%;
 }
 
+.featured-link-entry {
+	padding: 14px;
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	background: #eff6ff;
+}
+
+.public-ready-link {
+	border-color: #86efac;
+	background: #f0fdf4;
+}
+
+.btn-disabled {
+	cursor: not-allowed;
+	opacity: 0.68;
+	pointer-events: none;
+}
+
+.public-link-blocked {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 14px;
+	align-items: flex-start;
+	padding: 18px;
+	border: 1px solid #fecaca;
+	border-radius: 8px;
+	background: #fff7f7;
+}
+
+.public-link-blocked-icon {
+	display: grid;
+	place-items: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 8px;
+	background: #fee2e2;
+	color: #b91c1c;
+	font-size: 22px;
+}
+
+.public-link-blocked h3 {
+	margin: 0 0 8px;
+	font-size: 20px;
+	line-height: 1.2;
+}
+
+.public-link-blocked p {
+	margin: 0;
+	color: var(--muted);
+	line-height: 1.5;
+}
+
+.gps-steps {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.gps-steps div {
+	padding: 14px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: var(--surface-soft);
+}
+
+.gps-steps span {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	margin-bottom: 10px;
+	border-radius: 50%;
+	background: var(--accent);
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: 950;
+}
+
+.gps-steps strong {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.gps-steps small {
+	line-height: 1.45;
+}
+
+.tunnel-helper-card {
+	display: grid;
+	gap: 14px;
+	padding: 16px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: #ffffff;
+}
+
+.compact-title {
+	align-items: flex-start;
+	margin-bottom: 0;
+}
+
+.compact-title h3 {
+	margin: 0;
+	font-size: 18px;
+	line-height: 1.2;
+}
+
+.tunnel-options {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.easy-command-box {
+	display: grid;
+	gap: 8px;
+	padding: 14px;
+	border: 1px solid #bbf7d0;
+	border-radius: 8px;
+	background: #f0fdf4;
+}
+
+.easy-command-box strong {
+	color: #166534;
+}
+
+.easy-command-box p {
+	margin: 0;
+	color: var(--muted);
+	line-height: 1.45;
+}
+
+.easy-command-box code {
+	display: block;
+	padding: 12px;
+	border-radius: 8px;
+	background: #052e16;
+	color: #dcfce7;
+	font-weight: 900;
+	overflow-wrap: anywhere;
+}
+
+.client-no-install-box {
+	display: grid;
+	gap: 8px;
+	padding: 14px;
+	border: 1px solid #bae6fd;
+	border-radius: 8px;
+	background: #f0f9ff;
+}
+
+.client-no-install-box strong {
+	color: #075985;
+}
+
+.client-no-install-box p {
+	margin: 0;
+	color: var(--muted);
+	line-height: 1.45;
+}
+
+.client-no-install-box span {
+	color: var(--ink);
+	font-weight: 900;
+}
+
+.tunnel-options > div {
+	padding: 14px;
+	border: 1px solid #dbeafe;
+	border-radius: 8px;
+	background: #f8fbff;
+}
+
+.tunnel-options strong {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.tunnel-options ol {
+	margin: 0;
+	padding-left: 20px;
+	color: var(--muted);
+}
+
+.tunnel-options li {
+	margin-bottom: 6px;
+	line-height: 1.45;
+}
+
+.tunnel-options code {
+	color: var(--ink);
+	font-weight: 850;
+	overflow-wrap: anywhere;
+}
+
 .tracking-page {
 	min-height: 100vh;
 	padding: 28px 16px;
@@ -1756,6 +2103,40 @@ label span {
 	gap: 18px;
 	width: min(1240px, 100%);
 	margin: 0 auto;
+}
+
+.tracking-consent-shell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: min(560px, 100%);
+	min-height: calc(100vh - 56px);
+	margin: 0 auto;
+}
+
+.tracking-consent-card {
+	width: 100%;
+}
+
+.permission-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 62px;
+	height: 62px;
+	margin: 18px 0 12px;
+	border-radius: 18px;
+	background: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+	font-size: 30px;
+}
+
+.tracking-consent-card h1 {
+	margin-bottom: 12px;
+}
+
+.tracking-consent-card p {
+	max-width: 48ch;
 }
 
 .live-tracker-card {
@@ -1894,6 +2275,7 @@ label span {
 	.dashboard-grid-featured,
 	.dashboard-grid,
 	.detail-grid,
+	.gps-command-grid,
 	.result-summary-grid,
 	.section-grid.two,
 	.content-grid,
@@ -1951,6 +2333,8 @@ label span {
 	.form-grid.two,
 	.indicator-grid,
 	.finding-body,
+	.gps-steps,
+	.tunnel-options,
 	.osint-category-grid {
 		grid-template-columns: 1fr;
 	}
@@ -1983,6 +2367,10 @@ label span {
 
 	.cyber-visual {
 		min-height: 260px;
+	}
+
+	.exposure-map {
+		min-height: 340px;
 	}
 }
 
@@ -2083,6 +2471,23 @@ label span {
 		width: 104px;
 		height: 104px;
 	}
+
+	.exposure-panel {
+		align-items: flex-start;
+		flex-direction: row;
+	}
+
+	.exposure-metrics {
+		left: 12px;
+		right: 12px;
+		bottom: 12px;
+		width: auto;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.exposure-metrics div {
+		padding: 9px;
+	}
 }
 
 @media (max-width: 420px) {
@@ -2090,5 +2495,13 @@ label span {
 	.live-map,
 	.device-map {
 		aspect-ratio: 1 / 1;
+	}
+
+	.exposure-map {
+		min-height: 380px;
+	}
+
+	.exposure-metrics {
+		grid-template-columns: 1fr;
 	}
 }

@@ -57,6 +57,14 @@ public class TrackedDevice {
 	@Column(name = "location_label", length = 180)
 	private String locationLabel;
 
+	@Size(max = 45, message = "Client IP is too long")
+	@Column(name = "last_client_ip", length = 45)
+	private String lastClientIp;
+
+	@Size(max = 255, message = "Client browser is too long")
+	@Column(name = "last_user_agent", length = 255)
+	private String lastUserAgent;
+
 	@Size(max = 500, message = "Notes are too long")
 	@Column(length = 500)
 	private String notes;
@@ -100,6 +108,12 @@ public class TrackedDevice {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.accuracyMeters = accuracyMeters;
+		this.lastSeenAt = LocalDateTime.now();
+	}
+
+	public void updateClientMetadata(String clientIp, String userAgent) {
+		this.lastClientIp = clientIp;
+		this.lastUserAgent = userAgent;
 		this.lastSeenAt = LocalDateTime.now();
 	}
 
@@ -163,12 +177,57 @@ public class TrackedDevice {
 		return latitude != null && longitude != null;
 	}
 
+	public String getTrackingModeLabel() {
+		return active ? "GPS live link" : "Tracking disabled";
+	}
+
+	public String getTrackingStatusLabel() {
+		if (!active) {
+			return "Inactive";
+		}
+		if (!hasCoordinates()) {
+			return "Waiting for client";
+		}
+		if (lastSeenAt != null && lastSeenAt.isAfter(LocalDateTime.now().minusMinutes(5))) {
+			return "Live GPS";
+		}
+		if (lastSeenAt != null && lastSeenAt.isAfter(LocalDateTime.now().minusHours(1))) {
+			return "Recently seen";
+		}
+		return "Last known location";
+	}
+
+	public String getTrackingStatusClass() {
+		return switch (getTrackingStatusLabel()) {
+			case "Live GPS" -> "success";
+			case "Recently seen" -> "medium";
+			case "Inactive" -> "neutral";
+			default -> "low";
+		};
+	}
+
 	public String getLocationLabel() {
 		return locationLabel;
 	}
 
 	public void setLocationLabel(String locationLabel) {
 		this.locationLabel = locationLabel;
+	}
+
+	public String getLastClientIp() {
+		return lastClientIp;
+	}
+
+	public void setLastClientIp(String lastClientIp) {
+		this.lastClientIp = lastClientIp;
+	}
+
+	public String getLastUserAgent() {
+		return lastUserAgent;
+	}
+
+	public void setLastUserAgent(String lastUserAgent) {
+		this.lastUserAgent = lastUserAgent;
 	}
 
 	public String getNotes() {

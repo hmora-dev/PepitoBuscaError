@@ -13,7 +13,7 @@
 				<div>
 					<p class="eyebrow">Owned device tracking</p>
 					<h1>Geolocation</h1>
-					<p class="muted">Register your own devices, open their live tracking link, and store real browser GPS updates in MySQL.</p>
+					<p class="muted">Register authorized devices and send only public HTTPS GPS links that work from another Wi-Fi or mobile network.</p>
 				</div>
 				<a class="btn btn-primary" th:href="@{/geolocation/new}">
 					<i class="bi bi-plus-lg"></i>
@@ -25,7 +25,7 @@
 
 			<div class="info-box">
 				<i class="bi bi-shield-lock"></i>
-				<span>Tracking requires an owned or authorized device, an open private tracking link, and explicit browser location permission.</span>
+				<span>Device links are shown only when a public HTTPS URL is ready. The other device sees only a permission page and allows location in the browser.</span>
 			</div>
 
 			<section class="dark-panel-grid">
@@ -40,9 +40,14 @@
 					<small>Marked as currently active</small>
 				</article>
 				<article class="dark-metric-panel">
+					<span>GPS positions</span>
+					<strong th:text="${locatedDevices}">0</strong>
+					<small>Devices with saved coordinates</small>
+				</article>
+				<article class="dark-metric-panel">
 					<span>Tracking mode</span>
-					<strong>Manual</strong>
-					<small>Browser permission required</small>
+					<strong>Public HTTPS</strong>
+					<small>No local device links</small>
 				</article>
 			</section>
 
@@ -93,8 +98,9 @@
 							</td>
 							<td th:text="${#temporals.format(device.lastSeenAt, 'dd MMM yyyy HH:mm')}">Date</td>
 							<td>
-								<span class="badge success" th:if="${device.active}">Active</span>
-								<span class="badge neutral" th:if="${!device.active}">Inactive</span>
+								<span class="badge" th:classappend="${device.trackingStatusClass}"
+									  th:text="${device.trackingStatusLabel}">Live GPS</span>
+								<small th:text="${device.trackingModeLabel}">GPS live link</small>
 							</td>
 							<td class="table-actions">
 								<a class="btn btn-small btn-secondary" th:href="@{/geolocation/{id}(id=${device.idDevice})}">
@@ -104,10 +110,6 @@
 								<a class="btn btn-small btn-ghost" th:href="@{/geolocation/edit/{id}(id=${device.idDevice})}">
 									<i class="bi bi-pencil"></i>
 									<span>Edit</span>
-								</a>
-								<a class="btn btn-small btn-ghost" th:href="@{/geolocation/live/{token}(token=${device.trackingToken})}">
-									<i class="bi bi-broadcast-pin"></i>
-									<span>Track</span>
 								</a>
 								<a class="btn btn-small btn-danger" th:href="@{/geolocation/delete/{id}(id=${device.idDevice})}"
 								   onclick="return confirm('Delete this tracked device?');">

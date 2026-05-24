@@ -19,6 +19,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -54,6 +56,21 @@ class CorePageSmokeTests {
 	}
 
 	@Test
+	void analysisShortcutRedirectsToCompanySelection() throws Exception {
+		mockMvc.perform(get("/analyses/new"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/companies"))
+				.andExpect(flash().attribute("infoMessage", "Choose a company before creating an analysis."));
+	}
+
+	@Test
+	void invalidNumericRouteParameterRendersNotFound() throws Exception {
+		mockMvc.perform(get("/analyses/not-a-number"))
+				.andExpect(status().isNotFound())
+				.andExpect(content().string(containsString("Page not found")));
+	}
+
+	@Test
 	void companyDetailAndAnalysisResultRender() throws Exception {
 		Company company = new Company();
 		company.setName("Example Company");
@@ -85,11 +102,11 @@ class CorePageSmokeTests {
 
 		mockMvc.perform(get("/geolocation/{id}", savedDevice.getIdDevice()))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("Real tracking link")))
+				.andExpect(content().string(containsString("Public tracking link")))
 				.andExpect(content().string(containsString("/webjars/leaflet/1.9.4/dist/leaflet.js")));
 		mockMvc.perform(get("/geolocation/live/{token}", savedDevice.getTrackingToken()))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("no hidden background tracking")))
-				.andExpect(content().string(containsString("/webjars/leaflet/1.9.4/dist/leaflet.js")));
+				.andExpect(content().string(containsString("Allow location permission")))
+				.andExpect(content().string(containsString("This page has no dashboard, menus, or map.")));
 	}
 }

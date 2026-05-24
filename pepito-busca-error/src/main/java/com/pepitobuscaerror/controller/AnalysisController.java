@@ -30,6 +30,12 @@ public class AnalysisController {
 		return "analyses/list";
 	}
 
+	@GetMapping("/analyses/new")
+	public String chooseCompanyForNewAnalysis(RedirectAttributes redirectAttributes) {
+		redirectAttributes.addFlashAttribute("infoMessage", "Choose a company before creating an analysis.");
+		return "redirect:/companies";
+	}
+
 	@GetMapping("/companies/{companyId}/analyses/new")
 	public String newAnalysis(@PathVariable Long companyId, Model model) {
 		model.addAttribute("company", companyService.getCompany(companyId));

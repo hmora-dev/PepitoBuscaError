@@ -16,4 +16,6 @@ public interface TrackedDeviceRepository extends JpaRepository<TrackedDevice, Lo
 	Optional<TrackedDevice> findByTrackingToken(String trackingToken);
 
 	long countByActiveTrue();
+
+	long countByLatitudeIsNotNullAndLongitudeIsNotNull();
 }

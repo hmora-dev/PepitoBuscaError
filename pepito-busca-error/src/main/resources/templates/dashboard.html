@@ -34,22 +34,37 @@
 					</div>
 				</div>
 
-				<div class="cyber-visual glass-card" aria-hidden="true">
-					<div class="security-grid"></div>
-					<div class="risk-orb">
-						<i class="bi bi-shield-lock"></i>
-						<span>PB</span>
+				<div class="cyber-visual exposure-map glass-card" id="dashboard-exposure-map"
+					 th:attr="data-companies=${stats.totalCompanies},
+						 data-analyses=${stats.totalAnalyses},
+						 data-osint=${stats.totalOsintChecks},
+						 data-average-risk=${stats.averageRiskScore},
+						 data-critical=${stats.criticalFindings},
+						 data-high=${stats.highFindings},
+						 data-recommendations=${stats.openRecommendations}">
+					<canvas id="dashboard-exposure-canvas" aria-label="Live company exposure map"></canvas>
+					<div class="exposure-vignette"></div>
+					<div class="exposure-panel">
+						<div>
+							<span>Exposure map</span>
+							<strong th:text="${stats.averageRiskScore + '/100'}">0/100</strong>
+						</div>
+						<span class="badge neutral">Live data</span>
 					</div>
-					<span class="network-node node-a"></span>
-					<span class="network-node node-b"></span>
-					<span class="network-node node-c"></span>
-					<span class="network-node node-d"></span>
-					<span class="network-line line-a"></span>
-					<span class="network-line line-b"></span>
-					<span class="network-line line-c"></span>
-					<div class="visual-chip chip-a">DNS</div>
-					<div class="visual-chip chip-b">OSINT</div>
-					<div class="visual-chip chip-c">TLS</div>
+					<div class="exposure-metrics">
+						<div>
+							<span>Companies</span>
+							<strong th:text="${stats.totalCompanies}">0</strong>
+						</div>
+						<div>
+							<span>Critical</span>
+							<strong th:text="${stats.criticalFindings}">0</strong>
+						</div>
+						<div>
+							<span>OSINT</span>
+							<strong th:text="${stats.totalOsintChecks}">0</strong>
+						</div>
+					</div>
 				</div>
 			</section>
 
@@ -379,6 +394,7 @@
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</div>
 </div>
+<script th:src="@{/js/dashboard-exposure-map.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script th:inline="javascript">
 	const chartTextColor = "#64748b";

@@ -58,6 +58,8 @@ Stores owned devices used by the geolocation module.
 - `latitude` and `longitude`: last browser-reported coordinates.
 - `accuracy_meters`: browser-reported GPS/network accuracy.
 - `location_label`: readable place label when available.
+- `last_client_ip`: request IP from the latest authorized browser position update.
+- `last_user_agent`: browser user agent from the latest authorized position update.
 - `tracking_token`: private token used by the live tracking link.
 - `active`: whether the tracking link can update the device.
 - `registered_at` and `last_seen_at`: creation and latest update dates.

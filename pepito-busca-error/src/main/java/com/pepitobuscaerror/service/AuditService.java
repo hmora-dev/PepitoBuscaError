@@ -100,7 +100,24 @@ public class AuditService {
 	@Transactional(readOnly = true)
 	public ScanRun getScan(Long id) {
 		return scanRunRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("Scan not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("The requested OSINT report does not exist."));
+	}
+
+	@Transactional
+	public void deleteScan(Long id) {
+		if (!scanRunRepository.existsById(id)) {
+			throw new ResourceNotFoundException("The OSINT report you tried to delete does not exist.");
+		}
+		scanRunRepository.deleteById(id);
+	}
+
+	@Transactional
+	public void deleteTarget(Long id) {
+		AuditTarget target = targetRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("The OSINT target you tried to delete does not exist."));
+		List<ScanRun> scans = scanRunRepository.findByTarget_IdOrderByStartedAtDesc(target.getId());
+		scanRunRepository.deleteAll(scans);
+		targetRepository.delete(target);
 	}
 
 	public Map<FindingSeverity, Long> countBySeverity(List<Finding> findings) {

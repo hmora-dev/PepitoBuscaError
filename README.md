@@ -51,7 +51,8 @@ The main user is an analyst or technician performing authorized defensive review
 - Have I Been Pwned-style corporate email exposure checks with optional API key support.
 - Finding lifecycle status field with default `OPEN`.
 - Consent-based geolocation module for owned or authorized devices.
-- Private tracking links that only send updates while the browser page is open and permission is granted.
+- Public HTTPS private tracking links that only send updates while the browser page is open and permission is granted.
+- Latest authorized geolocation update stores the request IP address and browser user agent.
 - Friendly error page for not-found and unexpected errors.
 - Documentation section and supporting files under `pepito-busca-error/docs`.
 
@@ -162,6 +163,19 @@ Open:
 http://localhost:8080
 ```
 
+To run on another port:
+
+```powershell
+$env:SERVER_PORT="8081"
+.\mvnw.cmd spring-boot:run
+```
+
+Open:
+
+```text
+http://localhost:8081
+```
+
 Run tests:
 
 ```powershell
@@ -200,10 +214,131 @@ The geolocation feature is consent-based:
 - The device owner opens a private tracking link.
 - The browser asks for location permission.
 - Updates are sent only while the live tracking page remains open.
+- The generated client link is classified as public HTTPS, local-only, same-Wi-Fi only, or HTTPS-required.
+- Use `APP_PUBLIC_BASE_URL` for a reliable public HTTPS link that works from another Wi-Fi or mobile network.
+- If `APP_PUBLIC_BASE_URL` is empty, the application can derive a public HTTPS link when the dashboard is opened through an HTTPS tunnel or reverse proxy.
 - There is no hidden background tracking.
 - Inactive devices reject live updates.
 
-This module is intended only for owned or explicitly authorized devices. More detail is available in `pepito-busca-error/docs/geolocation-privacy.md`.
+This module is intended only for owned or explicitly authorized devices. More detail is available in `pepito-busca-error/docs/geolocation-privacy.md` and `pepito-busca-error/docs/public-gps-link.md`.
+
+For Windows PowerShell with a public HTTPS tunnel:
+
+```powershell
+$env:APP_PUBLIC_BASE_URL="https://abc123.ngrok-free.app"
+.\mvnw.cmd spring-boot:run
+```
+
+For CMD:
+
+```bat
+set APP_PUBLIC_BASE_URL=https://abc123.ngrok-free.app
+mvnw.cmd spring-boot:run
+```
+
+## Public GPS Link from another Wi-Fi network
+
+A `localhost` GPS link only works on the same computer that is running Spring Boot. A `192.168.x.x` LAN link usually works only for devices connected to the same Wi-Fi. A phone on another Wi-Fi network or on mobile data needs a public HTTPS URL that forwards traffic to the same local port as the running app, usually `http://localhost:8080`.
+
+Browser geolocation still requires consent: the phone must open the private tracking link and allow the browser location prompt. After permission is granted, the live page sends the location automatically while it remains open. For reliable mobile geolocation, use HTTPS. If `APP_PUBLIC_BASE_URL` is empty, the app can derive a public HTTPS base URL when the dashboard itself is opened through a tunnel or reverse proxy.
+
+The other device does not install anything. It only opens the link in its browser. If you also do not want to install a tunnel tool on the development PC, the app must already be running on a public HTTPS server or behind an existing public HTTPS reverse proxy.
+
+Easiest Windows mode:
+
+```powershell
+cd C:\Users\hecto\Desktop\pepito-busca-error
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\easy-public-gps-link.ps1
+```
+
+This helper forwards to the Spring Boot project, builds the runnable jar, looks for `cloudflared` or `ngrok`, starts a public HTTPS tunnel, sets `APP_PUBLIC_BASE_URL`, and starts Spring Boot. Then open the device detail page, copy the generated GPS link, and send it to the authorized phone.
+
+If you run the app on another port, set `SERVER_PORT` before the helper:
+
+```powershell
+$env:SERVER_PORT="8081"
+.\scripts\easy-public-gps-link.ps1
+```
+
+The tunnel will expose `http://localhost:8081`.
+
+Cloudflare Tunnel quick mode:
+
+```powershell
+cloudflared tunnel --url http://localhost:8080
+```
+
+Then restart the app with the generated HTTPS URL:
+
+```powershell
+$env:APP_PUBLIC_BASE_URL="https://abc123.trycloudflare.com"
+.\mvnw.cmd spring-boot:run
+```
+
+ngrok:
+
+```powershell
+ngrok http 8080
+$env:APP_PUBLIC_BASE_URL="https://abc123.ngrok-free.app"
+.\mvnw.cmd spring-boot:run
+```
+
+Windows helper:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\start-with-public-url.ps1
+```
+
+More detail is available in `pepito-busca-error/docs/public-gps-link.md` and `pepito-busca-error/scripts/README-public-link.md`.
+
+## Troubleshooting
+
+### Port 8080 already in use
+
+This means another process is already using the local web port that Spring Boot wants to use. The app supports changing the port with `SERVER_PORT`.
+
+Option A: run on another port:
+
+```powershell
+$env:SERVER_PORT="8081"
+.\mvnw.cmd spring-boot:run
+```
+
+Then open:
+
+```text
+http://localhost:8081
+```
+
+Option B: use the helper script:
+
+```powershell
+.\scripts\run-on-port.ps1 -Port 8081
+```
+
+Option C: safely free port 8080:
+
+```powershell
+.\scripts\free-port.ps1
+```
+
+The script shows which process owns the port and asks before stopping it.
+
+Option D: manual Windows commands:
+
+```bat
+netstat -ano | findstr :8080
+taskkill /PID PID_NUMBER /F
+```
+
+If you use the public GPS tunnel, expose the same port as the running app. For example, if `SERVER_PORT=8081`, use:
+
+```powershell
+cloudflared tunnel --url http://localhost:8081
+ngrok http 8081
+```
 
 ## AI Usage Statement
 

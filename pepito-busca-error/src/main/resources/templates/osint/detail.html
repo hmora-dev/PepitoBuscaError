@@ -177,6 +177,13 @@
 							<i class="bi bi-radar"></i>
 							<span>New target</span>
 						</a>
+						<form th:action="@{/osint/scans/{id}/delete(id=${scan.id})}" method="post">
+							<button class="btn btn-danger" type="submit"
+									onclick="return confirm('Delete this OSINT report?');">
+								<i class="bi bi-trash"></i>
+								<span>Delete report</span>
+							</button>
+						</form>
 					</div>
 				</div>
 

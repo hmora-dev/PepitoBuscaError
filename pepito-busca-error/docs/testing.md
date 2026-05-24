@@ -2,11 +2,38 @@
 
 The test suite uses JUnit, Spring Boot Test, MockMvc, and H2.
 
+## Running tests
+
 Run all tests from Windows PowerShell:
 
 ```powershell
 cd C:\Users\hecto\Desktop\pepito-busca-error\pepito-busca-error
 .\mvnw.cmd test
+```
+
+The basic `PepitoBuscaErrorApplicationTests` class verifies that the Spring Boot application context can start with the test configuration. Controller tests use MockMvc, and persistence tests use H2 instead of the local MySQL database.
+
+The Maven test configuration loads Mockito as an explicit Java agent during Surefire test runs. This keeps the test output clean on current Java versions and avoids Mockito/Byte Buddy dynamic self-attach warnings on Java 21 and later. Class data sharing is disabled only for the forked test JVM to avoid harmless agent-related JVM noise; application startup is not affected.
+
+## Local Port
+
+The application uses port `8080` by default. If another Spring Boot process is already running, start this project on another port:
+
+```powershell
+$env:SERVER_PORT="8081"
+.\mvnw.cmd spring-boot:run
+```
+
+Or use:
+
+```powershell
+.\scripts\run-on-port.ps1 -Port 8081
+```
+
+To free a busy port safely:
+
+```powershell
+.\scripts\free-port.ps1 -Port 8080
 ```
 
 ## Current Coverage

@@ -82,6 +82,8 @@ CREATE TABLE IF NOT EXISTS tracked_devices (
   longitude DOUBLE NULL,
   accuracy_meters DOUBLE NULL,
   location_label VARCHAR(180) NULL,
+  last_client_ip VARCHAR(45) NULL,
+  last_user_agent VARCHAR(255) NULL,
   notes VARCHAR(500) NULL,
   active BIT NOT NULL,
   tracking_token VARCHAR(80) NULL,

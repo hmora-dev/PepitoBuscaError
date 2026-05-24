@@ -20,7 +20,7 @@
 					<div>
 						<p class="eyebrow">Owned device</p>
 						<h1 th:text="${pageTitle}">Register device</h1>
-						<p class="muted">Register the device first. Then open its tracking link on that device to detect its real location.</p>
+						<p class="muted">Register the device first. Then send only its public HTTPS GPS link from the detail page.</p>
 					</div>
 				</div>
 
@@ -58,7 +58,7 @@
 
 					<div class="info-box">
 						<i class="bi bi-crosshair"></i>
-						<span>The location is captured only from the tracked device browser after it opens the private tracking link and grants location permission. Inactive devices reject live updates.</span>
+						<span>The location is captured only after the tracked device opens the public HTTPS permission page and grants browser location access. Inactive devices reject live updates.</span>
 					</div>
 
 					<div class="form-actions">

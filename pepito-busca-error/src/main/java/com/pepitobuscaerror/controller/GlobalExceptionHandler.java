@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -23,6 +24,14 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler({ NoHandlerFoundException.class, NoResourceFoundException.class })
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public String handleMissingRoute(Exception exception, Model model) {
+		model.addAttribute("title", "Page not found");
+		model.addAttribute("message", "The requested page does not exist.");
+		return "error/404";
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public String handleInvalidRouteParameter(MethodArgumentTypeMismatchException exception, Model model) {
 		model.addAttribute("title", "Page not found");
 		model.addAttribute("message", "The requested page does not exist.");
 		return "error/404";
