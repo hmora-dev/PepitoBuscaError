@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memoria técnica completa - PepitoBuscaError</title>
+<style>:root{--page:#eef2f7;--paper:#fff;--ink:#111827;--muted:#64748b;--line:#dbe3ef;--brand:#0f172a;--accent:#2563eb;--accent-soft:#eff6ff}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#eaf1ff 0,var(--page) 420px);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.68}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.document{width:min(900px,calc(100% - 40px));margin:32px auto;background:var(--paper);border:1px solid var(--line);box-shadow:0 24px 70px rgba(15,23,42,.12)}.content{padding:54px 64px 70px}.cover-block{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:44px;margin:-54px -64px 34px;color:#fff;background:linear-gradient(135deg,rgba(37,99,235,.92),rgba(8,145,178,.78)),linear-gradient(145deg,#0f172a,#111827)}.cover-block h1{margin:0 0 10px;font-size:clamp(44px,8vw,82px);line-height:.98;letter-spacing:0}.cover-block h2{margin:0 0 26px;color:#dbeafe;font-size:clamp(22px,3vw,32px);border:0;break-before:auto;page-break-before:auto}.cover-block p{max-width:760px;color:#e0f2fe;font-size:17px}h1{margin:0 0 18px;font-size:42px;line-height:1.1}h2{margin:62px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--line);color:var(--brand);font-size:30px;line-height:1.2;break-before:page;page-break-before:always}h2:first-of-type{break-before:auto;page-break-before:auto}h3{margin:34px 0 10px;color:#1e293b;font-size:21px;line-height:1.3}h4{margin:22px 0 8px;color:#334155;font-size:16px}p{margin:0 0 15px}ul,ol{margin:0 0 18px 24px;padding:0}li{margin:5px 0}code{padding:2px 5px;border:1px solid #dbeafe;border-radius:5px;background:#eff6ff;color:#1e3a8a;font-family:"Cascadia Code",Consolas,Monaco,monospace;font-size:.92em}pre{margin:18px 0 24px;padding:18px 20px;overflow:auto;border:1px solid #d1dbe8;border-radius:8px;background:#0b1020;color:#e2e8f0;font-size:13px;line-height:1.55;break-inside:avoid;page-break-inside:avoid}pre code{padding:0;border:0;background:transparent;color:inherit}.table-wrap{overflow-x:auto;margin:18px 0 26px;break-inside:avoid;page-break-inside:avoid}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 12px;border:1px solid var(--line);vertical-align:top}th{background:var(--accent-soft);color:#1e3a8a;text-align:left;font-weight:800}tr:nth-child(even) td{background:#f8fafc}.print-anchor{display:block;height:0}@media screen and (max-width:760px){.document{width:100%;margin:0;border:0}.content{padding:32px 22px 48px}.cover-block{margin:-32px -22px 28px;padding:30px 22px;min-height:82vh}h2{font-size:25px}table{font-size:13px}}@page{size:A4;margin:18mm 16mm 20mm}@media print{body{background:#fff}.document{width:100%;margin:0;border:0;box-shadow:none}.content{padding:0}.cover-block{min-height:260mm;margin:0;padding:32mm 20mm;print-color-adjust:exact;-webkit-print-color-adjust:exact}h2{break-before:page;page-break-before:always}h2:first-of-type{break-before:auto;page-break-before:auto}h3,h4,table,pre{break-inside:avoid;page-break-inside:avoid}a{color:#0f172a;text-decoration:none}pre{white-space:pre-wrap}}</style>
+</head>
+<body>
+<main class="document"><article class="content">
+<span id="1-portada" class="print-anchor"></span>
+<div class="cover-block">
+<h1 id="pepitobuscaerror">PepitoBuscaError</h1>
+<h2 id="memoria-tecnica-completa">Memoria técnica completa</h2>
+<p><strong>Proyecto final de Desarrollo de Aplicaciones Multiplataforma (DAM)</strong> <strong>Autor:</strong> Héctor Mora <strong>Curso académico:</strong> 2025-2026 <strong>Tecnologías principales:</strong> Java 17, Spring Boot 3.5.14, Maven, Spring MVC, Thymeleaf, Spring Data JPA, Hibernate, MySQL 8, H2, HTML5, CSS3, Bootstrap Icons, Chart.js, Leaflet, OpenStreetMap, JUnit, Mockito y PowerShell.</p>
+<p><strong>Subtítulo:</strong> Plataforma web MVC de ciberseguridad defensiva para pequeñas y medianas empresas, orientada al registro de compañías, análisis de riesgo, OSINT pasivo, recomendaciones, visualización ejecutiva y geolocalización con consentimiento.</p>
+</div>
+<h2 id="2-indice">2. Índice</h2>
+<ol>
+<li><a href="#1-portada">Portada</a></li>
+<li><a href="#2-indice">Índice</a></li>
+<li><a href="#3-resumen-ejecutivo">Resumen ejecutivo</a></li>
+<li><a href="#4-objetivo-del-proyecto">Objetivo del proyecto</a></li>
+<li><a href="#5-arquitectura-general">Arquitectura general</a></li>
+<li><a href="#6-tecnologias-utilizadas-y-justificacion">Tecnologías utilizadas y justificación</a></li>
+<li><a href="#7-estructura-del-repositorio">Estructura del repositorio</a></li>
+<li><a href="#8-pom-xml">pom.xml</a></li>
+<li><a href="#9-application-properties">application.properties</a></li>
+<li><a href="#10-modelo-de-base-de-datos">Modelo de base de datos</a></li>
+<li><a href="#11-entidades-java">Entidades Java</a></li>
+<li><a href="#12-repositorios">Repositorios</a></li>
+<li><a href="#13-servicios">Servicios</a></li>
+<li><a href="#14-controladores">Controladores</a></li>
+<li><a href="#15-dashboard-y-graficos">Dashboard y gráficos</a></li>
+<li><a href="#16-modulo-de-empresas">Módulo de empresas</a></li>
+<li><a href="#17-modulo-de-analisis-de-riesgo">Módulo de análisis de riesgo</a></li>
+<li><a href="#18-motor-de-riesgo">Motor de riesgo</a></li>
+<li><a href="#19-indicadores">Indicadores</a></li>
+<li><a href="#20-recomendaciones-y-plan-de-accion">Recomendaciones y plan de acción</a></li>
+<li><a href="#21-modulo-osint">Módulo OSINT</a></li>
+<li><a href="#22-apis-externas">APIs externas</a></li>
+<li><a href="#23-modulo-de-geolocalizacion">Módulo de geolocalización</a></li>
+<li><a href="#24-public-https-links">Public HTTPS links</a></li>
+<li><a href="#25-scripts-powershell">Scripts PowerShell</a></li>
+<li><a href="#26-templates-thymeleaf">Templates Thymeleaf</a></li>
+<li><a href="#27-css-y-diseno-visual">CSS y diseño visual</a></li>
+<li><a href="#28-error-handling">Error handling</a></li>
+<li><a href="#29-tests">Tests</a></li>
+<li><a href="#30-seguridad-y-privacidad">Seguridad y privacidad</a></li>
+<li><a href="#31-uso-de-ia-durante-el-desarrollo">Uso de IA durante el desarrollo</a></li>
+<li><a href="#32-limitaciones-actuales">Limitaciones actuales</a></li>
+<li><a href="#33-mejoras-futuras">Mejoras futuras</a></li>
+<li><a href="#34-conclusion">Conclusión</a></li>
+</ol>
+<h2 id="3-resumen-ejecutivo">3. Resumen ejecutivo</h2>
+<p>PepitoBuscaError es una aplicación web desarrollada con Spring Boot MVC que he planteado como una plataforma de ciberseguridad defensiva para pequeñas y medianas empresas. Su objetivo no es explotar sistemas ni sustituir a una auditoría profesional completa, sino ofrecer una primera visión estructurada de la exposición digital de una organización: empresas registradas, análisis de riesgo, indicadores técnicos, recomendaciones, comprobaciones OSINT pasivas, cuadros de mando y enlaces de geolocalización basados en consentimiento.</p>
+<p>El problema que resuelve es muy habitual en una pyme: la información de seguridad suele estar dispersa, no siempre se documenta la evolución del riesgo y muchas decisiones técnicas se toman sin una vista clara de prioridades. Esta aplicación centraliza datos básicos de la empresa, permite registrar análisis, calcula una puntuación de riesgo, clasifica los resultados por nivel y genera acciones recomendadas. Además, el módulo OSINT aporta una revisión pasiva de dominios, DNS, correo, TLS, cabeceras web y exposición pública sin realizar ataques ni pruebas intrusivas.</p>
+<p>La plataforma incluye estos módulos principales:</p>
+<ul>
+<li>Gestión de compañías: alta, listado, búsqueda, detalle, edición y borrado.</li>
+<li>Análisis de riesgo: selección de indicadores, cálculo de puntuación y clasificación por niveles.</li>
+<li>Indicadores: catálogo de señales de riesgo y consulta de indicadores almacenados.</li>
+<li>Recomendaciones: plan de acción priorizado a partir de los indicadores detectados.</li>
+<li>Dashboard: métricas, tarjetas KPI, gráficos y tendencias recientes.</li>
+<li>OSINT: análisis de dominio, comprobación de correo corporativo y creación de informes pasivos guardados.</li>
+<li>Geolocalización: registro de dispositivos propios, enlace privado por token y actualización de ubicación solo tras permiso del navegador.</li>
+<li>Documentación interna, scripts de ayuda y pruebas automatizadas.</li>
+</ul>
+<p>El valor de la aplicación como plataforma de ciberseguridad está en que traduce señales técnicas en información comprensible para un entorno de negocio. Un responsable de una pyme puede ver qué empresas tienen más riesgo, qué indicadores aparecen con más frecuencia, qué recomendaciones están pendientes y qué activos públicos requieren revisión. Desde el punto de vista académico, el proyecto demuestra uso real de arquitectura MVC, persistencia relacional, validación, servicios, repositorios, DTOs, plantillas Thymeleaf, pruebas y documentación técnica.</p>
+<h2 id="4-objetivo-del-proyecto">4. Objetivo del proyecto</h2>
+<p>El objetivo principal del proyecto es construir una aplicación web defendible, mantenible y coherente que permita analizar de forma básica la exposición digital de una empresa desde un enfoque defensivo. El proyecto se centra en explicar y organizar el riesgo, no en realizar explotación ofensiva.</p>
+<p>En concreto, la aplicación persigue estos objetivos:</p>
+<ul>
+<li>Registrar compañías con su nombre, dominio, correo corporativo y sector.</li>
+<li>Crear análisis de riesgo asociados a cada compañía.</li>
+<li>Calcular una puntuación de riesgo a partir de indicadores definidos en el código.</li>
+<li>Asignar un nivel de riesgo comprensible: bajo, medio, alto o crítico.</li>
+<li>Generar recomendaciones concretas que convierten los hallazgos en acciones de mejora.</li>
+<li>Visualizar KPIs y gráficos para entender el estado global del sistema.</li>
+<li>Ejecutar comprobaciones OSINT pasivas sobre dominios y correos autorizados.</li>
+<li>Guardar informes OSINT con hallazgos, severidades, evidencias y recomendaciones.</li>
+<li>Gestionar dispositivos propios o autorizados mediante geolocalización consentida.</li>
+<li>Documentar configuración, modelo de datos, pruebas, privacidad y mejoras futuras.</li>
+</ul>
+<p>Como estudiante, he diseñado el proyecto para que sirva tanto como demostración académica como prototipo profesional. La parte académica está en la aplicación de patrones MVC, JPA, validación, servicios y pruebas. La parte profesional está en la orientación a pymes, la separación de responsabilidades, la privacidad del módulo GPS, el uso de variables de entorno para secretos y el enfoque ético del OSINT.</p>
+<h2 id="5-arquitectura-general">5. Arquitectura general</h2>
+<p>La arquitectura general sigue el patrón Spring Boot MVC clásico. Esta decisión encaja muy bien con un proyecto final de DAM porque permite explicar de forma clara cómo entra una petición HTTP, cómo se procesa en Java, cómo se consulta o modifica la base de datos y cómo se renderiza finalmente una página HTML con Thymeleaf.</p>
+<p>El flujo principal de la aplicación es:</p>
+<pre><code class="language-text">Navegador
+   |
+   v
+Controller Spring MVC
+   |
+   v
+Service
+   |
+   v
+Repository Spring Data JPA
+   |
+   v
+Base de datos MySQL
+   |
+   v
+Repository -&gt; Service -&gt; Controller
+   |
+   v
+Vista Thymeleaf renderizada en HTML</code></pre>
+<p>La separación de capas que se observa en el código es la siguiente:</p>
+<div class="table-wrap"><table><thead><tr><th>Capa</th><th>Paquetes / recursos</th><th>Responsabilidad</th></tr></thead><tbody><tr><td>Presentación</td><td><code>controller</code>, <code>templates</code>, <code>static</code></td><td>Recibir rutas, validar formularios, preparar modelos y renderizar HTML.</td></tr><tr><td>Lógica de negocio</td><td><code>service</code> y <code>service.checks</code></td><td>Crear análisis, calcular riesgo, generar recomendaciones, ejecutar OSINT, gestionar geolocalización y enlaces públicos.</td></tr><tr><td>Persistencia</td><td><code>repository</code></td><td>Acceso a base de datos mediante Spring Data JPA.</td></tr><tr><td>Dominio</td><td><code>model</code></td><td>Entidades JPA, relaciones y enums de negocio.</td></tr><tr><td>Transporte / formularios</td><td><code>dto</code></td><td>Formularios y objetos de resultado que no son entidades persistentes directas.</td></tr><tr><td>Utilidades</td><td><code>util</code></td><td>Normalización de dominios y URLs.</td></tr><tr><td>Configuración</td><td><code>application.properties</code>, <code>pom.xml</code></td><td>Puerto, base de datos, claves API opcionales, dependencias y pruebas.</td></tr></tbody></table></div>
+<p>Esta arquitectura es apropiada porque evita mezclar responsabilidades. Los controladores no contienen SQL ni cálculo de riesgo; los repositorios no conocen la interfaz web; las entidades representan el modelo persistente; y los servicios concentran las decisiones de negocio. Para una defensa oral, esta estructura permite explicar el proyecto por capas y demostrar que cada clase tiene un propósito concreto.</p>
+<h2 id="6-tecnologias-utilizadas-y-justificacion">6. Tecnologías utilizadas y justificación</h2>
+<p>Las tecnologías utilizadas aparecen directamente en el <code>pom.xml</code>, en las plantillas, en los recursos estáticos, en la configuración y en los tests.</p>
+<div class="table-wrap"><table><thead><tr><th>Tecnología</th><th>Dónde aparece</th><th>Qué hace</th><th>Por qué encaja en el proyecto</th></tr></thead><tbody><tr><td>Java 17</td><td><code>pom.xml</code> con <code>&lt;java.version&gt;17&lt;/java.version&gt;</code></td><td>Lenguaje principal de la aplicación.</td><td>Es una versión LTS estable, compatible con Spring Boot 3 y adecuada para un proyecto DAM mantenible.</td></tr><tr><td>Spring Boot 3.5.14</td><td>Parent Maven <code>spring-boot-starter-parent</code></td><td>Arranque automático, servidor embebido, configuración y gestión de dependencias.</td><td>Reduce configuración repetitiva y permite centrarse en la lógica de la aplicación.</td></tr><tr><td>Maven</td><td><code>pom.xml</code>, <code>mvnw</code>, <code>mvnw.cmd</code></td><td>Compilación, dependencias, tests y ejecución.</td><td>Hace que el proyecto sea reproducible en Windows y en otros entornos.</td></tr><tr><td>Spring MVC</td><td><code>spring-boot-starter-web</code>, controladores</td><td>Gestiona rutas HTTP, formularios y respuestas HTML.</td><td>El flujo MVC es claro y defendible para una aplicación server-side.</td></tr><tr><td>Thymeleaf</td><td><code>spring-boot-starter-thymeleaf</code>, <code>templates</code></td><td>Motor de plantillas HTML del lado servidor.</td><td>Permite renderizar vistas sin crear una SPA ni una API separada.</td></tr><tr><td>Spring Data JPA</td><td><code>spring-boot-starter-data-jpa</code>, repositorios</td><td>Genera operaciones CRUD y consultas por nombre de método.</td><td>Reduce SQL repetitivo y mantiene separada la persistencia.</td></tr><tr><td>Hibernate</td><td>incluido por JPA</td><td>Implementación ORM que mapea entidades a tablas.</td><td>Permite trabajar con objetos Java y relaciones en lugar de manipular filas manualmente.</td></tr><tr><td>MySQL 8</td><td><code>mysql-connector-j</code>, <code>application.properties</code>, scripts SQL</td><td>Base de datos relacional principal.</td><td>Es una tecnología habitual en entornos empresariales y adecuada para compañías, análisis y hallazgos.</td></tr><tr><td>H2</td><td>dependencia <code>h2</code>, <code>src/test/resources/application.properties</code></td><td>Base de datos en memoria para pruebas.</td><td>Permite ejecutar tests sin depender de MySQL local.</td></tr><tr><td>HTML5</td><td>todas las plantillas <code>templates</code></td><td>Estructura semántica de la interfaz.</td><td>Es suficiente para una aplicación MVC renderizada en servidor.</td></tr><tr><td>CSS3</td><td><code>static/css/style.css</code>, <code>static/css/app.css</code></td><td>Diseño visual, responsive, tarjetas, badges y mapas.</td><td>Mejora la comprensión de riesgo para usuarios no técnicos.</td></tr><tr><td>Bootstrap Icons</td><td>CDN en <code>fragments/layout.html</code></td><td>Iconos visuales para navegación y acciones.</td><td>Da claridad visual sin añadir un framework frontend pesado.</td></tr><tr><td>Chart.js</td><td>CDN en <code>dashboard.html</code></td><td>Gráficos del dashboard.</td><td>Representa distribución de riesgo, severidad, categorías OSINT y tendencia.</td></tr><tr><td>Leaflet</td><td>WebJar <code>leaflet</code> y plantillas de geolocalización</td><td>Mapas interactivos.</td><td>Permite mostrar coordenadas usando OpenStreetMap sin crear un sistema GIS propio.</td></tr><tr><td>OpenStreetMap</td><td><code>tile.openstreetmap.org</code> en plantillas</td><td>Teselas de mapa.</td><td>Solución abierta y apropiada para visualizar ubicaciones autorizadas.</td></tr><tr><td>JUnit</td><td><code>spring-boot-starter-test</code>, tests</td><td>Framework de pruebas.</td><td>Valida contexto, servicios, controladores, utilidades y flujos críticos.</td></tr><tr><td>Mockito</td><td><code>mockito-core</code>, Surefire <code>javaagent</code></td><td>Soporte para dobles de prueba.</td><td>La configuración como agente evita warnings de Byte Buddy en Java moderno.</td></tr><tr><td>PowerShell</td><td>carpeta <code>scripts</code></td><td>Automatización local en Windows.</td><td>El proyecto está pensado para ejecutarse desde Windows y estos scripts ayudan con puertos y enlaces públicos.</td></tr></tbody></table></div>
+<p>La elección general prioriza simplicidad, trazabilidad y facilidad de defensa. No se ha introducido React, microservicios, JWT, Docker o WebFlux porque el alcance del proyecto es una aplicación MVC académica y profesionalmente explicable.</p>
+<h2 id="7-estructura-del-repositorio">7. Estructura del repositorio</h2>
+<p>La estructura real del repositorio muestra una aplicación Spring Boot estándar con documentación y scripts auxiliares:</p>
+<div class="table-wrap"><table><thead><tr><th>Ruta</th><th>Contenido real</th><th>Explicación</th></tr></thead><tbody><tr><td><code>src/main/java</code></td><td>Código Java principal</td><td>Contiene la clase de arranque y los paquetes MVC.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/controller</code></td><td><code>DashboardController</code>, <code>CompanyController</code>, <code>AnalysisController</code>, <code>OsintController</code>, <code>GeolocationController</code>, etc.</td><td>Gestiona rutas, formularios y modelos para Thymeleaf.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/service</code></td><td>Servicios de empresas, análisis, dashboard, OSINT, geolocalización, enlaces públicos y cálculo de riesgo.</td><td>Aloja lógica de negocio y coordinación entre repositorios y vistas.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/service/checks</code></td><td>Comprobaciones pasivas como DNS, correo, TLS, cabeceras, CT, fingerprint y recursos well-known.</td><td>Implementa el motor OSINT pasivo mediante <code>SecurityCheck</code>.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/repository</code></td><td>Interfaces <code>JpaRepository</code></td><td>Abstraen el acceso a datos.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/model</code></td><td>Entidades JPA y enums</td><td>Define tablas, relaciones, niveles y estados.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/dto</code></td><td>Formularios y resultados</td><td>Evita usar entidades para todos los datos de entrada/salida.</td></tr><tr><td><code>src/main/java/com/pepitobuscaerror/util</code></td><td><code>TargetNormalizer</code></td><td>Normaliza dominios y URLs para OSINT y empresas.</td></tr><tr><td><code>src/main/resources/templates</code></td><td>Vistas Thymeleaf</td><td>Páginas de dashboard, empresas, análisis, indicadores, recomendaciones, OSINT, geolocalización, documentación y errores.</td></tr><tr><td><code>src/main/resources/static</code></td><td>CSS, JavaScript e imagen SVG</td><td>Diseño visual, mapa animado del dashboard y marcador de mapa.</td></tr><tr><td><code>src/main/resources/application.properties</code></td><td>Configuración principal</td><td>Puerto, base de datos, JPA, variables de entorno, OSINT y enlaces públicos.</td></tr><tr><td><code>src/test/java</code></td><td>Pruebas JUnit y MockMvc</td><td>Comprueba contexto, páginas, controladores, servicios y utilidades.</td></tr><tr><td><code>src/test/resources/application.properties</code></td><td>Configuración de tests</td><td>Usa H2 en memoria y <code>ddl-auto=create-drop</code>.</td></tr><tr><td><code>docs</code></td><td>Documentación técnica y SQL</td><td>Modelo de datos, configuración, OSINT, privacidad, pruebas, mejoras, scripts SQL y esta memoria.</td></tr><tr><td><code>scripts</code></td><td>Scripts PowerShell</td><td>Ayudan a liberar puertos, ejecutar en otro puerto y preparar enlaces GPS públicos.</td></tr><tr><td><code>pom.xml</code></td><td>Configuración Maven</td><td>Dependencias, versión de Java, plugins de Spring Boot y Surefire.</td></tr><tr><td><code>HELP.md</code></td><td>Ayuda generada por Spring Initializr</td><td>Referencias oficiales de Maven, Spring Web, Thymeleaf, JPA y validación.</td></tr></tbody></table></div>
+<p>En el repositorio inspeccionado no aparece un <code>README.md</code> en la raíz. Sí aparece <code>HELP.md</code>, que cumple una función de referencia inicial generada por Spring Initializr, y varios documentos propios dentro de <code>docs/</code> que explican configuración, modelo de datos, OSINT, geolocalización, pruebas y roadmap.</p>
+<h2 id="8-pom-xml">8. pom.xml</h2>
+<p>El <code>pom.xml</code> define el proyecto Maven <code>com.pepitobuscaerror:pepito-busca-error:0.0.1-SNAPSHOT</code>. El parent utilizado es:</p>
+<pre><code class="language-xml">&lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+    &lt;version&gt;3.5.14&lt;/version&gt;
+&lt;/parent&gt;</code></pre>
+<p>La versión de Java se fija en Java 17:</p>
+<pre><code class="language-xml">&lt;properties&gt;
+    &lt;java.version&gt;17&lt;/java.version&gt;
+&lt;/properties&gt;</code></pre>
+<p>Las dependencias principales existen por una razón concreta:</p>
+<div class="table-wrap"><table><thead><tr><th>Dependencia</th><th>Alcance</th><th>Motivo</th></tr></thead><tbody><tr><td><code>spring-boot-starter-data-jpa</code></td><td>Principal</td><td>Repositorios JPA, Hibernate y persistencia relacional.</td></tr><tr><td><code>spring-boot-starter-thymeleaf</code></td><td>Principal</td><td>Renderizado de vistas HTML server-side.</td></tr><tr><td><code>spring-boot-starter-validation</code></td><td>Principal</td><td>Validaciones con anotaciones como <code>@NotBlank</code>, <code>@Email</code>, <code>@Size</code> y <code>@AssertTrue</code>.</td></tr><tr><td><code>spring-boot-starter-web</code></td><td>Principal</td><td>Spring MVC, Tomcat embebido, controladores y formularios.</td></tr><tr><td><code>org.webjars.npm:leaflet:1.9.4</code></td><td>Principal</td><td>Integrar Leaflet desde WebJars para mapas.</td></tr><tr><td><code>mysql-connector-j</code></td><td>Runtime</td><td>Conexión real con MySQL 8.</td></tr><tr><td><code>h2</code></td><td>Runtime</td><td>Base de datos en memoria usada por tests.</td></tr><tr><td><code>spring-boot-starter-test</code></td><td>Test</td><td>JUnit, AssertJ, Spring Test y MockMvc.</td></tr><tr><td><code>mockito-core</code></td><td>Test</td><td>Soporte explícito para Mockito.</td></tr></tbody></table></div>
+<p>El bloque de plugins contiene tres elementos importantes:</p>
+<div class="table-wrap"><table><thead><tr><th>Plugin</th><th>Función</th></tr></thead><tbody><tr><td><code>maven-dependency-plugin</code></td><td>Crea propiedades de dependencias durante <code>initialize</code>, usadas para ubicar el JAR de Mockito.</td></tr><tr><td><code>maven-surefire-plugin</code></td><td>Ejecuta tests y configura <code>argLine</code> con <code>-javaagent:${org.mockito:mockito-core:jar}</code>.</td></tr><tr><td><code>spring-boot-maven-plugin</code></td><td>Permite empaquetar y ejecutar la aplicación Spring Boot.</td></tr></tbody></table></div>
+<p>La configuración de Surefire es relevante porque evita el auto-attach dinámico de Mockito/Byte Buddy en versiones modernas de Java:</p>
+<pre><code class="language-xml">&lt;argLine&gt;-Xshare:off -javaagent:${org.mockito:mockito-core:jar}&lt;/argLine&gt;</code></pre>
+<p>Esto no cambia la aplicación en producción; solo afecta al proceso de pruebas. Desde un punto de vista de calidad, muestra que el proyecto no se limita a compilar, sino que también cuida la ejecución limpia de tests.</p>
+<h2 id="9-application-properties">9. application.properties</h2>
+<p>La configuración principal se encuentra en <code>src/main/resources/application.properties</code>. Está diseñada para funcionar en local, pero permitiendo sobrescribir valores mediante variables de entorno.</p>
+<p>Fragmento representativo:</p>
+<pre><code class="language-properties">server.port=${SERVER_PORT:8080}
+server.address=${SERVER_ADDRESS:0.0.0.0}
+server.forward-headers-strategy=${SERVER_FORWARD_HEADERS_STRATEGY:framework}
+app.public-base-url=${APP_PUBLIC_BASE_URL:}
+public.base-url=${PUBLIC_BASE_URL:}
+
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/pepito_busca_error?createDatabaseIfNotExist=true&amp;useSSL=false&amp;serverTimezone=Europe/Madrid&amp;allowPublicKeyRetrieval=true}
+spring.datasource.username=${DB_USERNAME:pepito_app}
+spring.datasource.password=${DB_PASSWORD:change_this_password}
+spring.jpa.hibernate.ddl-auto=update
+
+osint.securitytrails.api-key=${SECURITYTRAILS_API_KEY:}
+osint.hibp.api-key=${HIBP_API_KEY:}
+osint.demo-mode=${OSINT_DEMO_MODE:true}</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Propiedad</th><th>Explicación</th></tr></thead><tbody><tr><td><code>SERVER_PORT</code></td><td>Permite arrancar en otro puerto si <code>8080</code> está ocupado.</td></tr><tr><td><code>SERVER_ADDRESS=0.0.0.0</code></td><td>Hace que la aplicación escuche en todas las interfaces, útil para túneles o proxy inverso.</td></tr><tr><td><code>APP_PUBLIC_BASE_URL</code></td><td>URL pública HTTPS preferida para generar enlaces GPS que funcionen fuera de la red local.</td></tr><tr><td><code>PUBLIC_BASE_URL</code></td><td>Alias de compatibilidad para la URL pública.</td></tr><tr><td><code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code></td><td>Permiten configurar MySQL sin cambiar código fuente.</td></tr><tr><td><code>spring.jpa.hibernate.ddl-auto=update</code></td><td>Hibernate actualiza el esquema en desarrollo.</td></tr><tr><td><code>spring.jpa.open-in-view=false</code></td><td>Evita mantener sesiones JPA abiertas durante la vista.</td></tr><tr><td><code>osint.demo-mode=true</code></td><td>Mantiene el módulo OSINT funcional sin claves externas.</td></tr><tr><td><code>SECURITYTRAILS_API_KEY</code>, <code>HIBP_API_KEY</code></td><td>Claves opcionales para proveedores externos.</td></tr></tbody></table></div>
+<p>La decisión de no hardcodear secretos es correcta: las claves API y credenciales reales no deben ir en Git. En desarrollo se usan valores por defecto seguros para arrancar, pero en producción se deberían inyectar variables de entorno reales, contraseñas fuertes y una URL pública HTTPS estable.</p>
+<p>Para tests, <code>src/test/resources/application.properties</code> cambia MySQL por H2:</p>
+<pre><code class="language-properties">spring.datasource.url=jdbc:h2:mem:pepito_busca_error;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+spring.jpa.hibernate.ddl-auto=create-drop</code></pre>
+<p>Con esto, los tests no dependen de una base de datos local ni modifican datos reales.</p>
+<h2 id="10-modelo-de-base-de-datos">10. Modelo de base de datos</h2>
+<p>El modelo relacional se basa en dos bloques: el bloque académico de compañías y análisis, y el bloque OSINT/geolocalización. Las tablas documentadas en <code>docs/database-model.md</code> y <code>docs/mysql-workbench-setup.sql</code> son:</p>
+<div class="table-wrap"><table><thead><tr><th>Tabla</th><th>Propósito</th><th>Clave primaria</th></tr></thead><tbody><tr><td><code>companies</code></td><td>Empresas registradas.</td><td><code>id_company</code></td></tr><tr><td><code>analyses</code></td><td>Evaluaciones de riesgo de una empresa.</td><td><code>id_analysis</code></td></tr><tr><td><code>indicators</code></td><td>Indicadores detectados en un análisis.</td><td><code>id_indicator</code></td></tr><tr><td><code>recommendations</code></td><td>Acciones recomendadas para un análisis.</td><td><code>id_recommendation</code></td></tr><tr><td><code>audit_target</code></td><td>Dominio o URL auditada por OSINT.</td><td><code>id</code></td></tr><tr><td><code>scan_run</code></td><td>Ejecución de informe OSINT pasivo.</td><td><code>id</code></td></tr><tr><td><code>finding</code></td><td>Hallazgo producido por un scan OSINT.</td><td><code>id</code></td></tr><tr><td><code>tracked_devices</code></td><td>Dispositivo propio o autorizado para geolocalización consentida.</td><td><code>id_device</code></td></tr></tbody></table></div>
+<p>Modelo relacional textual:</p>
+<pre><code class="language-text">companies (1) ──── (N) analyses
+analyses  (1) ──── (N) indicators
+analyses  (1) ──── (N) recommendations
+
+audit_target (1) ──── (N) scan_run
+scan_run     (1) ──── (N) finding
+
+tracked_devices es independiente y guarda el último estado GPS autorizado.</code></pre>
+<h3 id="companies">companies</h3>
+<p>Guarda los datos básicos de la empresa: <code>name</code>, <code>domain</code>, <code>corporate_email</code>, <code>sector</code> y <code>registration_date</code>. Existe porque el resto del sistema necesita una entidad de negocio sobre la que crear análisis. Un ejemplo real de uso es registrar una pyme con dominio <code>mercadosol.es</code>, correo técnico y sector <code>Retail</code>.</p>
+<h3 id="analyses">analyses</h3>
+<p>Guarda cada evaluación de riesgo: fecha, puntuación, nivel, estado y empresa asociada mediante <code>id_company</code>. La relación con <code>Company</code> se implementa con <code>@ManyToOne</code> y <code>@JoinColumn(name = &quot;id_company&quot;)</code>. Un análisis permite comparar evolución temporal de una empresa.</p>
+<h3 id="indicators">indicators</h3>
+<p>Guarda señales concretas de riesgo: tipo, valor, descripción, severidad y análisis asociado. Cada indicador pertenece a un análisis. En la base de datos <code>indicator_value</code> corresponde al atributo Java <code>value</code>.</p>
+<h3 id="recommendations">recommendations</h3>
+<p>Guarda acciones recomendadas con prioridad, descripción y acción práctica. Cada recomendación pertenece a un análisis. Su valor de negocio es transformar un problema técnico en una tarea ejecutable.</p>
+<h3 id="audit-target">audit_target</h3>
+<p>Guarda objetivos OSINT normalizados: nombre, dominio, URL y fecha de creación. Existe para no repetir el mismo dominio como texto suelto en cada informe.</p>
+<h3 id="scan-run">scan_run</h3>
+<p>Representa una ejecución de comprobaciones pasivas. Guarda objetivo, fecha de inicio, fecha de finalización, estado y puntuación OSINT. La entidad <code>ScanRun</code> contiene una lista de <code>Finding</code> con <code>cascade = ALL</code> y <code>orphanRemoval = true</code>.</p>
+<h3 id="finding">finding</h3>
+<p>Guarda un hallazgo OSINT con categoría, severidad, estado, título, evidencia y recomendación. Permite ordenar y mostrar hallazgos de DNS, correo, web, datos, OSINT y disponibilidad.</p>
+<h3 id="tracked-devices">tracked_devices</h3>
+<p>Guarda dispositivos autorizados con nombre, tipo, propietario, token privado, estado activo, coordenadas opcionales, precisión, etiqueta de ubicación, IP, user-agent y fechas. No almacena histórico completo de ubicaciones; solo la última posición conocida.</p>
+<p>Las claves foráneas principales son <code>analyses.id_company</code>, <code>indicators.id_analysis</code>, <code>recommendations.id_analysis</code>, <code>scan_run.target_id</code> y <code>finding.scan_run_id</code>. En las tablas de análisis, indicadores y recomendaciones se usa cascada para que al borrar una empresa se eliminen los datos dependientes. En OSINT, el borrado de informes y objetivos se gestiona desde <code>AuditService</code> y también existe cascada desde <code>ScanRun</code> hacia <code>Finding</code>.</p>
+<h2 id="11-entidades-java">11. Entidades Java</h2>
+<p>Las entidades se encuentran en <code>src/main/java/com/pepitobuscaerror/model</code>. Cada una representa una tabla o concepto persistente.</p>
+<div class="table-wrap"><table><thead><tr><th>Entidad</th><th>Tabla</th><th>Propósito principal</th></tr></thead><tbody><tr><td><code>Company</code></td><td><code>companies</code></td><td>Empresa registrada y resumen de su historial de análisis.</td></tr><tr><td><code>Analysis</code></td><td><code>analyses</code></td><td>Evaluación de riesgo de una empresa.</td></tr><tr><td><code>Indicator</code></td><td><code>indicators</code></td><td>Señal técnica detectada en un análisis.</td></tr><tr><td><code>Recommendation</code></td><td><code>recommendations</code></td><td>Acción recomendada asociada al análisis.</td></tr><tr><td><code>AuditTarget</code></td><td><code>audit_target</code></td><td>Objetivo normalizado de OSINT.</td></tr><tr><td><code>ScanRun</code></td><td><code>scan_run</code></td><td>Informe OSINT pasivo guardado.</td></tr><tr><td><code>Finding</code></td><td><code>finding</code></td><td>Hallazgo de un informe OSINT.</td></tr><tr><td><code>TrackedDevice</code></td><td><code>tracked_devices</code></td><td>Dispositivo geolocalizable con consentimiento.</td></tr></tbody></table></div>
+<h3 id="company">Company</h3>
+<p><code>Company</code> usa <code>@Entity</code> y <code>@Table(name = &quot;companies&quot;)</code>. Sus atributos principales son <code>idCompany</code>, <code>name</code>, <code>domain</code>, <code>corporateEmail</code>, <code>sector</code>, <code>registrationDate</code> y <code>analyses</code>. Incluye validaciones como <code>@NotBlank</code>, <code>@Email</code> y <code>@Size</code>. La relación con análisis se define como:</p>
+<pre><code class="language-java">@OneToMany(mappedBy = &quot;company&quot;, cascade = CascadeType.ALL, orphanRemoval = true)
+@OrderBy(&quot;analysisDate DESC&quot;)
+private List&lt;Analysis&gt; analyses = new ArrayList&lt;&gt;();</code></pre>
+<p>Además de representar datos, contiene métodos útiles para la interfaz: último análisis, último nivel de riesgo, puntuación media, tendencia y número de recomendaciones. Esta decisión permite que la vista de detalle de empresa muestre un resumen sin duplicar esa lógica en la plantilla.</p>
+<h3 id="analysis">Analysis</h3>
+<p><code>Analysis</code> representa un análisis terminado. Tiene <code>riskScore</code>, <code>riskLevel</code>, <code>status</code>, <code>analysisDate</code>, <code>company</code>, <code>indicators</code> y <code>recommendations</code>. El método <code>complete</code> limita la puntuación entre 0 y 100 y asigna el nivel:</p>
+<pre><code class="language-java">public void complete(int riskScore, RiskLevel riskLevel) {
+    this.riskScore = Math.min(100, Math.max(0, riskScore));
+    this.riskLevel = riskLevel;
+    this.status = &quot;COMPLETED&quot;;
+}</code></pre>
+<p>También incluye métodos <code>addIndicator</code> y <code>addRecommendation</code>, que adjuntan correctamente los objetos hijos al análisis.</p>
+<h3 id="indicator">Indicator</h3>
+<p><code>Indicator</code> guarda <code>type</code>, <code>value</code>, <code>description</code>, <code>severity</code> y la relación <code>@ManyToOne</code> con <code>Analysis</code>. La severidad se persiste como texto mediante <code>@Enumerated(EnumType.STRING)</code>, lo que hace la base de datos más legible que si se guardaran ordinales.</p>
+<h3 id="recommendation">Recommendation</h3>
+<p><code>Recommendation</code> guarda <code>priority</code>, <code>description</code> y <code>action</code>. También calcula valores de presentación como responsable sugerido, plazo sugerido y estado de seguimiento. No sustituye a un gestor de tickets, pero permite mostrar un plan de acción estructurado.</p>
+<h3 id="audittarget">AuditTarget</h3>
+<p><code>AuditTarget</code> almacena nombre, dominio, URL normalizada y fecha de creación. La relación con <code>ScanRun</code> es uno a muchos. Esta entidad separa el concepto de empresa interna del concepto de activo público OSINT.</p>
+<h3 id="scanrun">ScanRun</h3>
+<p><code>ScanRun</code> representa una ejecución de informe. Comienza con estado <code>RUNNING</code>, puede terminar como <code>COMPLETED</code> o <code>FAILED</code>, y calcula etiquetas de riesgo para la interfaz. Los hallazgos se cargan eager para simplificar la vista del informe:</p>
+<pre><code class="language-java">@OneToMany(mappedBy = &quot;scanRun&quot;, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+@OrderBy(&quot;severity DESC, category ASC, id ASC&quot;)
+private List&lt;Finding&gt; findings = new ArrayList&lt;&gt;();</code></pre>
+<h3 id="finding">Finding</h3>
+<p><code>Finding</code> guarda la categoría, severidad, estado, título, evidencia y recomendación. El estado por defecto es <code>OPEN</code>. Esto deja preparada la base para una futura gestión de estados de hallazgos.</p>
+<h3 id="trackeddevice">TrackedDevice</h3>
+<p><code>TrackedDevice</code> guarda un dispositivo autorizado. Incluye validaciones de latitud y longitud, token privado, estado activo, metadata del cliente y fechas. El token se genera con <code>UUID.randomUUID()</code> si no existe. La entidad no intenta rastrear sin permiso: solo guarda posiciones enviadas desde la página live tras autorización del navegador.</p>
+<h3 id="enums">Enums</h3>
+<div class="table-wrap"><table><thead><tr><th>Enum</th><th>Valores</th><th>Uso</th></tr></thead><tbody><tr><td><code>RiskLevel</code></td><td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td><td>Nivel del análisis de empresa.</td></tr><tr><td><code>Severity</code></td><td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td><td>Severidad de indicadores.</td></tr><tr><td><code>FindingSeverity</code></td><td><code>INFO</code>, <code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td><td>Severidad de hallazgos OSINT, con peso de puntuación.</td></tr><tr><td><code>FindingCategory</code></td><td><code>OSINT</code>, <code>WEB</code>, <code>MAIL</code>, <code>DNS</code>, <code>DATA</code>, <code>AVAILABILITY</code></td><td>Área técnica del hallazgo.</td></tr><tr><td><code>ScanStatus</code></td><td><code>RUNNING</code>, <code>COMPLETED</code>, <code>FAILED</code></td><td>Estado de informes OSINT.</td></tr><tr><td><code>Priority</code></td><td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code></td><td>Prioridad de recomendaciones.</td></tr><tr><td><code>FindingStatus</code></td><td><code>OPEN</code>, <code>IN_PROGRESS</code>, <code>ACCEPTED_RISK</code>, <code>RESOLVED</code>, <code>FALSE_POSITIVE</code></td><td>Estado futuro o actual de seguimiento de hallazgos.</td></tr></tbody></table></div>
+<h2 id="12-repositorios">12. Repositorios</h2>
+<p>Los repositorios usan Spring Data JPA y extienden <code>JpaRepository</code>. Esto proporciona automáticamente operaciones como <code>findAll</code>, <code>findById</code>, <code>save</code>, <code>deleteById</code>, <code>count</code> y <code>existsById</code>. Además, el proyecto define consultas por nombre de método y algunas consultas JPQL.</p>
+<div class="table-wrap"><table><thead><tr><th>Repositorio</th><th>Entidad</th><th>Métodos destacables</th></tr></thead><tbody><tr><td><code>CompanyRepository</code></td><td><code>Company</code></td><td><code>findAllByOrderByRegistrationDateDesc</code>, <code>findTop5ByOrderByRegistrationDateDesc</code>, búsqueda por nombre/dominio/sector.</td></tr><tr><td><code>AnalysisRepository</code></td><td><code>Analysis</code></td><td>Últimos análisis, conteos por <code>RiskLevel</code>, media de riesgo, conteo de indicadores por severidad.</td></tr><tr><td><code>IndicatorRepository</code></td><td><code>Indicator</code></td><td>Listado por severidad y tipo, conteo por <code>Severity</code>.</td></tr><tr><td><code>RecommendationRepository</code></td><td><code>Recommendation</code></td><td>Listado por prioridad, conteo por <code>Priority</code>.</td></tr><tr><td><code>AuditTargetRepository</code></td><td><code>AuditTarget</code></td><td>Búsqueda por dominio ignorando mayúsculas, últimos objetivos.</td></tr><tr><td><code>ScanRunRepository</code></td><td><code>ScanRun</code></td><td>Últimos scans, scans por target, conteo de hallazgos por severidad y categoría.</td></tr><tr><td><code>TrackedDeviceRepository</code></td><td><code>TrackedDevice</code></td><td>Búsqueda por token, búsquedas por texto, conteo de activos y localizados.</td></tr></tbody></table></div>
+<p>Se usan <code>@EntityGraph</code> en repositorios como <code>CompanyRepository</code>, <code>AnalysisRepository</code>, <code>IndicatorRepository</code> y <code>RecommendationRepository</code> para cargar relaciones necesarias en las vistas sin provocar problemas de carga perezosa. Esta decisión es coherente con <code>spring.jpa.open-in-view=false</code>, porque obliga a traer los datos que se van a usar antes de renderizar Thymeleaf.</p>
+<p>Los repositorios mantienen la lógica de base de datos separada de los controladores. Por ejemplo, <code>CompanyController</code> no sabe cómo se ordenan las empresas ni cómo se busca por sector; delega en <code>CompanyService</code>, y este usa <code>CompanyRepository</code>.</p>
+<h2 id="13-servicios">13. Servicios</h2>
+<p>La capa de servicios contiene la lógica de negocio. Esta es una de las decisiones más importantes del proyecto, porque evita que los controladores se conviertan en clases con demasiada responsabilidad.</p>
+<div class="table-wrap"><table><thead><tr><th>Servicio</th><th>Responsabilidad</th><th>Repositorios / dependencias</th><th>Controladores que lo usan</th></tr></thead><tbody><tr><td><code>CompanyService</code></td><td>Buscar, crear, actualizar y borrar compañías; normalizar dominio; inicializar datos de dashboard.</td><td><code>CompanyRepository</code>, <code>TargetNormalizer</code></td><td><code>CompanyController</code>, <code>AnalysisController</code></td></tr><tr><td><code>AnalysisService</code></td><td>Catálogo de indicadores, creación de análisis, cálculo de riesgo y recomendaciones.</td><td><code>CompanyRepository</code>, <code>AnalysisRepository</code>, <code>BasicRiskCalculator</code></td><td><code>AnalysisController</code>, <code>IndicatorService</code></td></tr><tr><td><code>DashboardService</code></td><td>Construir KPIs, distribuciones y listas recientes.</td><td><code>CompanyRepository</code>, <code>AnalysisRepository</code>, <code>RecommendationRepository</code>, <code>ScanRunRepository</code></td><td><code>DashboardController</code></td></tr><tr><td><code>AuditService</code></td><td>Crear objetivos OSINT, ejecutar checks pasivos, guardar scans y ordenar hallazgos.</td><td><code>AuditTargetRepository</code>, <code>ScanRunRepository</code>, lista de <code>SecurityCheck</code></td><td><code>OsintController</code></td></tr><tr><td><code>RiskCalculator</code></td><td>Contrato para calcular riesgo.</td><td>No aplica</td><td>Implementado por <code>BasicRiskCalculator</code></td></tr><tr><td><code>BasicRiskCalculator</code></td><td>Ponderación de indicadores y umbrales de nivel de riesgo.</td><td>No aplica</td><td><code>AnalysisService</code>, tests</td></tr><tr><td><code>IndicatorService</code></td><td>Listado de indicadores y catálogo disponible.</td><td><code>IndicatorRepository</code>, <code>AnalysisService</code></td><td><code>IndicatorController</code></td></tr><tr><td><code>RecommendationService</code></td><td>Listado y conteo de recomendaciones por prioridad.</td><td><code>RecommendationRepository</code></td><td><code>RecommendationController</code></td></tr><tr><td><code>OsintService</code></td><td>Coordinar DNSDumpster-style, SecurityTrails-style y HIBP-style; crear resultados y hallazgos.</td><td><code>DnsDumpsterClient</code>, <code>SecurityTrailsClient</code>, <code>HaveIBeenPwnedClient</code></td><td><code>OsintController</code>, <code>OsintProviderCheck</code></td></tr><tr><td><code>DnsLookupService</code></td><td>Consultas DNS JNDI para A, AAAA, MX, NS, TXT, etc.</td><td>JNDI DNS</td><td>Clientes OSINT y checks DNS/correo</td></tr><tr><td><code>DnsDumpsterClient</code></td><td>Inteligencia pasiva estilo DNSDumpster con resumen DNS y datos demo.</td><td><code>DnsLookupService</code>, <code>osint.demo-mode</code></td><td><code>OsintService</code></td></tr><tr><td><code>SecurityTrailsClient</code></td><td>Integración real o demo con SecurityTrails.</td><td><code>RestTemplate</code>, <code>ObjectMapper</code>, API key opcional</td><td><code>OsintService</code></td></tr><tr><td><code>HaveIBeenPwnedClient</code></td><td>Integración real o demo con Have I Been Pwned.</td><td><code>RestTemplate</code>, <code>ObjectMapper</code>, API key opcional</td><td><code>OsintService</code></td></tr><tr><td><code>PublicLinkService</code></td><td>Construir y clasificar enlaces GPS públicos, locales o LAN.</td><td><code>Environment</code>, <code>HttpServletRequest</code></td><td><code>GeolocationController</code></td></tr><tr><td><code>TrackingLinkService</code></td><td>Servicio alternativo/compatibilidad para URLs de tracking.</td><td><code>Environment</code></td><td>Tests y compatibilidad del módulo</td></tr><tr><td><code>TrackedDeviceService</code></td><td>CRUD de dispositivos y actualización de ubicación live validada.</td><td><code>TrackedDeviceRepository</code></td><td><code>GeolocationController</code></td></tr><tr><td><code>GeolocationSchemaService</code></td><td>Ajuste de columnas GPS antiguas a nullable al arrancar.</td><td><code>JdbcTemplate</code></td><td>Evento <code>ApplicationReadyEvent</code></td></tr></tbody></table></div>
+<h3 id="checks-pasivos-de-seguridad">Checks pasivos de seguridad</h3>
+<p>El paquete <code>service.checks</code> implementa una arquitectura extensible mediante la interfaz:</p>
+<pre><code class="language-java">public interface SecurityCheck {
+    List&lt;Finding&gt; analyze(AuditTarget target);
+}</code></pre>
+<p>Spring inyecta en <code>AuditService</code> una lista de implementaciones. El servicio las ordena por nombre de clase y las ejecuta. Las implementaciones reales son:</p>
+<div class="table-wrap"><table><thead><tr><th>Check</th><th>Qué revisa</th><th>Enfoque</th></tr></thead><tbody><tr><td><code>DnsRecordCheck</code></td><td>A/AAAA, NS, CAA, DS y CNAME obsoleto.</td><td>DNS pasivo.</td></tr><tr><td><code>MailSecurityCheck</code></td><td>MX, SPF, DMARC, MTA-STS y TLS-RPT.</td><td>Seguridad de correo.</td></tr><tr><td><code>PassiveOsintFootprintCheck</code></td><td>Inventario DNS y proveedores probables.</td><td>Huella pública.</td></tr><tr><td><code>OsintProviderCheck</code></td><td>Convierte resultados del módulo OSINT en findings guardados.</td><td>Integración de proveedores.</td></tr><tr><td><code>WebSecurityHeaderCheck</code></td><td>HTTPS, códigos HTTP, HSTS, CSP, cookies y disclosure.</td><td>Cabeceras web pasivas.</td></tr><tr><td><code>WebFingerprintCheck</code></td><td>Server, X-Powered-By, CDN/edge providers.</td><td>Fingerprinting no intrusivo.</td></tr><tr><td><code>TlsCertificateCheck</code></td><td>Handshake TLS, certificado, emisor y expiración.</td><td>Revisión TLS.</td></tr><tr><td><code>CertificateTransparencyCheck</code></td><td>Nombres en CT logs y etiquetas sensibles.</td><td>OSINT público.</td></tr><tr><td><code>WellKnownResourceCheck</code></td><td><code>security.txt</code>, <code>robots.txt</code>, <code>sitemap.xml</code>.</td><td>Recursos públicos conocidos.</td></tr><tr><td><code>HttpProbeClient</code></td><td>Cliente HTTP común para checks web.</td><td>Infraestructura reutilizable.</td></tr></tbody></table></div>
+<p>La lógica pertenece a servicios porque es reutilizable, testeable y no depende directamente de una vista concreta.</p>
+<h2 id="14-controladores">14. Controladores</h2>
+<p>Los controladores se encuentran en <code>src/main/java/com/pepitobuscaerror/controller</code>. Su función es recibir peticiones, validar formularios, invocar servicios y devolver el nombre de la plantilla Thymeleaf.</p>
+<div class="table-wrap"><table><thead><tr><th>Controlador</th><th>Rutas principales</th><th>Servicios</th><th>Vistas</th></tr></thead><tbody><tr><td><code>DashboardController</code></td><td><code>GET /</code>, <code>GET /dashboard</code></td><td><code>DashboardService</code></td><td><code>index</code>, <code>dashboard</code></td></tr><tr><td><code>CompanyController</code></td><td><code>/companies</code>, <code>/companies/new</code>, <code>/companies/save</code>, <code>/companies/{id}</code>, edición y borrado</td><td><code>CompanyService</code></td><td><code>companies/list</code>, <code>companies/form</code>, <code>companies/detail</code></td></tr><tr><td><code>AnalysisController</code></td><td><code>/analyses</code>, <code>/analyses/new</code>, <code>/companies/{companyId}/analyses/new</code>, guardar y ver análisis</td><td><code>CompanyService</code>, <code>AnalysisService</code></td><td><code>analyses/list</code>, <code>analyses/form</code>, <code>analyses/result</code></td></tr><tr><td><code>IndicatorController</code></td><td><code>GET /indicators</code></td><td><code>IndicatorService</code></td><td><code>indicators/list</code></td></tr><tr><td><code>RecommendationController</code></td><td><code>GET /recommendations</code></td><td><code>RecommendationService</code></td><td><code>recommendations/list</code></td></tr><tr><td><code>OsintController</code></td><td><code>/osint</code>, <code>/osint/domain</code>, <code>/osint/email</code>, <code>/osint/run</code>, <code>/osint/scans/{id}</code></td><td><code>AuditService</code>, <code>OsintService</code></td><td><code>osint/index</code>, <code>domain-result</code>, <code>email-result</code>, <code>detail</code></td></tr><tr><td><code>GeolocationController</code></td><td><code>/geolocation</code>, CRUD de dispositivos, <code>/live/{token}</code>, endpoints JSON de posición</td><td><code>TrackedDeviceService</code>, <code>PublicLinkService</code></td><td><code>geolocation/list</code>, <code>form</code>, <code>detail</code>, <code>live</code></td></tr><tr><td><code>DocumentationController</code></td><td><code>GET /documentation</code></td><td>Ninguno</td><td><code>documentation/index</code></td></tr><tr><td><code>GlobalExceptionHandler</code></td><td>Excepciones globales</td><td><code>ResourceNotFoundException</code></td><td><code>error/404</code>, <code>error/500</code></td></tr></tbody></table></div>
+<p>Ejemplo de flujo en creación de empresa:</p>
+<ol>
+<li>El usuario abre <code>GET /companies/new</code>.</li>
+<li><code>CompanyController</code> coloca un objeto <code>Company</code> vacío en el modelo.</li>
+<li>Thymeleaf renderiza <code>companies/form</code>.</li>
+<li>El usuario envía <code>POST /companies/save</code>.</li>
+<li>Spring valida <code>@Valid @ModelAttribute(&quot;company&quot;)</code>.</li>
+<li>Si hay errores, se devuelve el formulario.</li>
+<li>Si es válido, <code>CompanyService.createCompany</code> normaliza y guarda.</li>
+<li>El controlador redirige al detalle de la empresa.</li>
+</ol>
+<p>Ejemplo de endpoint JSON en geolocalización:</p>
+<ul>
+<li><code>GET /geolocation/{id}/position</code> devuelve el estado actual del dispositivo.</li>
+<li><code>POST /geolocation/live/{trackingToken}/position</code> recibe <code>latitude</code>, <code>longitude</code>, <code>accuracy</code> y <code>locationLabel</code> desde el navegador autorizado.</li>
+</ul>
+<p>La aplicación mezcla vistas HTML y respuestas JSON solo donde tiene sentido: el panel es MVC/Thymeleaf, pero el mapa necesita refrescar posición sin recargar toda la página.</p>
+<h2 id="15-dashboard-y-graficos">15. Dashboard y gráficos</h2>
+<p>El dashboard se apoya en <code>DashboardService</code> y <code>DashboardStats</code>. El servicio consulta repositorios y el DTO prepara datos ya listos para Thymeleaf y Chart.js.</p>
+<p>La página <code>dashboard.html</code> muestra:</p>
+<ul>
+<li>Tarjetas KPI de empresas, análisis, OSINT checks, riesgo medio, hallazgos críticos, hallazgos altos y recomendaciones abiertas.</li>
+<li>Visualización animada de exposición en <code>dashboard-exposure-map.js</code>.</li>
+<li>Gráfico de análisis por nivel de riesgo.</li>
+<li>Gráfico de indicadores por severidad.</li>
+<li>Gráfico de hallazgos OSINT por área.</li>
+<li>Tendencia de puntuaciones recientes.</li>
+<li>Últimas empresas registradas.</li>
+<li>Últimos scans OSINT.</li>
+<li>Top recomendaciones.</li>
+<li>Bloque de análisis críticos y altos.</li>
+</ul>
+<p>Datos reales que llegan al frontend:</p>
+<div class="table-wrap"><table><thead><tr><th>Dato</th><th>Origen backend</th></tr></thead><tbody><tr><td>Total de empresas</td><td><code>companyRepository.count()</code></td></tr><tr><td>Total de análisis</td><td><code>analysisRepository.count()</code></td></tr><tr><td>Riesgo medio</td><td><code>analysisRepository.averageRiskScore()</code></td></tr><tr><td>Análisis críticos</td><td><code>countByRiskLevel(RiskLevel.CRITICAL)</code></td></tr><tr><td>Indicadores críticos</td><td><code>countIndicatorsBySeverity(Severity.CRITICAL)</code></td></tr><tr><td>Hallazgos críticos OSINT</td><td><code>scanRunRepository.countFindingsBySeverity(FindingSeverity.CRITICAL)</code></td></tr><tr><td>Scans recientes</td><td><code>findTop12ByOrderByStartedAtDesc()</code></td></tr><tr><td>Tendencia reciente</td><td><code>latestAnalyses</code> ordenados por fecha</td></tr></tbody></table></div>
+<p>El paso desde backend a frontend es directo: <code>DashboardController</code> añade <code>stats</code> al modelo y Thymeleaf usa expresiones como <code>${stats.totalCompanies}</code>, <code>${stats.riskDistributionData}</code> o <code>${stats.recentRiskTrendLabels}</code>. Chart.js se inicializa en un script inline de <code>dashboard.html</code>.</p>
+<p>El proyecto cuida los estados vacíos. Si no hay datos, la vista no dibuja gráficos falsos: muestra mensajes de estado vacío indicando que primero hay que crear análisis o informes. Esto es importante en una presentación porque permite demostrar honestidad de datos y evitar una interfaz engañosa.</p>
+<h2 id="16-modulo-de-empresas">16. Módulo de empresas</h2>
+<p>El módulo de empresas es la base del sistema. Sin una empresa registrada, no tiene sentido crear análisis de riesgo.</p>
+<p>Funcionalidades reales:</p>
+<ul>
+<li>Listar empresas en <code>/companies</code>.</li>
+<li>Buscar por nombre, dominio o sector mediante el parámetro <code>q</code>.</li>
+<li>Crear empresa en <code>/companies/new</code> y <code>POST /companies/save</code>.</li>
+<li>Ver detalle en <code>/companies/{id}</code>.</li>
+<li>Editar empresa en <code>/companies/edit/{id}</code> y <code>POST /companies/update/{id}</code>.</li>
+<li>Borrar empresa con <code>/companies/delete/{id}</code>.</li>
+<li>Lanzar análisis desde el detalle de empresa.</li>
+<li>Abrir OSINT pre-rellenando dominio y nombre.</li>
+</ul>
+<p>Campos principales:</p>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Uso</th></tr></thead><tbody><tr><td><code>name</code></td><td>Nombre de la compañía.</td></tr><tr><td><code>domain</code></td><td>Dominio público que se analizará o usará para OSINT.</td></tr><tr><td><code>corporateEmail</code></td><td>Correo técnico/corporativo.</td></tr><tr><td><code>sector</code></td><td>Sector de actividad.</td></tr><tr><td><code>registrationDate</code></td><td>Fecha automática de registro.</td></tr></tbody></table></div>
+<p><code>CompanyService</code> normaliza el dominio con <code>TargetNormalizer</code>, recorta espacios y guarda la entidad. La relación <code>Company -&gt; Analysis</code> permite mostrar en el detalle la puntuación más reciente, media histórica, tendencia y número de hallazgos/recomendaciones. Este diseño convierte la empresa en el punto de entrada natural para el resto del sistema.</p>
+<h2 id="17-modulo-de-analisis-de-riesgo">17. Módulo de análisis de riesgo</h2>
+<p>El módulo de análisis de riesgo permite crear una evaluación seleccionando indicadores predefinidos. No inventa hallazgos automáticos: en esta parte el usuario selecciona indicadores del catálogo definido en <code>AnalysisService.availableIndicatorOptions()</code>.</p>
+<p>Flujo real:</p>
+<ol>
+<li>Se elige una empresa.</li>
+<li>Se abre <code>/companies/{companyId}/analyses/new</code>.</li>
+<li>El controlador carga <code>company</code>, <code>analysisForm</code> e <code>indicatorOptions</code>.</li>
+<li>El usuario selecciona indicadores.</li>
+<li><code>AnalysisService.createAnalysis</code> construye objetos <code>Indicator</code>.</li>
+<li><code>BasicRiskCalculator</code> calcula la puntuación.</li>
+<li>Se asigna <code>RiskLevel</code>.</li>
+<li>Se generan recomendaciones según los indicadores.</li>
+<li>Se guarda <code>Analysis</code> con sus indicadores y recomendaciones.</li>
+<li>Se muestra <code>analyses/result</code> agrupando indicadores por severidad y recomendaciones por prioridad.</li>
+</ol>
+<p>Catálogo real de indicadores:</p>
+<div class="table-wrap"><table><thead><tr><th>Indicador</th><th>Severidad</th><th>Puntuación</th></tr></thead><tbody><tr><td><code>Suspicious IP address</code></td><td>CRITICAL</td><td>40</td></tr><tr><td><code>Suspicious corporate email</code></td><td>HIGH</td><td>25</td></tr><tr><td><code>Domain without HTTPS</code></td><td>MEDIUM</td><td>15</td></tr><tr><td><code>Missing security headers</code></td><td>MEDIUM</td><td>10</td></tr><tr><td><code>Invalid SSL certificate</code></td><td>HIGH</td><td>10</td></tr></tbody></table></div>
+<p>Ejemplo pedido: una empresa tiene tres indicadores:</p>
+<ul>
+<li>Missing HTTPS, que en el código corresponde a <code>Domain without HTTPS</code>: 15 puntos.</li>
+<li>Missing security headers: 10 puntos.</li>
+<li>Exposed email breach, que en el módulo de análisis se representa como <code>Suspicious corporate email</code>: 25 puntos.</li>
+</ul>
+<p>Cálculo según el código:</p>
+<pre><code class="language-text">15 + 10 + 25 = 50 puntos</code></pre>
+<p>Umbrales reales de <code>BasicRiskCalculator</code>:</p>
+<pre><code class="language-text">0-30   -&gt; LOW
+31-60  -&gt; MEDIUM
+61-80  -&gt; HIGH
+81-100 -&gt; CRITICAL</code></pre>
+<p>Por tanto, el resultado sería <code>50</code>, nivel <code>MEDIUM</code>. Las recomendaciones generadas serían:</p>
+<ul>
+<li><code>Enable HTTPS.</code> con acción de instalar certificado TLS válido y redirigir HTTP a HTTPS.</li>
+<li><code>Review security headers.</code> con acción de añadir HSTS, CSP, X-Content-Type-Options, Referrer-Policy y cabeceras relacionadas.</li>
+<li><code>Change exposed credentials.</code> con acción de resetear credenciales sospechosas y revisar SPF, DKIM y DMARC.</li>
+</ul>
+<p>Este ejemplo demuestra que el motor es simple, transparente y defendible: cualquier puntuación puede explicarse leyendo las reglas.</p>
+<h2 id="18-motor-de-riesgo">18. Motor de riesgo</h2>
+<p>El motor de riesgo está separado mediante la interfaz <code>RiskCalculator</code> y la implementación <code>BasicRiskCalculator</code>. La interfaz define el contrato:</p>
+<pre><code class="language-java">public interface RiskCalculator {
+    int calculateRisk(List&lt;Indicator&gt; indicators);
+}</code></pre>
+<p><code>BasicRiskCalculator</code> suma pesos por tipo de indicador y limita el resultado a 100. Después asigna el nivel:</p>
+<pre><code class="language-java">if (riskScore &lt;= 30) return RiskLevel.LOW;
+if (riskScore &lt;= 60) return RiskLevel.MEDIUM;
+if (riskScore &lt;= 80) return RiskLevel.HIGH;
+return RiskLevel.CRITICAL;</code></pre>
+<p>La ventaja de este sistema basado en reglas es que es fácil de explicar, testear y modificar. Para un proyecto DAM es más adecuado que un sistema de machine learning porque no exige datasets, entrenamiento ni opacidad algorítmica. Además, los tests <code>BasicRiskCalculatorTests</code> comprueban puntuaciones conocidas, límite máximo y umbrales.</p>
+<p>Su principal limitación es que los pesos son estáticos. En una versión futura se podrían parametrizar por sector, histórico, criticidad del activo o frecuencia de aparición. Aun así, para el alcance actual, el diseño cumple su función: convertir indicadores técnicos en una puntuación entendible.</p>
+<h2 id="19-indicadores">19. Indicadores</h2>
+<p>Los indicadores representan señales concretas que afectan al riesgo de una empresa. La entidad <code>Indicator</code> tiene tipo, valor, descripción, severidad y referencia al análisis.</p>
+<p>Campos relevantes:</p>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Explicación</th></tr></thead><tbody><tr><td><code>type</code></td><td>Nombre técnico del indicador.</td></tr><tr><td><code>value</code></td><td>Valor resumido o evidencia breve.</td></tr><tr><td><code>description</code></td><td>Explicación del problema.</td></tr><tr><td><code>severity</code></td><td>Nivel de severidad: LOW, MEDIUM, HIGH o CRITICAL.</td></tr><tr><td><code>analysis</code></td><td>Análisis al que pertenece.</td></tr></tbody></table></div>
+<p>El módulo de indicadores tiene dos usos:</p>
+<ul>
+<li>Mostrar indicadores ya almacenados en <code>/indicators</code>.</li>
+<li>Mostrar el catálogo disponible de checks manuales definido por <code>AnalysisService</code>.</li>
+</ul>
+<p>Los indicadores alimentan el dashboard mediante conteos por severidad y alimentan recomendaciones porque cada indicador puede activar una acción. Por ejemplo, <code>Domain without HTTPS</code> activa <code>Enable HTTPS</code>, mientras que <code>Missing security headers</code> activa <code>Review security headers</code>.</p>
+<h2 id="20-recomendaciones-y-plan-de-accion">20. Recomendaciones y plan de acción</h2>
+<p>Las recomendaciones convierten problemas en acciones. La entidad <code>Recommendation</code> guarda prioridad, descripción y acción. También proporciona métodos de presentación como responsable sugerido y plazo sugerido:</p>
+<div class="table-wrap"><table><thead><tr><th>Prioridad</th><th>Responsable sugerido</th><th>Plazo sugerido</th></tr></thead><tbody><tr><td>HIGH</td><td>IT / Security owner</td><td>7 days</td></tr><tr><td>MEDIUM</td><td>Technical owner</td><td>30 days</td></tr><tr><td>LOW</td><td>Operations owner</td><td>90 days</td></tr></tbody></table></div>
+<p>La generación se realiza en <code>AnalysisService.generateRecommendations</code>. El uso de un <code>LinkedHashMap</code> evita duplicar recomendaciones con la misma descripción.</p>
+<p>Ejemplos reales:</p>
+<div class="table-wrap"><table><thead><tr><th>Indicador</th><th>Recomendación</th><th>Acción</th></tr></thead><tbody><tr><td>Suspicious IP address</td><td>Review IP reputation.</td><td>Revisar IP, proveedor, DNS y exposición firewall.</td></tr><tr><td>Suspicious corporate email</td><td>Change exposed credentials.</td><td>Resetear credenciales y revisar SPF, DKIM y DMARC.</td></tr><tr><td>Domain without HTTPS</td><td>Enable HTTPS.</td><td>Instalar TLS válido y redirigir HTTP a HTTPS.</td></tr><tr><td>Missing security headers</td><td>Review security headers.</td><td>Añadir HSTS, CSP, X-Content-Type-Options, Referrer-Policy, etc.</td></tr><tr><td>Invalid SSL certificate</td><td>Renew or install SSL certificate.</td><td>Sustituir certificados expirados o inválidos.</td></tr></tbody></table></div>
+<p>Desde el punto de vista empresarial, este módulo es clave porque una pyme no solo necesita saber que tiene riesgo: necesita saber qué hacer primero.</p>
+<h2 id="21-modulo-osint">21. Módulo OSINT</h2>
+<p>El módulo OSINT tiene un enfoque pasivo, defensivo y autorizado. Está documentado en <code>docs/osint-module.md</code> y se implementa principalmente con <code>OsintController</code>, <code>OsintService</code>, clientes de proveedor y <code>AuditService</code>.</p>
+<p>Rutas reales:</p>
+<div class="table-wrap"><table><thead><tr><th>Ruta</th><th>Función</th></tr></thead><tbody><tr><td><code>GET /osint</code></td><td>Página principal con formularios de dominio, correo y scan guardado.</td></tr><tr><td><code>POST /osint/domain</code></td><td>Análisis de dominio estilo DNSDumpster/SecurityTrails.</td></tr><tr><td><code>POST /osint/email</code></td><td>Comprobación de correo estilo Have I Been Pwned.</td></tr><tr><td><code>POST /osint/run</code></td><td>Ejecuta y guarda un informe OSINT pasivo completo.</td></tr><tr><td><code>GET /osint/scans/{id}</code></td><td>Muestra detalle de informe guardado.</td></tr><tr><td><code>POST /osint/scans/{id}/delete</code></td><td>Borra un informe.</td></tr><tr><td><code>POST /osint/targets/{id}/delete</code></td><td>Borra un objetivo y sus informes.</td></tr></tbody></table></div>
+<p>Los formularios <code>OsintDomainForm</code>, <code>OsintEmailForm</code> y <code>TargetForm</code> obligan a marcar autorización mediante <code>@AssertTrue</code>. Esto es una decisión ética importante: la interfaz recuerda que solo se deben analizar dominios, correos o activos propios o autorizados.</p>
+<p>El módulo analiza:</p>
+<ul>
+<li>Registros DNS A, AAAA, MX, NS, TXT, CAA y DS.</li>
+<li>Subdominios demo o de proveedor.</li>
+<li>Proveedores asociados por registros públicos.</li>
+<li>Seguridad de correo: SPF, DMARC, MTA-STS y TLS-RPT.</li>
+<li>Cabeceras web y cookies.</li>
+<li>Metadatos TLS y expiración de certificados.</li>
+<li>Certificate Transparency logs.</li>
+<li><code>security.txt</code>, <code>robots.txt</code> y <code>sitemap.xml</code>.</li>
+<li>Exposición de correo corporativo mediante resultados tipo HIBP.</li>
+</ul>
+<p>El modo demo existe para que el proyecto funcione sin claves API de pago. Si no hay claves o <code>OSINT_DEMO_MODE=true</code>, los clientes devuelven datos de demostración claramente indicados. Esto evita que la aplicación falle durante una presentación académica y evita hardcodear secretos.</p>
+<p>Los hallazgos se almacenan como <code>Finding</code> dentro de <code>ScanRun</code> cuando se ejecuta el flujo guardado. En el análisis directo de dominio o email se muestran DTOs de resultado sin necesariamente persistirlos.</p>
+<h2 id="22-apis-externas">22. APIs externas</h2>
+<p>El proyecto integra APIs o integraciones estilo API de forma opcional y segura.</p>
+<div class="table-wrap"><table><thead><tr><th>Integración</th><th>Clase</th><th>Modo real</th><th>Modo demo / fallback</th><th>Consideraciones</th></tr></thead><tbody><tr><td>DNS lookups</td><td><code>DnsLookupService</code></td><td>JNDI DNS local para registros públicos.</td><td>Si falla, devuelve lista vacía.</td><td>No usa clave API.</td></tr><tr><td>DNSDumpster-style</td><td><code>DnsDumpsterClient</code></td><td>Resume DNS real y genera subdominios no intrusivos simulados.</td><td>Siempre marca contexto demo/pasivo según configuración.</td><td>No hace brute force ni port scanning.</td></tr><tr><td>SecurityTrails</td><td><code>SecurityTrailsClient</code></td><td>Llama a <code>https://api.securitytrails.com/v1/domain/</code> con header <code>APIKEY</code>.</td><td>Si falta clave, demo mode o error, devuelve demo.</td><td>API key mediante <code>SECURITYTRAILS_API_KEY</code>.</td></tr><tr><td>Have I Been Pwned</td><td><code>HaveIBeenPwnedClient</code></td><td>Llama a breachedaccount API con <code>hibp-api-key</code> y user-agent.</td><td>Si falta clave, demo mode o error, devuelve demo.</td><td>No almacena contraseñas ni datos sensibles en bruto.</td></tr><tr><td>HTTP/TLS públicos</td><td><code>HttpProbeClient</code>, <code>TlsCertificateCheck</code></td><td>Solicitudes HTTP GET y handshake TLS.</td><td>Si falla, genera finding informativo o de disponibilidad.</td><td>Enfoque pasivo y limitado.</td></tr><tr><td>OpenStreetMap</td><td>Plantillas geolocalización</td><td>Carga teselas públicas.</td><td>No aplica.</td><td>Solo visualiza coordenadas autorizadas.</td></tr></tbody></table></div>
+<p>Las claves no están hardcodeadas. Se leen desde propiedades:</p>
+<pre><code class="language-properties">osint.securitytrails.api-key=${SECURITYTRAILS_API_KEY:}
+osint.hibp.api-key=${HIBP_API_KEY:}
+osint.demo-mode=${OSINT_DEMO_MODE:true}</code></pre>
+<p>Las limitaciones son claras: los datos de proveedores externos pueden tener límites de cuota, coste, disponibilidad o exactitud. Por eso el código tiene fallback a demo y mensajes de estado. En privacidad, la aplicación solo muestra información defensiva de alto nivel; no solicita contraseñas ni intenta acceder a cuentas.</p>
+<h2 id="23-modulo-de-geolocalizacion">23. Módulo de geolocalización</h2>
+<p>El módulo de geolocalización está diseñado para dispositivos propios o explícitamente autorizados. No intenta ocultarse, no instala nada en el dispositivo y no evita los permisos del navegador.</p>
+<p>Flujo real:</p>
+<ol>
+<li>Se registra un dispositivo en <code>/geolocation/new</code>.</li>
+<li><code>TrackedDevice</code> genera un <code>trackingToken</code> privado.</li>
+<li>En el detalle, <code>PublicLinkService</code> construye un enlace <code>/geolocation/live/{token}</code>.</li>
+<li>El usuario abre ese enlace en el dispositivo autorizado.</li>
+<li>El navegador muestra su permiso de geolocalización.</li>
+<li>Solo si el usuario acepta, JavaScript envía latitud, longitud, precisión y etiqueta aproximada.</li>
+<li><code>GeolocationController</code> recibe la posición por POST.</li>
+<li><code>TrackedDeviceService</code> valida coordenadas y actualiza la última posición.</li>
+<li>La página de detalle consulta <code>/geolocation/{id}/position</code> para refrescar el mapa.</li>
+</ol>
+<p>Datos que puede guardar <code>TrackedDevice</code>:</p>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Explicación</th></tr></thead><tbody><tr><td><code>trackingToken</code></td><td>Token privado para el enlace live.</td></tr><tr><td><code>latitude</code>, <code>longitude</code></td><td>Últimas coordenadas autorizadas.</td></tr><tr><td><code>accuracyMeters</code></td><td>Precisión indicada por el navegador.</td></tr><tr><td><code>locationLabel</code></td><td>Etiqueta legible opcional.</td></tr><tr><td><code>lastClientIp</code></td><td>IP de la petición autorizada, considerando cabeceras de proxy.</td></tr><tr><td><code>lastUserAgent</code></td><td>Navegador del cliente que envió la posición.</td></tr><tr><td><code>active</code></td><td>Permite desactivar el tracking.</td></tr><tr><td><code>registeredAt</code>, <code>lastSeenAt</code></td><td>Fechas de registro y última actualización.</td></tr></tbody></table></div>
+<p>Leaflet se usa para el mapa interactivo y OpenStreetMap para las teselas. La plantilla <code>geolocation/detail.html</code> muestra la última ubicación, precisión, enlace público, estado del token y controles de mapa. La plantilla <code>geolocation/live.html</code> es mínima: solo solicita permiso y envía posición.</p>
+<p>Punto de privacidad fundamental: la aplicación no bypassa permisos del navegador y no hace tracking oculto. Si la pestaña se cierra, deja de enviar actualizaciones. Para tracking continuo en segundo plano haría falta una app nativa o una PWA avanzada, que no forma parte del proyecto actual.</p>
+<h2 id="24-public-https-links">24. Public HTTPS links</h2>
+<p>El módulo GPS necesita enlaces que puedan abrirse desde otro dispositivo. Un enlace <code>localhost</code> solo funciona en el mismo ordenador. Un enlace <code>192.168.x.x</code> suele funcionar solo dentro de la misma red Wi-Fi. Para un móvil en datos o en otra red se necesita una URL pública HTTPS.</p>
+<p>La configuración relevante es:</p>
+<pre><code class="language-properties">app.public-base-url=${APP_PUBLIC_BASE_URL:}
+public.base-url=${PUBLIC_BASE_URL:}
+server.forward-headers-strategy=${SERVER_FORWARD_HEADERS_STRATEGY:framework}</code></pre>
+<p><code>PublicLinkService</code> construye el enlace con esta prioridad:</p>
+<ol>
+<li><code>app.public-base-url</code> / <code>APP_PUBLIC_BASE_URL</code>.</li>
+<li><code>public.base-url</code> / <code>PUBLIC_BASE_URL</code> como alias.</li>
+<li>URL derivada de la petición actual, incluyendo cabeceras <code>Forwarded</code> y <code>X-Forwarded-*</code>.</li>
+</ol>
+<p>Después clasifica el enlace:</p>
+<div class="table-wrap"><table><thead><tr><th>Estado</th><th>Significado</th></tr></thead><tbody><tr><td><code>Public HTTPS ready</code></td><td>Enlace público HTTPS válido para otra red.</td></tr><tr><td><code>Local test link</code></td><td>Solo sirve en el mismo ordenador.</td></tr><tr><td><code>Same Wi-Fi only</code></td><td>Puede servir en LAN, no desde otra red.</td></tr><tr><td><code>HTTPS required</code></td><td>Hay host público pero usa HTTP; la geolocalización móvil puede fallar.</td></tr><tr><td><code>Not properly configured</code></td><td>No se pudo generar una URL útil.</td></tr></tbody></table></div>
+<p>Esto es importante porque los navegadores móviles suelen exigir HTTPS para geolocalización precisa. Los documentos <code>docs/public-gps-link.md</code> y <code>scripts/README-public-link.md</code> explican flujos con Cloudflare Tunnel o ngrok.</p>
+<p>Ejemplo PowerShell documentado:</p>
+<pre><code class="language-powershell">$env:APP_PUBLIC_BASE_URL=&quot;https://abc123.trycloudflare.com&quot;
+.\mvnw.cmd spring-boot:run</code></pre>
+<p>La aplicación no puede convertir un <code>localhost</code> privado en público por sí sola. Necesita despliegue público, proxy inverso o túnel HTTPS.</p>
+<h2 id="25-scripts-powershell">25. Scripts PowerShell</h2>
+<p>La carpeta <code>scripts</code> contiene utilidades para desarrollo local en Windows.</p>
+<div class="table-wrap"><table><thead><tr><th>Script</th><th>Propósito</th><th>Cuándo se usa</th><th>Problema que resuelve</th></tr></thead><tbody><tr><td><code>easy-public-gps-link.ps1</code></td><td>Construye el JAR, arranca túnel Cloudflare/ngrok, configura <code>APP_PUBLIC_BASE_URL</code> y ejecuta Spring Boot.</td><td>Cuando se quiere probar GPS desde otra red con un solo flujo.</td><td>Evita copiar manualmente URLs de túnel y coordinar puerto/app.</td></tr><tr><td><code>start-with-public-url.ps1</code></td><td>Pide o recibe una URL pública HTTPS y arranca Maven con <code>APP_PUBLIC_BASE_URL</code>.</td><td>Cuando ya se tiene el túnel creado.</td><td>Simplifica establecer variables de entorno en PowerShell.</td></tr><tr><td><code>run-on-port.ps1</code></td><td>Establece <code>SERVER_PORT</code> y arranca <code>mvnw.cmd spring-boot:run</code>.</td><td>Cuando el puerto 8080 está ocupado o se quiere usar otro.</td><td>Evita editar <code>application.properties</code>.</td></tr><tr><td><code>free-port.ps1</code></td><td>Inspecciona qué proceso usa un puerto y pregunta si debe detenerlo.</td><td>Cuando Spring Boot no puede arrancar por puerto ocupado.</td><td>Ayuda a liberar puertos de forma explícita y con confirmación.</td></tr><tr><td><code>README-public-link.md</code></td><td>Guía de uso de enlaces GPS públicos.</td><td>Consulta del estudiante o del tribunal.</td><td>Documenta Cloudflare, ngrok, puertos y pruebas con móvil.</td></tr></tbody></table></div>
+<p><code>easy-public-gps-link.ps1</code> es el script más avanzado. Primero resuelve el puerto, busca <code>cloudflared</code> o <code>ngrok</code>, construye el JAR con Maven, inicia el túnel, extrae la URL HTTPS, configura variables y arranca la aplicación. También deja claro que el móvil debe pulsar <code>Allow</code> en el permiso del navegador.</p>
+<p>Estos scripts son útiles porque el proyecto se encuentra en un entorno Windows (<code>mvnw.cmd</code>, PowerShell y ruta de escritorio). Automatizan tareas repetitivas sin modificar el código Java.</p>
+<h2 id="26-templates-thymeleaf">26. Templates Thymeleaf</h2>
+<p>Las plantillas están en <code>src/main/resources/templates</code>. El proyecto usa fragmentos reutilizables para evitar duplicar HTML.</p>
+<div class="table-wrap"><table><thead><tr><th>Plantilla / carpeta</th><th>Función</th></tr></thead><tbody><tr><td><code>fragments/layout.html</code></td><td><code>&lt;head&gt;</code> común: título, Bootstrap Icons, Leaflet CSS y <code>style.css</code>.</td></tr><tr><td><code>fragments/sidebar.html</code></td><td>Navegación lateral principal.</td></tr><tr><td><code>fragments/navbar.html</code></td><td>Barra superior responsive.</td></tr><tr><td><code>fragments/footer.html</code></td><td>Pie con referencia a DAM, Spring Boot, Thymeleaf y MySQL.</td></tr><tr><td><code>index.html</code></td><td>Página inicial con resumen de riesgo.</td></tr><tr><td><code>dashboard.html</code></td><td>Dashboard completo con KPIs y Chart.js.</td></tr><tr><td><code>companies/list.html</code></td><td>Listado y búsqueda de empresas.</td></tr><tr><td><code>companies/form.html</code></td><td>Alta y edición de empresa.</td></tr><tr><td><code>companies/detail.html</code></td><td>Detalle, historial, últimos indicadores y recomendaciones.</td></tr><tr><td><code>analyses/list.html</code></td><td>Listado de análisis.</td></tr><tr><td><code>analyses/form.html</code></td><td>Selección de indicadores.</td></tr><tr><td><code>analyses/result.html</code></td><td>Resultado del análisis agrupado por severidad/prioridad.</td></tr><tr><td><code>indicators/list.html</code></td><td>Indicadores guardados y catálogo disponible.</td></tr><tr><td><code>recommendations/list.html</code></td><td>Plan de acciones por prioridad.</td></tr><tr><td><code>osint/index.html</code></td><td>Formularios OSINT y listas de objetivos/informes recientes.</td></tr><tr><td><code>osint/domain-result.html</code></td><td>Resultado de dominio con DNSDumpster/SecurityTrails-style.</td></tr><tr><td><code>osint/email-result.html</code></td><td>Resultado de email estilo HIBP.</td></tr><tr><td><code>osint/detail.html</code></td><td>Informe OSINT guardado con findings.</td></tr><tr><td><code>scan-detail.html</code></td><td>Plantilla de compatibilidad para informe OSINT.</td></tr><tr><td><code>geolocation/list.html</code></td><td>Listado de dispositivos.</td></tr><tr><td><code>geolocation/form.html</code></td><td>Alta/edición de dispositivo.</td></tr><tr><td><code>geolocation/detail.html</code></td><td>Mapa, enlace público y estado de ubicación.</td></tr><tr><td><code>geolocation/live.html</code></td><td>Página cliente que solicita permiso GPS.</td></tr><tr><td><code>documentation/index.html</code></td><td>Documentación interna resumida.</td></tr><tr><td><code>error.html</code>, <code>error/404.html</code>, <code>error/500.html</code></td><td>Páginas de error amigables.</td></tr></tbody></table></div>
+<p>Thymeleaf usa variables añadidas por los controladores. Ejemplos:</p>
+<pre><code class="language-html">&lt;strong th:text=&quot;${stats.totalCompanies}&quot;&gt;0&lt;/strong&gt;
+&lt;a th:href=&quot;@{/companies/{id}(id=${company.idCompany})}&quot;&gt;
+&lt;span th:text=&quot;${analysis.riskLevel.label}&quot;&gt;Low&lt;/span&gt;</code></pre>
+<p>Esta elección permite que el HTML sea legible y que la lógica fuerte permanezca en Java. Las plantillas se encargan de presentar datos, no de calcular reglas de negocio.</p>
+<h2 id="27-css-y-diseno-visual">27. CSS y diseño visual</h2>
+<p>El diseño principal está en <code>src/main/resources/static/css/style.css</code>. <code>app.css</code> importa <code>style.css</code> y añade compatibilidad para una página standalone de informe.</p>
+<p>Elementos visuales importantes:</p>
+<ul>
+<li>Paleta basada en fondo claro, superficies blancas, azul de acento, verde, amarillo y rojo para riesgo.</li>
+<li>Layout tipo SaaS con sidebar, topbar, cards, métricas y tablas.</li>
+<li>Badges para riesgo, severidad, prioridad y estados.</li>
+<li>Tarjetas KPI con iconografía de Bootstrap Icons.</li>
+<li>Grids responsive para dashboard, detalles y formularios.</li>
+<li>Contenedores de charts con estados vacíos.</li>
+<li>Estilos específicos para mapas Leaflet y geolocalización.</li>
+<li>Media queries para adaptar el diseño a móvil.</li>
+</ul>
+<p>La decisión visual tiene una justificación de negocio: los usuarios no técnicos entienden mejor el riesgo si se presenta con colores, porcentajes, tendencias y prioridades. Una tabla cruda de hallazgos puede ser correcta técnicamente, pero una pyme necesita saber qué es crítico, qué es alto y qué acciones debe priorizar.</p>
+<p>El diseño evita depender de un framework frontend pesado. Se logra una apariencia profesional con CSS propio, Thymeleaf, Bootstrap Icons, Chart.js y Leaflet.</p>
+<h2 id="28-error-handling">28. Error handling</h2>
+<p>La gestión de errores se centraliza en <code>GlobalExceptionHandler</code>, marcado con <code>@ControllerAdvice</code>. Esto evita mostrar trazas internas al usuario.</p>
+<p>Casos gestionados:</p>
+<div class="table-wrap"><table><thead><tr><th>Excepción</th><th>Respuesta</th><th>Vista</th></tr></thead><tbody><tr><td><code>ResourceNotFoundException</code></td><td>404</td><td><code>error/404</code></td></tr><tr><td><code>NoHandlerFoundException</code> / <code>NoResourceFoundException</code></td><td>404</td><td><code>error/404</code></td></tr><tr><td><code>MethodArgumentTypeMismatchException</code></td><td>404</td><td><code>error/404</code></td></tr><tr><td><code>Exception</code> genérica</td><td>500</td><td><code>error/500</code></td></tr></tbody></table></div>
+<p>El mensaje de 500 es deliberadamente genérico:</p>
+<pre><code class="language-text">The application could not complete the requested action. Please return to the dashboard and try again.</code></pre>
+<p>Esto es correcto porque una aplicación no debe enseñar stack traces, nombres de clases internas, consultas SQL o detalles de infraestructura al usuario final. En producción, esos detalles deberían quedar en logs internos y observabilidad, no en HTML público.</p>
+<h2 id="29-tests">29. Tests</h2>
+<p>El proyecto incluye pruebas en <code>src/test/java</code> y configuración H2 en <code>src/test/resources/application.properties</code>.</p>
+<p>Tecnologías de test:</p>
+<ul>
+<li>JUnit 5.</li>
+<li>Spring Boot Test.</li>
+<li>MockMvc.</li>
+<li>H2 en memoria en modo MySQL.</li>
+<li>AssertJ.</li>
+<li>Mockito configurado como agente de test.</li>
+</ul>
+<p>Cobertura real observada:</p>
+<div class="table-wrap"><table><thead><tr><th>Test</th><th>Qué valida</th></tr></thead><tbody><tr><td><code>PepitoBuscaErrorApplicationTests</code></td><td>Carga del contexto Spring.</td></tr><tr><td><code>CorePageSmokeTests</code></td><td>Renderizado de <code>/</code>, <code>/dashboard</code>, <code>/companies</code>, <code>/geolocation</code>, detalle de empresa, resultado de análisis y páginas live.</td></tr><tr><td><code>OsintControllerTests</code></td><td>Página OSINT, dominio demo, email demo, validación, detalle y borrados.</td></tr><tr><td><code>GeolocationControllerTests</code></td><td>Actualización live, rechazo de dispositivos inactivos y coordenadas inválidas.</td></tr><tr><td><code>BasicRiskCalculatorTests</code></td><td>Puntuaciones conocidas, límite a 100 y umbrales de nivel.</td></tr><tr><td><code>CompanyRiskHistoryTests</code></td><td>Media, tendencia y análisis previo.</td></tr><tr><td><code>TargetNormalizerTests</code></td><td>Normalización, puertos, dominios públicos y esquemas inválidos.</td></tr><tr><td><code>PublicLinkServiceTests</code></td><td>Clasificación de enlaces públicos, localhost, LAN, HTTP y alias.</td></tr><tr><td><code>TrackingLinkServiceTests</code></td><td>Elección de URL pública recomendada.</td></tr><tr><td><code>HaveIBeenPwnedClientTests</code></td><td>Demo mode cuando falta API key.</td></tr><tr><td><code>HttpProbeClientTests</code></td><td>Peticiones HTTP locales y captura de metadata.</td></tr></tbody></table></div>
+<p>La base H2 permite ejecutar pruebas sin MySQL local. El documento <code>docs/testing.md</code> también propone una prueba manual de humo: abrir dashboard, registrar empresa, crear análisis, revisar gráficos, ejecutar OSINT demo, probar geolocalización y confirmar errores 404 amigables.</p>
+<p>Mejoras futuras razonables serían más tests de repositorio, más MockMvc para flujos de empresa, tests de integración de <code>AuditService</code> y pruebas visuales básicas de plantillas críticas.</p>
+<h2 id="30-seguridad-y-privacidad">30. Seguridad y privacidad</h2>
+<p>La aplicación está diseñada con propósito defensivo. No incluye explotación ofensiva, fuerza bruta, escaneo de redes, bypass de autenticación ni recolección de credenciales.</p>
+<p>Medidas y decisiones reales:</p>
+<ul>
+<li>Formularios OSINT requieren confirmar autorización con <code>@AssertTrue</code>.</li>
+<li><code>TargetNormalizer</code> rechaza localhost, IPs y dominios <code>.local</code> para OSINT.</li>
+<li>Las claves API se leen de variables de entorno.</li>
+<li>El modo demo evita hardcodear claves y mantiene la aplicación funcional.</li>
+<li>HIBP-style no solicita ni almacena contraseñas.</li>
+<li>Geolocalización depende del permiso del navegador.</li>
+<li>Los dispositivos pueden desactivarse con <code>active=false</code>.</li>
+<li>Coordenadas se validan en backend.</li>
+<li>La app guarda solo la última ubicación del dispositivo, no un histórico completo.</li>
+<li>Los errores no muestran trazas internas al usuario.</li>
+</ul>
+<p>Limitación de seguridad actual importante: no hay autenticación ni roles implementados. Esto está documentado en <code>docs/security-roadmap.md</code> como decisión de alcance académico. En producción sería obligatorio añadir Spring Security, login, roles, CSRF, control de propiedad de datos, auditoría y políticas de retención.</p>
+<p>También debe quedar claro que un enlace GPS público es un token privado. No debe publicarse en capturas, chats o repositorios. La seguridad del enlace depende de su confidencialidad y de que el dispositivo lo abra voluntariamente.</p>
+<h2 id="31-uso-de-ia-durante-el-desarrollo">31. Uso de IA durante el desarrollo</h2>
+<p>Durante el desarrollo utilicé inteligencia artificial como herramienta de apoyo, no como sustituto de mi trabajo ni como servicio necesario para ejecutar la aplicación.</p>
+<p>El uso de IA se puede explicar de forma honesta así:</p>
+<ul>
+<li>Me ayudó a planificar la arquitectura MVC y a ordenar ideas.</li>
+<li>Me sirvió para proponer estructuras de documentación técnica.</li>
+<li>La usé para revisar explicaciones y mejorar la redacción de textos de interfaz.</li>
+<li>Me ayudó a depurar errores concretos y a pensar casos de prueba.</li>
+<li>Me sirvió para preparar prompts, listas de comprobación y secciones de memoria.</li>
+</ul>
+<p>No significa que la IA haya construido el proyecto de forma autónoma. Las decisiones finales, la adaptación al código real, la ejecución de pruebas, la integración de clases, la configuración local y la comprensión necesaria para defender el proyecto corresponden al estudiante.</p>
+<p>Además, la aplicación no requiere ninguna API de IA para funcionar. Es una aplicación Java Spring Boot tradicional con MySQL, Thymeleaf, JPA y lógica local.</p>
+<h2 id="32-limitaciones-actuales">32. Limitaciones actuales</h2>
+<p>El proyecto es funcional como prototipo académico, pero tiene limitaciones que conviene reconocer:</p>
+<ul>
+<li>No hay autenticación ni roles de usuario implementados.</li>
+<li>No existe multi-tenant ni separación por organizaciones.</li>
+<li>No hay despliegue productivo completo documentado como infraestructura final.</li>
+<li>Las integraciones SecurityTrails y HIBP pueden funcionar en modo demo si no hay claves.</li>
+<li>El GPS desde otra red requiere HTTPS público mediante despliegue, proxy o túnel.</li>
+<li>La geolocalización solo funciona mientras la página live está abierta.</li>
+<li>No hay tracking histórico completo de posiciones.</li>
+<li>No hay scans programados automáticos.</li>
+<li>No hay sistema real de alertas por correo o webhook.</li>
+<li>No hay exportación PDF interna de informes de la aplicación como funcionalidad de producto.</li>
+<li>La puntuación de riesgo de análisis de empresa es rule-based y estática.</li>
+<li>La cobertura de tests es útil, pero no exhaustiva.</li>
+</ul>
+<p>Estas limitaciones no invalidan el proyecto; al contrario, ayudan a acotar qué es versión académica y qué sería una versión empresarial endurecida.</p>
+<h2 id="33-mejoras-futuras">33. Mejoras futuras</h2>
+<p>Las mejoras futuras documentadas y coherentes con el código actual son:</p>
+<ul>
+<li>Añadir Spring Security con login, logout y sesiones.</li>
+<li>Crear roles <code>ADMIN</code>, <code>ANALYST</code> y <code>VIEWER</code>.</li>
+<li>Añadir hash de contraseñas con BCrypt.</li>
+<li>Implementar organizaciones/multi-tenant para separar datos por cliente.</li>
+<li>Activar CSRF y reglas de acceso por rutas.</li>
+<li>Añadir informes PDF ejecutivos y técnicos desde la propia aplicación.</li>
+<li>Exportar CSV de hallazgos y recomendaciones.</li>
+<li>Añadir scans OSINT programados.</li>
+<li>Implementar alertas por email o webhook.</li>
+<li>Añadir más APIs OSINT con controles de privacidad y cuota.</li>
+<li>Permitir habilitar/deshabilitar proveedores OSINT.</li>
+<li>Gestionar estados de findings desde UI.</li>
+<li>Añadir expiración y regeneración de tokens GPS.</li>
+<li>Definir política de retención de ubicaciones y evidencias OSINT.</li>
+<li>Aumentar tests unitarios, tests MockMvc y tests de repositorio.</li>
+<li>Crear guía de despliegue productivo con HTTPS, variables de entorno, logs y backup.</li>
+</ul>
+<p>Estas mejoras mantienen la dirección del proyecto: una plataforma defensiva para pymes, cada vez más robusta y profesional.</p>
+<h2 id="34-conclusion">34. Conclusión</h2>
+<p>PepitoBuscaError es un proyecto defendible porque combina una arquitectura Spring Boot MVC clara con una temática profesional actual: la exposición digital y la ciberseguridad defensiva en pequeñas y medianas empresas.</p>
+<p>Desde el punto de vista técnico, el proyecto demuestra dominio de Java 17, Spring Boot, controladores, servicios, repositorios, entidades JPA, validación, DTOs, Thymeleaf, MySQL, pruebas y scripts de automatización. La separación por capas permite explicar el código de forma ordenada y justificar por qué cada responsabilidad está donde corresponde.</p>
+<p>Desde el punto de vista académico, la aplicación es adecuada para un proyecto final de DAM porque no es solo una colección de pantallas: tiene flujo de negocio, persistencia, cálculo de riesgo, visualización, integración opcional con APIs, privacidad, documentación, pruebas y mejoras futuras. También muestra criterio al no incorporar tecnologías innecesarias para el alcance.</p>
+<p>Desde el punto de vista de negocio, la plataforma aporta valor porque convierte señales técnicas en información accionable. Una pyme puede registrar empresas, ver su riesgo, entender indicadores, priorizar recomendaciones, revisar huella pública y gestionar dispositivos autorizados con enlaces GPS seguros.</p>
+<p>Lo más importante que he aprendido con este proyecto es a construir una aplicación completa manteniendo coherencia entre arquitectura, base de datos, interfaz, seguridad, privacidad y documentación. La aplicación no pretende ser una herramienta ofensiva ni una plataforma empresarial terminada, sino un prototipo sólido, explicable y extensible que demuestra una base profesional real.</p>
+</article></main>
+</body>
+</html>

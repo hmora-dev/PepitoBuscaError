@@ -1,23 +1,23 @@
 @import url("style.css");
 
-/* Compatibility stylesheet for the standalone OSINT scan report page. */
+/* Standalone OSINT scan report page */
 .layout {
-	width: min(1180px, calc(100% - 48px));
-	margin: 28px auto 56px;
+	width: min(1160px, calc(100% - 48px));
+	margin: 26px auto 52px;
 }
 
 .report-head,
 .findings-panel {
-	background: var(--surface);
+	background: var(--bg-surface);
 }
 
 .finding-card {
-	margin-top: 16px;
+	margin-top: 14px;
 }
 
 @media (max-width: 820px) {
 	.layout {
-		width: min(100% - 24px, 1180px);
-		margin-top: 18px;
+		width: min(100% - 22px, 1160px);
+		margin-top: 16px;
 	}
 }

@@ -1,0 +1,22 @@
+{
+  "name": "pepito-busca-error-frontend",
+  "version": "1.0.0",
+  "description": "Frontend assets for PepitoBuscaError — dark cybersecurity theme + JS interactions",
+  "private": true,
+  "scripts": {
+    "dev": "npx live-server ../src/main/resources/static --port=3001 --no-browser",
+    "lint:css": "npx stylelint ../src/main/resources/static/css/*.css",
+    "lint:js": "npx eslint ../src/main/resources/static/js/app.js",
+    "fmt:js": "npx prettier --write ../src/main/resources/static/js/app.js"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "live-server": "^1.2.2",
+    "prettier": "^3.0.0",
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^36.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
