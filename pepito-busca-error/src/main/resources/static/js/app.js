@@ -282,7 +282,7 @@
     Chart.defaults.plugins.legend.labels.color   = '#94a3b8';
     Chart.defaults.plugins.legend.labels.boxWidth = 9;
 
-    Chart.defaults.plugins.tooltip.backgroundColor = '#1e293b';
+    Chart.defaults.plugins.tooltip.backgroundColor = '#181818';
     Chart.defaults.plugins.tooltip.titleColor      = '#f1f5f9';
     Chart.defaults.plugins.tooltip.bodyColor       = '#94a3b8';
     Chart.defaults.plugins.tooltip.borderColor     = 'rgba(148,163,184,0.10)';

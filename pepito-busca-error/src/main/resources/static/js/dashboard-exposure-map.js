@@ -23,14 +23,14 @@
 		recommendations: readNumber("recommendations")
 	};
 	const palette = {
-		blue: "#60a5fa",
-		cyan: "#22d3ee",
+		blue: "#3b82f6",
+		cyan: "#2563eb",
 		green: "#22c55e",
-		amber: "#f59e0b",
+		amber: "#eab308",
 		red: "#ef4444",
 		white: "#ffffff",
-		muted: "#94a3b8",
-		panel: "rgba(15, 23, 42, 0.78)"
+		muted: "#888888",
+		panel: "rgba(0, 0, 0, 0.82)"
 	};
 	let width = 0;
 	let height = 0;
@@ -81,15 +81,15 @@
 
 	function drawBackground(time) {
 		const gradient = context.createLinearGradient(0, 0, width, height);
-		gradient.addColorStop(0, "#0b1020");
-		gradient.addColorStop(0.52, "#101935");
-		gradient.addColorStop(1, "#020617");
+		gradient.addColorStop(0, "#000000");
+		gradient.addColorStop(0.52, "#0d0d0d");
+		gradient.addColorStop(1, "#000000");
 		context.fillStyle = gradient;
 		context.fillRect(0, 0, width, height);
 
 		context.save();
 		context.globalAlpha = 0.25;
-		context.strokeStyle = "rgba(96, 165, 250, 0.16)";
+		context.strokeStyle = "rgba(37, 99, 235, 0.18)";
 		context.lineWidth = 1;
 		const gridSize = 34;
 		const offset = (time * 10) % gridSize;
@@ -151,8 +151,8 @@
 
 		context.save();
 		context.shadowBlur = 42 + criticalGlow * 18;
-		context.shadowColor = criticalGlow > 0.35 ? "rgba(239, 68, 68, 0.55)" : "rgba(96, 165, 250, 0.55)";
-		context.fillStyle = "rgba(15, 23, 42, 0.92)";
+		context.shadowColor = criticalGlow > 0.35 ? "rgba(239, 68, 68, 0.55)" : "rgba(37, 99, 235, 0.55)";
+		context.fillStyle = "rgba(0, 0, 0, 0.92)";
 		context.beginPath();
 		context.arc(center.x, center.y, radius, 0, Math.PI * 2);
 		context.fill();
@@ -160,9 +160,9 @@
 
 		drawArc(center.x, center.y, radius + 11 + ringPulse, -Math.PI / 2,
 				-Math.PI / 2 + Math.PI * 2 * Math.max(0.06, data.averageRisk / 100), riskColor(), 6);
-		drawArc(center.x, center.y, radius + 24, time, time + Math.PI * 1.25, "rgba(34, 211, 238, 0.72)", 2);
+		drawArc(center.x, center.y, radius + 24, time, time + Math.PI * 1.25, "rgba(37, 99, 235, 0.65)", 2);
 		drawArc(center.x, center.y, radius + 34, -time * 0.72, -time * 0.72 + Math.PI * 1.55,
-				"rgba(96, 165, 250, 0.38)", 1.5);
+				"rgba(59, 130, 246, 0.35)", 1.5);
 
 		context.fillStyle = palette.white;
 		context.font = "900 " + Math.max(34, radius * 0.72) + "px Inter, system-ui, sans-serif";
